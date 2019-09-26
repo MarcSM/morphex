@@ -1,11 +1,11 @@
 # Morphex
+**A Spectral Morphing Synthesizer**
+
 [![GitHub release](https://img.shields.io/github/release/MarcSM/morphex.svg)](https://github.com/MarcSM/morphex/releases) [![Github All Releases](https://img.shields.io/github/downloads/MarcSM/morphex/total.svg)]() [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 ![](https://github.com/MarcSM/SpectralMorphingTool/blob/master/Assets/Images/morphex_v02.png?raw=true)
 
 <img align="right" width="100" height="100" src="https://github.com/MarcSM/SpectralMorphingTool/blob/master/Assets/Images/Logos/morphex_logo.png?raw=true">
-
-**A Spectral Morphing Synthesizer**
 
 Morphex is a an open source audio plugin that morphs the harmonics of two sounds while exploring the latent timbral space that emerges from the spectral analysis of musical sounds, and to craft new hybrid instruments. 
 
