@@ -1,4 +1,5 @@
 # Morphex
+[![GitHub release](https://img.shields.io/github/release/MarcSM/morphex.svg)](https://github.com/MarcSM/morphex/releases) [![Github All Releases](https://img.shields.io/github/downloads/MarcSM/morphex/total.svg)]() [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 ![](https://github.com/MarcSM/SpectralMorphingTool/blob/master/Assets/Images/morphex_v02.png?raw=true)
 
