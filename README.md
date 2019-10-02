@@ -13,9 +13,13 @@ Morphex is a an open source audio plugin that morphs the harmonics of two sounds
 
 If you want to see the plugin live you can take a look at this video:
 
-https://www.youtube.com/watch?v=4NT5JkBR96U
+www.youtube.com/watch?v=4NT5JkBR96U
 
 In this video you can hear some presets of the plugin. External plugin effects such as distortion and reverb are used at the end of the video to see what kind of sounds can we get when using the plugin within a DAW in a music production use case.
+
+## Research Repository
+
+www.github.com/MarcSM/morphex-research
 
 ## System requirements
 
