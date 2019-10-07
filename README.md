@@ -63,3 +63,6 @@ Right now we have 3 different builds of the plugin:
 ## License
 
 All the software is distributed with the Affero GPL license (http://www.gnu.org/licenses/agpl-3.0.en.html). The sounds located at "data/sounds" come from freesound.org, in particular from http://www.freesound.org/people/xserra/packs/13038/.
+
+Copyright © 2019, [Marc Sanchez](https://github.com/MarcSM).
+All rights reserved.
