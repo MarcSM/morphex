@@ -28,6 +28,8 @@ const static int XYPAD_UI_REFRESH_TIMER_CALLBACK = 5000; // 0.5 seconds
     static const String directorySeparator = "\\";
 # elif JUCE_MAC
     static const String directorySeparator = "/";
+# else
+    static const String directorySeparator = "/";
 # endif
 
 static const String PLUGIN_DATA_DIRECTORY = (File::getSpecialLocation(File::userDesktopDirectory)).getFullPathName() + directorySeparator + PLUGIN_NAME;

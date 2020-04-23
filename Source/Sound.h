@@ -12,6 +12,7 @@
 
 #include "JuceHeader.h"
 
+#include "Model.h"
 #include "SynthesisEngine.h"
 //#include "SMTWaveformPreview.h"
 
@@ -59,6 +60,25 @@ enum WindowType
 class Sound
 {
 public:
+    
+    // Control flags
+    bool loaded;
+    bool analyzed;
+    bool had_file_loaded;
+    
+    int fs;
+    int note;
+    int velocity;
+    int max_harmonics;
+    int max_frames;
+    
+    struct SoundLoop {
+        int start;
+        int end;
+    };
+    SoundLoop loop;
+    
+    Model model;
     
     /** Sound parameters specified by the user */
     std::string path;
@@ -144,16 +164,15 @@ public:
     std::vector<std::vector<float>> harmonic_phases;
     std::vector<std::vector<float>> stochastic_residual;
     
-    /** Control flags */
-    bool loaded;
-    
     Sound();
     Sound(std::string filepath);
+    Sound(std::string file_path, int note = NULL, int velocity = NULL);
     Sound(String file_data, std::string filepath);
     ~Sound();
     
     String loadDataFromFile(std::string file_path);
     
+    void commonInit();
     void load(String file_data, HadFileSource file_source = HadFileSource::Path);
     void synthesize();
     

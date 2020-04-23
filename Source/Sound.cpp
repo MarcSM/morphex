@@ -14,15 +14,54 @@
 
 #include "SMTAudioHelpers.h"
 
-Sound::Sound()
+void Sound::commonInit()
 {
     // Initialize default values
     this->loaded = false;
+    this->analyzed = false;
+    this->had_file_loaded = false;
+    
+    // Initializing default values
+    //    this->x = []
+    this->fs = 44100;
+    this->note = NULL;
+    this->velocity = NULL;
+    this->max_harmonics = 0;
+    this->max_frames = 0;
+    this->loop.start = 0;
+    this->loop.end = 0;
+    
+    // Model object
+    this->model = new Model()
+    
+    //    // Initializing the harmonic analysis data structure for the .had file
+    //    this->had = {}
+}
+
+Sound::Sound()
+{
+    this->commonInit();
 };
 
 // Read the file from a file_path
 Sound::Sound(std::string file_path)
 {
+    this->commonInit();
+    
+    // Load data from file_path
+    String file_data = loadDataFromFile(file_path);
+    
+    // Load the sound
+    this->load(file_data, HadFileSource::Binary);
+};
+
+Sound::Sound(std::string file_path, int note, int velocity)
+{
+    this->commonInit();
+    
+    this->note = note;
+    this->velocity = velocity;
+    
     // Load data from file_path
     String file_data = loadDataFromFile(file_path);
     
@@ -78,16 +117,38 @@ void Sound::load(String file_data, HadFileSource file_source)
     {
         try
         {
-            /** Sound */
+            // Sound
             XmlElement *xml_sound = xml->getChildByName("sound"); // had["sound"]
-            this->file.fs = xml_sound->getChildByName("fs")->getAllSubText().getIntValue();
+            this->fs = xml_sound->getChildByName("fs")->getAllSubText().getIntValue();
+            this->note = xml_sound->getChildByName("note")->getAllSubText().getIntValue();
+            this->velocity = xml_sound->getChildByName("velocity")->getAllSubText().getIntValue();
+            this->max_harmonics = xml_sound->getChildByName("max_harmonics")->getAllSubText().getIntValue();
+            this->max_frames = xml_sound->getChildByName("max_frames")->getAllSubText().getIntValue();
+            this->loop.start = xml_sound->getChildByName("loop")->getChildByName("start")->getAllSubText().getIntValue();
+            this->loop.end = xml_sound->getChildByName("loop")->getChildByName("end")->getAllSubText().getIntValue();
             
-            /** File */
-            XmlElement *xml_sound_file = xml_sound->getChildByName("file"); // had["sound"]["file"]
-            this->file.name = xml_sound_file->getChildByName("name")->getAllSubText().toStdString();
-            this->file.extension = xml_sound_file->getChildByName("extension")->getAllSubText().toStdString();
-            this->file.path = xml_sound_file->getChildByName("path")->getAllSubText().toStdString();
-            this->file.dirpath = xml_sound_file->getChildByName("dirpath")->getAllSubText().toStdString();
+            // Model
+            XmlElement *xml_synthesis = xml->getChildByName("synthesis"); // had["synthesis"]
+            this->model.harmonic    = hasChild(xml_synthesis, "f") and hasChild(xml_synthesis, "m");
+            this->model.phases      = hasChild(xml_synthesis, "p");
+            this->model.sinusoidal  = hasChild(xml_synthesis, "l");
+            this->model.stochastic  = hasChild(xml_synthesis, "s");
+            this->model.residual    = hasChild(xml_synthesis, "r");
+            if (this->model.harmonic)   this->model.setHarmonics(   getMatrixOfFloats(xml_synthesis, "f"), getMatrixOfFloats(xml_synthesis, "m") );
+            if (this->model.phases)     this->model.setPhases(      getMatrixOfFloats(xml_synthesis, "p") );
+            if (this->model.sinusoidal) this->model.setSinusoidal(  getMatrixOfFloats(xml_synthesis, "l") );
+            if (this->model.stochastic) this->model.setStochastic(  getMatrixOfFloats(xml_synthesis, "s") );
+            if (this->model.residual)   this->model.setResidual(    getMatrixOfFloats(xml_synthesis, "r") );
+
+//            // Decode the values from the ".had" files
+//            self.decodeHadValues(had, self.model)
+            
+//            // File
+//            XmlElement *xml_sound_file = xml_sound->getChildByName("file"); // had["sound"]["file"]
+//            this->file.name = xml_sound_file->getChildByName("name")->getAllSubText().toStdString();
+//            this->file.extension = xml_sound_file->getChildByName("extension")->getAllSubText().toStdString();
+//            this->file.path = xml_sound_file->getChildByName("path")->getAllSubText().toStdString();
+//            this->file.dirpath = xml_sound_file->getChildByName("dirpath")->getAllSubText().toStdString();
             
             /** Binary Data Cases */
 //            if (this->path.empty()) this->path = "";
@@ -112,12 +173,12 @@ void Sound::load(String file_data, HadFileSource file_source)
             this->analysis.parameters.synthesis_fft_size = xml_parameters->getChildByName("synthesis_fft_size")->getAllSubText().getIntValue();
             this->analysis.parameters.hop_size = xml_parameters->getChildByName("hop_size")->getAllSubText().getIntValue();
             
-            /** Analysis Output Values */
-            XmlElement *xml_analysis = xml->getChildByName("output")->getChildByName("values"); // had["output"]
-            this->harmonic_frequencies = getMatrixOfFloats(xml_analysis, "harmonic_frequencies");
-            this->harmonic_magnitudes = getMatrixOfFloats(xml_analysis, "harmonic_magnitudes");
-            this->harmonic_phases = getMatrixOfFloats(xml_analysis, "harmonic_phases");
-            this->stochastic_residual = getMatrixOfFloats(xml_analysis, "stochastic_residual");
+//            /** Analysis Output Values */
+//            XmlElement *xml_analysis = xml->getChildByName("output")->getChildByName("values"); // had["output"]
+//            this->harmonic_frequencies = getMatrixOfFloats(xml_analysis, "harmonic_frequencies");
+//            this->harmonic_magnitudes = getMatrixOfFloats(xml_analysis, "harmonic_magnitudes");
+//            this->harmonic_phases = getMatrixOfFloats(xml_analysis, "harmonic_phases");
+//            this->stochastic_residual = getMatrixOfFloats(xml_analysis, "stochastic_residual");
             
             /** Original Sound Synthesized */
             this->synthesize();
@@ -146,6 +207,12 @@ void Sound::load(String file_data, HadFileSource file_source)
         std::cout << "Error while loading the sound\n";
     }
 };
+
+
+
+
+
+
 
 void Sound::synthesize()
 {

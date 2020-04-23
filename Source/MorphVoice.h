@@ -241,8 +241,8 @@ struct MorphVoice
                 else
                 {
                     // No changes will be made to the frequencies
-                    sound_harmonic_frequencies[1] = mSound[1]->harmonic_frequencies[mHarmonicsHead];
                     sound_harmonic_frequencies[2] = mSound[2]->harmonic_frequencies[mHarmonicsHead];
+                    sound_harmonic_frequencies[1] = mSound[1]->harmonic_frequencies[mHarmonicsHead];
                 }
                 
                 // Interpolating the frequencies of the matching harmonics

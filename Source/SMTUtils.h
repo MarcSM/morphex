@@ -53,6 +53,12 @@ inline std::vector<float> splitFloats(const std::string& list_of_doubles)
     };
 }
 
+/** Check if an xml element has any child with a given name */
+inline bool hasChild(XmlElement* parent, String child_name)
+{
+    return parent->getChildByName(child_name) != nullptr;
+}
+
 /** Get a matrix of floats from an xml element */
 inline std::vector<std::vector<float>> getMatrixOfFloats(XmlElement* parent, String child_name )
 {
