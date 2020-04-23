@@ -1,6 +1,4 @@
-
-
-<p align="center"><img width="100" height="100" src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/Logos/morphex_logo.png?raw=true"></p>
+<p align="center"> <img width="110" height="110" src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/Logos/morphex_logo.png?raw=true"></p>
 
 <h2 align="center">Morphex</h2>
 <h4 align="center">A Spectral Morphing Synthesizer</h4>
