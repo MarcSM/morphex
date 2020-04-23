@@ -2,14 +2,14 @@
 
 <p align="center"><img width="100" height="100" src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/Logos/morphex_logo.png?raw=true"></p>
 
+<h2 align="center">Morphex</h2>
+<h4 align="center">A Spectral Morphing Synthesizer</h4>
+
 <p align="center">
   <a href="https://github.com/MarcSM/morphex/releases"><img src="https://img.shields.io/github/release/MarcSM/morphex.svg" alt="Version"></a>
   <a href="https://github.com/MarcSM/morphex/releases"><img src="https://img.shields.io/github/downloads/MarcSM/morphex/total.svg" alt="Downloads"></a>
   <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg" alt="License"></a>
 </p>
-
-<h2 align="center">Morphex</h2>
-<h4 align="center">A Spectral Morphing Synthesizer</h4>
 
 <p align="center">
   <a href="https://github.com/MarcSM/morphex"><img src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/morphex_v02.png?raw=true" alt="Morphex GUI"></a>
