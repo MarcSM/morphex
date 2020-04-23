@@ -1,13 +1,19 @@
-# Morphex
-**A Spectral Morphing Synthesizer**
 
-[![GitHub release](https://img.shields.io/github/release/MarcSM/morphex.svg)](https://github.com/MarcSM/morphex/releases)
-[![Github All Releases](https://img.shields.io/github/downloads/MarcSM/morphex/total.svg)]()
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-![](https://github.com/MarcSM/morphex/blob/master/Assets/Images/morphex_v02.png?raw=true)
+<p align="center"><img width="100" height="100" src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/Logos/morphex_logo.png?raw=true"></p>
 
-<img align="right" width="100" height="100" src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/Logos/morphex_logo.png?raw=true">
+<p align="center">
+  <a href="https://github.com/MarcSM/morphex/releases"><img src="https://img.shields.io/github/release/MarcSM/morphex.svg" alt="Version"></a>
+  <a href="https://github.com/MarcSM/morphex/releases"><img src="https://img.shields.io/github/downloads/MarcSM/morphex/total.svg" alt="Downloads"></a>
+  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg" alt="License"></a>
+</p>
+
+<h2 align="center">Morphex</h2>
+<h4 align="center">A Spectral Morphing Synthesizer</h4>
+
+<p align="center">
+  <a href="https://github.com/MarcSM/morphex"><img src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/morphex_v02.png?raw=true" alt="Morphex GUI"></a>
+</p>
 
 Morphex is a an open source audio plugin that morphs the harmonics of two sounds while exploring the latent timbral space that emerges from the spectral analysis of musical sounds, and to craft new hybrid instruments. 
 
