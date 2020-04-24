@@ -44,7 +44,8 @@
 //#include <list>
 //#include <boost/filesystem.hpp>
 
-enum class HadFileSource
+//enum class HadFileSource
+enum HadFileSource
 {
     Path = 0,   // The ".had" file will be loaded from a filepath
     Binary,     // The ".had" file will be loaded from a binary data object
@@ -78,7 +79,7 @@ public:
     };
     SoundLoop loop;
     
-    Model model;
+    Model* model;
     
     /** Sound parameters specified by the user */
     std::string path;
@@ -104,6 +105,7 @@ public:
             int window_size;
             int fft_size;
             int magnitude_threshold;
+            int hearing_threshold;
             double min_sine_dur;
             int max_harm;
             int min_f0;
@@ -151,18 +153,18 @@ public:
     /** Original Sound Values */
     struct OriginalValues {
         /** Analysis output readen from the ".had" file */
-        std::vector<std::vector<float>> harmonic_frequencies;
-        std::vector<std::vector<float>> harmonic_magnitudes;
-        std::vector<std::vector<float>> harmonic_phases;
-        std::vector<std::vector<float>> stochastic_residual;
+        std::vector<std::vector<float>> harmonics_freqs;
+        std::vector<std::vector<float>> harmonics_mags;
+        std::vector<std::vector<float>> harmonics_phases;
+        std::vector<std::vector<float>> stochastic;
     };
     OriginalValues original;
-    
-    /** Analysis output readen from the ".had" file */
-    std::vector<std::vector<float>> harmonic_frequencies;
-    std::vector<std::vector<float>> harmonic_magnitudes;
-    std::vector<std::vector<float>> harmonic_phases;
-    std::vector<std::vector<float>> stochastic_residual;
+
+//    /** Analysis output read from the ".had" file */
+//    std::vector<std::vector<float>> harmonic_frequencies;
+//    std::vector<std::vector<float>> harmonic_magnitudes;
+//    std::vector<std::vector<float>> harmonic_phases;
+//    std::vector<std::vector<float>> stochastic_residual;
     
     Sound();
     Sound(std::string filepath);

@@ -32,7 +32,7 @@ void Sound::commonInit()
     this->loop.end = 0;
     
     // Model object
-    this->model = new Model()
+    this->model = new Model();
     
     //    // Initializing the harmonic analysis data structure for the .had file
     //    this->had = {}
@@ -129,16 +129,16 @@ void Sound::load(String file_data, HadFileSource file_source)
             
             // Model
             XmlElement *xml_synthesis = xml->getChildByName("synthesis"); // had["synthesis"]
-            this->model.harmonic    = hasChild(xml_synthesis, "f") and hasChild(xml_synthesis, "m");
-            this->model.phases      = hasChild(xml_synthesis, "p");
-            this->model.sinusoidal  = hasChild(xml_synthesis, "l");
-            this->model.stochastic  = hasChild(xml_synthesis, "s");
-            this->model.residual    = hasChild(xml_synthesis, "r");
-            if (this->model.harmonic)   this->model.setHarmonics(   getMatrixOfFloats(xml_synthesis, "f"), getMatrixOfFloats(xml_synthesis, "m") );
-            if (this->model.phases)     this->model.setPhases(      getMatrixOfFloats(xml_synthesis, "p") );
-            if (this->model.sinusoidal) this->model.setSinusoidal(  getMatrixOfFloats(xml_synthesis, "l") );
-            if (this->model.stochastic) this->model.setStochastic(  getMatrixOfFloats(xml_synthesis, "s") );
-            if (this->model.residual)   this->model.setResidual(    getMatrixOfFloats(xml_synthesis, "r") );
+            this->model->harmonic   = hasChild(xml_synthesis, "f") and hasChild(xml_synthesis, "m");
+            this->model->phases     = hasChild(xml_synthesis, "p");
+            this->model->sinusoidal = hasChild(xml_synthesis, "l");
+            this->model->stochastic = hasChild(xml_synthesis, "s");
+            this->model->residual   = hasChild(xml_synthesis, "r");
+            if (this->model->harmonic)      this->model->setHarmonics(  getMatrixOfFloats(xml_synthesis, "f"), getMatrixOfFloats(xml_synthesis, "m") );
+            if (this->model->phases)        this->model->setPhases(     getMatrixOfFloats(xml_synthesis, "p") );
+            if (this->model->sinusoidal)    this->model->setSinusoidal( getMatrixOfFloats(xml_synthesis, "l") );
+            if (this->model->stochastic)    this->model->setStochastic( getMatrixOfFloats(xml_synthesis, "s") );
+            if (this->model->residual)      this->model->setResidual(   getMatrixOfFloats(xml_synthesis, "r") );
 
 //            // Decode the values from the ".had" files
 //            self.decodeHadValues(had, self.model)
@@ -158,11 +158,12 @@ void Sound::load(String file_data, HadFileSource file_source)
 
             /** Parameters */
             XmlElement *xml_parameters = xml->getChildByName("parameters"); // had["parameters"]
-            this->analysis.parameters.window = getVectorOfDoubles(xml_parameters, "window");
+//            this->analysis.parameters.window = getVectorOfDoubles(xml_parameters, "window");
             this->analysis.parameters.window_type = (WindowType)xml_parameters->getChildByName("window_type")->getAllSubText().getIntValue(); // TODO - Cast properly
             this->analysis.parameters.window_size = xml_parameters->getChildByName("window_size")->getAllSubText().getIntValue();
             this->analysis.parameters.fft_size = xml_parameters->getChildByName("fft_size")->getAllSubText().getIntValue();
             this->analysis.parameters.magnitude_threshold = xml_parameters->getChildByName("magnitude_threshold")->getAllSubText().getIntValue();
+            this->analysis.parameters.hearing_threshold = xml_parameters->getChildByName("hearing_threshold")->getAllSubText().getIntValue();
             this->analysis.parameters.min_sine_dur = xml_parameters->getChildByName("min_sine_dur")->getAllSubText().getDoubleValue();
             this->analysis.parameters.max_harm = xml_parameters->getChildByName("max_harm")->getAllSubText().getIntValue();
             this->analysis.parameters.min_f0 = xml_parameters->getChildByName("min_f0")->getAllSubText().getIntValue();
@@ -193,7 +194,7 @@ void Sound::load(String file_data, HadFileSource file_source)
             this->normalizeMagnitudes();
             
             /** Updating flags */
-            this->loaded = true;
+            this->had_file_loaded = true;
             
             /* TODO? - Refreshing the UI (waveform visualization) */
         }
@@ -224,16 +225,16 @@ void Sound::synthesize()
     this->synthesis.engine = std::make_unique<SynthesisEngine>();
     
     // Synthesize Harmonics
-    this->synthesis.harmonic = this->synthesis.engine->sineModelSynth(this->harmonic_frequencies,
-                                                                      this->harmonic_magnitudes,
-                                                                      this->harmonic_phases,
+    this->synthesis.harmonic = this->synthesis.engine->sineModelSynth(this->model->values.harmonics_freqs,
+                                                                      this->model->values.harmonics_mags,
+                                                                      this->model->values.harmonics_phases,
                                                                       this->analysis.parameters.synthesis_fft_size,
                                                                       this->analysis.parameters.hop_size,
                                                                       this->synthesis.engine->window,
                                                                       this->file.fs);
     
     // TODO - Synthesize Stochastic Component
-    this->synthesis.stochastic = this->synthesis.engine->stochasticModelSynth(this->stochastic_residual,
+    this->synthesis.stochastic = this->synthesis.engine->stochasticModelSynth(this->model->values.stochastic,
                                                                               this->analysis.parameters.synthesis_fft_size,
                                                                               this->analysis.parameters.hop_size);
     
@@ -286,10 +287,10 @@ void Sound::getFundamentalNotes()
     }
 
     // Count the number of occurrences for each fundamental present on "harmonic_frequencies"
-    for (int i_frame = 0; i_frame < this->harmonic_frequencies.size(); i_frame++)
+    for (int i_frame = 0; i_frame < this->model->values.harmonics_freqs.size(); i_frame++)
     {
         // Current fundamental
-        float current_fundamental = this->harmonic_frequencies[i_frame][0];
+        float current_fundamental = this->model->values.harmonics_freqs[i_frame][0];
         
         // Find the closest note for this fundamental in Hz
         float i_closest_note = findClosest(notes_array, (int) notes.size(), current_fundamental);
@@ -321,10 +322,10 @@ void Sound::getFundamentalNotes()
 
 void Sound::saveOriginalValues()
 {
-    this->original.harmonic_frequencies = this->harmonic_frequencies;
-    this->original.harmonic_magnitudes  = this->harmonic_magnitudes;
-    this->original.harmonic_phases      = this->harmonic_phases;
-    this->original.stochastic_residual  = this->stochastic_residual;
+    this->original.harmonics_freqs  = this->model->values.harmonics_freqs;
+    this->original.harmonics_mags   = this->model->values.harmonics_mags;
+    this->original.harmonics_phases = this->model->values.harmonics_phases;
+    this->original.stochastic       = this->model->values.stochastic;
 }
 
 void Sound::normalizeMagnitudes()
@@ -338,21 +339,21 @@ void Sound::normalizeMagnitudes()
     float max_val = -100.0;
     
     // Find the min and max of the harmonic magnitudes matrix
-    for (int i=0; i<this->harmonic_magnitudes.size(); i++)
+    for (int i=0; i<this->model->values.harmonics_mags.size(); i++)
     {
-        float local_min_val = *min_element(this->harmonic_magnitudes[i].begin(), this->harmonic_magnitudes[i].end());
-        float local_max_val = *max_element(this->harmonic_magnitudes[i].begin(), this->harmonic_magnitudes[i].end());
+        float local_min_val = *min_element(this->model->values.harmonics_mags[i].begin(), this->model->values.harmonics_mags[i].end());
+        float local_max_val = *max_element(this->model->values.harmonics_mags[i].begin(), this->model->values.harmonics_mags[i].end());
         
         if (local_min_val < min_val) min_val = local_min_val;
         if (local_max_val > max_val) max_val = local_max_val;
     }
     
     // Normalize the harmonic magnitudes
-    for (int i=0; i<this->harmonic_magnitudes.size(); i++)
+    for (int i=0; i<this->model->values.harmonics_mags.size(); i++)
     {
-        for (int j=0; j<this->harmonic_magnitudes[i].size(); j++)
+        for (int j=0; j<this->model->values.harmonics_mags[i].size(); j++)
         {
-            this->harmonic_magnitudes[i][j] = (max_db - min_db) * ( (this->harmonic_magnitudes[i][j] - min_val) / (max_val - min_val) ) + min_db;
+            this->model->values.harmonics_mags[i][j] = (max_db - min_db) * ( (this->model->values.harmonics_mags[i][j] - min_val) / (max_val - min_val) ) + min_db;
         }
     }
 }
