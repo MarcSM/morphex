@@ -10,7 +10,7 @@
 
 #pragma once
 
-namespace Codec
+namespace Core::Codec
 {
     const float DEFAULT_FREQ = 0.0;
     const float DEFAULT_MAG = -180.0;

@@ -12,7 +12,9 @@
 
 #include "Codec.h"
 
-class Model
+namespace Core { class Model; }
+    
+class Core::Model
 {
 public:
     

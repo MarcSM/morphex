@@ -14,6 +14,8 @@
 
 #include "SMTAudioHelpers.h"
 
+namespace Core
+{
 void Sound::commonInit()
 {
     // Initialize default values
@@ -357,3 +359,5 @@ void Sound::normalizeMagnitudes()
         }
     }
 }
+    
+} // namespace Core

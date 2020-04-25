@@ -12,11 +12,13 @@
 
 #include "Velocity.h"
 
-int NUM_MIDI_VELOCITIES = 128;
-
-class Note
+namespace Core::Instrument { class Note; }
+    
+class Core::Instrument::Note
 {
 public:
+    
+    const static int NUM_MIDI_VELOCITIES = 128;
     
     // Midi velocity value
     int value;

@@ -12,7 +12,9 @@
 
 #include "Sound.h"
 
-class Velocity
+namespace Core::Instrument { class Velocity; }
+
+class Core::Instrument::Velocity
 {
 public:
     

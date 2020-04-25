@@ -44,23 +44,24 @@
 //#include <list>
 //#include <boost/filesystem.hpp>
 
-//enum class HadFileSource
-enum HadFileSource
-{
-    Path = 0,   // The ".had" file will be loaded from a filepath
-    Binary,     // The ".had" file will be loaded from a binary data object
-};
+namespace Core { class Sound; }
 
-enum WindowType
-{
-    blackmanharris = 0,
-    triang,
-    hanning
-};
-
-class Sound
+class Core::Sound
 {
 public:
+    
+    enum HadFileSource
+    {
+        Path = 0,   // The ".had" file will be loaded from a filepath
+        Binary,     // The ".had" file will be loaded from a binary data object
+    };
+    
+    enum WindowType
+    {
+        blackmanharris = 0,
+        triang,
+        hanning
+    };
     
     // Control flags
     bool loaded;
