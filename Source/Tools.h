@@ -33,7 +33,7 @@ namespace Core::Tools
             // Output
             std::vector<float> result;
             
-            for (float i = min; i <= max; n += increment)
+            for (float i = min; i <= max; i += increment)
             {
                 result.push_back(i);
             }
@@ -93,13 +93,19 @@ namespace Core::Tools
     
     namespace Get
     {
-//        template<typename ForwardIterator, typename T>
-//        inline std::vector<float> valuesByIndex(std::vector<float> given_vector, std::vector<int> idxs)
-//        {
-//            // TODO - Generic Type instead of float
-//            std::vector<float> test(0);
-//            return test;
-//        }
+        template<typename T>
+        inline std::vector<T> valuesByIndex(std::vector<T> given_vector, std::vector<int> idxs)
+        {
+            // Output
+            std::vector<T> result;
+            
+            for (float i = 0; i <= idxs.size(); i++)
+            {
+                result.push_back( given_vector[i] );
+            }
+            
+            return result;
+        }
     }
     
     namespace Calculate

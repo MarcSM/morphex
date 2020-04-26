@@ -99,8 +99,8 @@ public:
     SoundFile file;
     
     /** Analysis parameters readen from the ".had" file */
-    struct Analysis {
-        struct AnalysisParameters {
+    struct SoundAnalysis {
+        struct SoundAnalysisParameters {
             std::vector<double> window;
             WindowType window_type;
             int window_size;
@@ -117,12 +117,12 @@ public:
             int synthesis_fft_size;
             int hop_size;
         };
-        AnalysisParameters parameters;
+        SoundAnalysisParameters parameters;
     };
-    Analysis analysis;
+    SoundAnalysis analysis;
     
     /** Original Sound Synthesized */
-    struct Synthesis {
+    struct SoundSynthesis {
         std::unique_ptr<SynthesisEngine> engine;
         std::vector<float> harmonic;
         std::vector<float> stochastic;
@@ -137,7 +137,7 @@ public:
 //        };
 //        SynthesisParameters parameters;
     };
-    Synthesis synthesis;
+    SoundSynthesis synthesis;
     
     /** Sound Features */
     struct SoundFeatures {
@@ -160,7 +160,18 @@ public:
         std::vector<std::vector<float>> stochastic;
     };
     OriginalValues original;
-
+    
+    /** Sound parameters of the actual ".had" file */
+    struct Frame
+    {
+        std::vector<float> harmonics_freqs;
+        std::vector<float> harmonics_mags;
+        std::vector<float> harmonics_phases;
+        std::vector<float> sinusoidal;
+        std::vector<float> stochastic;
+        std::vector<float> residual;
+    };
+    
 //    /** Analysis output read from the ".had" file */
 //    std::vector<std::vector<float>> harmonic_frequencies;
 //    std::vector<std::vector<float>> harmonic_magnitudes;
@@ -168,6 +179,7 @@ public:
 //    std::vector<std::vector<float>> stochastic_residual;
     
     Sound();
+    Sound(const Sound &obj);
     Sound(std::string filepath);
     Sound(std::string file_path, int note = NULL, int velocity = NULL);
     Sound(String file_data, std::string filepath);
@@ -190,4 +202,4 @@ private:
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Sound);
 };
 
-typedef std::array<std::unique_ptr<Sound>, 3> SoundArray;
+//typedef std::array<std::unique_ptr<Sound>, 3> SoundArray;

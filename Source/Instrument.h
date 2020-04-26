@@ -16,13 +16,22 @@
 
 #include <vector>
 
+namespace Core { class Instrument; }
+
+const static int NUM_MIDI_NOTES = 128;
+
+//const static float DEFAULT_FREQ = 0.0;
+//const static float DEFAULT_MAG = -180.0;
+//const static float DEFAULT_STOC = -180.0;
+const static float DEFAULT_HZ = 0.0;
+const static float DEFAULT_DB = -180.0;
+const static int XML_DECIMAL_PLACES = 5;
+
 class Core::Instrument
 {
 public:
     
-    const static int NUM_MIDI_NOTES = 128;
-    
-    enum FrameInterpolationMode
+    enum FrameType
     {
         Frequencies = 0,    // Interpolate Frequencies
         Magnitudes,         // Interpolate Magnitudes
@@ -39,7 +48,7 @@ public:
     };
     
     // Notes
-    std::vector<Note> note;
+    std::vector<Note*> note;
     
     // Data
     std::string name;
@@ -55,8 +64,16 @@ public:
     
     // Initializers
     Instrument();
-    
+    ~Instrument();
+
 private:
+    
+    virtual std::vector<float> interpolateFrames(FrameType frame_type,
+                                                 float interp_factor,
+                                                 std::vector<float> frame_1,
+                                                 std::vector<float> frame_2,
+                                                 int max_harmonics,
+                                                 std::vector<int> idx_harmonics);
     
 //    def interpolateFrames(self, interpolation_mode, interp_factor, frame_1, frame_2, max_harmonics, harmonics = []):
 //    

@@ -12,9 +12,9 @@
 
 #include "Velocity.h"
 
-namespace Core::Instrument { class Note; }
+namespace Core { class Note; }
     
-class Core::Instrument::Note
+class Core::Note
 {
 public:
     
@@ -32,7 +32,7 @@ public:
         this->value = value;
         
         // Velocities
-        velocity.reserve( NUM_MIDI_VELOCITIES );
+        this->velocity.reserve( NUM_MIDI_VELOCITIES );
         for (int i = 0; i < NUM_MIDI_VELOCITIES; i++)
         {
             this->velocity[i] = new Velocity(i);

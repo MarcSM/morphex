@@ -15,6 +15,8 @@
 #include "Tools.h"
 #include "Sound.h"
 
+#include "SMTConstants.h"
+
 #include <math.h>
 #include <vector>
 
@@ -290,15 +292,12 @@ public:
         
         // Selecting the processed samples
         std::vector<float> next_frame = getBuffer(BufferSection::Play, Channel::Mono, i_frame_length);
-        
-        next_frame = this->buffer.channels[LEFT_CH][this->buffer.selected.to_play]
 
         // Update samples ready
-        this->live_values.i_samples_ready -= len(next_frame)
+        this->live_values.i_samples_ready -= next_frame.size();
 
-        return next_frame
+        return next_frame;
     }
-    
     
 private:
     
@@ -411,8 +410,8 @@ private:
             std::vector<int> second_half = Tools::Generate::range(0, i_tail);
             
             // Concatenate "first_half" and "second_half"
-            buffer_section = first_half;
-            buffer_section.insert( buffer_section.end(), second_half.begin(), second_half.end() );
+            buffer_indexes = first_half;
+            buffer_indexes.insert( buffer_section.end(), second_half.begin(), second_half.end() );
         }
         else
         {
@@ -451,6 +450,8 @@ private:
                 // Return an empty vector
                 return std::vector<int>();
         }
+        
+        return buffer_indexes;
     }
     
     std::vector<float> getBuffer(BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = this->parameters.fft_size)
@@ -460,17 +461,17 @@ private:
         const int H = this->parameters.hop_size;
         
         // Output
-        std::vector<float> buffer_section;
+        std::vector<float> buffer_section_samples;
         
         std::vector<int> buffer_indexes = getBufferSectionIndexes(buffer_section, i_frame_length);
         
         // For each index
         for (int i = 0; i < buffer_indexes.size(); i++)
         {
-            buffer_section.push_back( this->buffer.channels[selected_channel][i] )
+            buffer_section_samples.push_back( this->buffer.channels[selected_channel][i] );
         }
         
-        return buffer_section;
+        return buffer_section_samples;
     }
     
     void updateBuffer(BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame, Channel selected_channel = Channel::Mono)
@@ -483,15 +484,15 @@ private:
         for (int i = 0; i < buffer_indexes.size(); i++)
         {
             float new_value = 0.0;
-            if ( i < given_frame.size() ) new_value = given_frame[i]
+            if ( i < given_frame.size() ) new_value = given_frame[i];
             
-            switch (buffer_section)
+            switch (update_mode)
             {
-                case BufferUpdateMode::Add:
-                    this->buffer.channels[selected_channel][i] = this->buffer.channels[selected_channel][i] + new_value[i];
+                case BufferUpdateMode::Set:
+                    this->buffer.channels[selected_channel][i] = this->buffer.channels[selected_channel][i] + new_value;
                     break;
-                case BufferSection::Clean:
-                    this->buffer.channels[selected_channel][i] = new_value[i];
+                case BufferUpdateMode::Add:
+                    this->buffer.channels[selected_channel][i] = new_value;
                     break;
             }
         }
@@ -619,7 +620,7 @@ private:
         int hN = int(NS/2+1); // positive size of fft
         
         std::vector<float> pY_aux(hN);
-        std::generate(pY_aux.begin(), pY_aux.end(), RandomGenerator(0.0, 1.0));
+        std::generate(pY_aux.begin(), pY_aux.end(), Tools::Generate::random(0.0, 1.0));
         
         for (int i=0; i<pY_aux.size(); i++) pY_aux[i] = pY_aux[i] * 2 * M_PI;
         
