@@ -351,43 +351,43 @@ inline float* generateSine(float frequency = 440.0, float level = 0.5f, float sa
     return out_audio;
 }
 
-inline std::vector<std::complex<float>> genStocComponent(std::vector<float> stocs_morph, int H, int NS)
-{
-    // Interpolate to original size
-    std::vector<float> mY = stocs_morph;
-    
-    // Generate phase random values
-    int hN = int(NS/2+1); // positive size of fft
-    
-    std::vector<float> pY_aux(hN);
-    std::generate(pY_aux.begin(), pY_aux.end(), Tools::Generate::random(0.0, 1.0));
-    
-    for (int i=0; i<pY_aux.size(); i++) pY_aux[i] = pY_aux[i] * 2 * M_PI;
-    
-    std::vector<std::complex<float>> pY(hN);
-    for (int i=0; i<pY.size(); i++) pY[i] = std::complex<float>(pY_aux[i]);
-    
-    // Initialize synthesis spectrum
-    std::vector<std::complex<float>> Y(NS, 0.0);
-    
-    for (int i=0; i<hN; i++)
-    {
-        // Generate positive freq
-        std::complex<float> aux_comp = std::complex<float>(0, -1) * std::complex<float>(pY[i]);
-        std::complex<float> aux_exp_comp = std::exp<float>(aux_comp);
-        
-        pY[i] = std::powf(10,mY[i]/20.0) * aux_exp_comp;
-    }
-    
-    for (int i=hN; i<Y.size(); i++)
-    {
-        
-        // Generate negative freq
-        std::complex<float> aux_comp = std::complex<float>(0, -1) * std::complex<float>(pY[i]);
-        std::complex<float> aux_exp_comp = std::exp<float>(aux_comp);
-        
-        pY[i] = std::powf(10,mY[i]/20.0) * aux_exp_comp;
-    }
-    
-    return pY;
-}
+//inline std::vector<std::complex<float>> genStocComponent(std::vector<float> stocs_morph, int H, int NS)
+//{
+//    // Interpolate to original size
+//    std::vector<float> mY = stocs_morph;
+//    
+//    // Generate phase random values
+//    int hN = int(NS/2+1); // positive size of fft
+//    
+//    std::vector<float> pY_aux(hN);
+//    std::generate(pY_aux.begin(), pY_aux.end(), Tools::Generate::random(0.0, 1.0));
+//    
+//    for (int i=0; i<pY_aux.size(); i++) pY_aux[i] = pY_aux[i] * 2 * M_PI;
+//    
+//    std::vector<std::complex<float>> pY(hN);
+//    for (int i=0; i<pY.size(); i++) pY[i] = std::complex<float>(pY_aux[i]);
+//    
+//    // Initialize synthesis spectrum
+//    std::vector<std::complex<float>> Y(NS, 0.0);
+//    
+//    for (int i=0; i<hN; i++)
+//    {
+//        // Generate positive freq
+//        std::complex<float> aux_comp = std::complex<float>(0, -1) * std::complex<float>(pY[i]);
+//        std::complex<float> aux_exp_comp = std::exp<float>(aux_comp);
+//        
+//        pY[i] = std::powf(10,mY[i]/20.0) * aux_exp_comp;
+//    }
+//    
+//    for (int i=hN; i<Y.size(); i++)
+//    {
+//        
+//        // Generate negative freq
+//        std::complex<float> aux_comp = std::complex<float>(0, -1) * std::complex<float>(pY[i]);
+//        std::complex<float> aux_exp_comp = std::exp<float>(aux_comp);
+//        
+//        pY[i] = std::powf(10,mY[i]/20.0) * aux_exp_comp;
+//    }
+//    
+//    return pY;
+//}

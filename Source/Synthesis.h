@@ -168,13 +168,15 @@ public:
         
         this->buffer.length = NS * NUM_FRAMES_IN_BUFFER;
         
-        // Initialize buffer channels
-        for (int i = 0; i < Channel::NUM_CHANNELS; i++)
-        {
-            this->buffer.channels[i].resize(NS);
-            std::fill(this->buffer.channels[i].begin(),
-                      this->buffer.channels[i].end(), 0.0);
-        }
+//        // Initialize buffer channels
+//        for (int i = 0; i < Channel::NUM_CHANNELS; i++)
+//        {
+//            this->buffer.channels[i].resize(this->buffer.length);
+//            std::fill(this->buffer.channels[i].begin(),
+//                      this->buffer.channels[i].end(), 0.0);
+//        }
+        
+        reset();
     }
     
     void reset()
@@ -197,7 +199,19 @@ public:
         
         std::fill(this->live_values.phases.begin(),
                   this->live_values.phases.end(), 0.0);
-
+        
+        // Clean the buffers
+//        zeromem(mCircularBufferLeft, sizeof(float) * this->buffer.length);
+//        zeromem(mCircularBufferRight, sizeof(float) * this->buffer.length);
+        
+        // Clean buffer channels
+        for (int i = 0; i < Channel::NUM_CHANNELS; i++)
+        {
+            this->buffer.channels[i].resize(this->buffer.length);
+            std::fill(this->buffer.channels[i].begin(),
+                      this->buffer.channels[i].end(), 0.0);
+        }
+        
 //        std::vector<float> empty_vector(MAX_HARMONICS, 0.0);
 //        this->live_values.last_freqs(empty_vector.begin(), empty_vector.end());
 //        this->live_values.phases(empty_vector.begin(), empty_vector.end());
@@ -312,7 +326,7 @@ public:
     
 private:
     
-    std::vector<float> getWindow()
+    void getWindow()
     {
         // Parameters shortcut
         const int NS = this->parameters.fft_size;

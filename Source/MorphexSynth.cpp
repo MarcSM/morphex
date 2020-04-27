@@ -12,12 +12,49 @@
 
 #include "SMTConstants.h"
 
-MorphexSynth::MorphexSynth(SoundArray& sound, AudioProcessorValueTreeState* parameters)
-:   mSound(sound)
+// TODO - Remove this reference, it's only for testing
+#include <filesystem>
+
+MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 {
+//    JUCE::DirectoryIterator()
+    char* instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
+    
+
+    std::string path = "/path/to/directory";
+    for (const auto & entry : std::filesystem::directory_iterator(path))
+        std::cout << entry.path() << std::endl;
+    
+//    DIR *dir;
+//    struct dirent *ent;
+//
+//    if ((dir = opendir (instrument_folder)) != NULL) {
+//
+////        if file_name.endswith(".had"):
+//        {
+//            had_file_path = os.path.join(instrument_folder, file_name)
+//            sound = Sound( had_file_path )
+//            sound.loadHadFile()
+//            test_instrument.note[ sound.note ].velocity[ sound.velocity ].loadSound( sound )
+//        }
+//
+//        /* print all the files and directories within directory */
+//        while ((ent = readdir (dir)) != NULL) {
+//            printf ("%s\n", ent->d_name);
+//        }
+//        closedir (dir);
+//    } else {
+//        /* could not open directory */
+//        perror ("");
+//    }
+    
+    throw std::exception();
+    
     // Add some voices to our synth, to play the sounds..
     for (int i = 0; i < MAX_VOICES; i++)
     {
+        // TODO - MorphVoice can be an instante of Intrument->Synthesis
+        
         // Add the voice to the synth
         this->addVoice( new MorphVoice(sound, parameters) );
     }
