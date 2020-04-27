@@ -155,8 +155,12 @@ public:
     Synthesis()
     {
         // Default values
-        const int NS = this->parameters.fft_size = FFT_SIZE;
-        const int H = this->parameters.hop_size = HOP_SIZE;
+        this->parameters.fft_size = FFT_SIZE;
+        this->parameters.hop_size = HOP_SIZE;
+        
+        // Parameters shortcut
+        const int NS = this->parameters.fft_size;
+//        const int H = this->parameters.hop_size;
         
         // TODO - Change this fixes values with the line below
         int fftOrder = 9; // 9 -> 2^9 = 512
@@ -208,36 +212,42 @@ public:
 //        this->live_values.phases = 2 * np.pi * np.zeros(MAX_HARMONICS)
     }
     
-    std::vector<float> synthesizeAudioFrame(Sound sound)
+    std::vector<float> synthesizeSoundFrame(Sound::Frame sound_frame)
     {
-        // TODO - // Instead of Sound, define SoundFrame, Model, or Model frame
-        
         // Parameters shortcut
         const int NS = this->parameters.fft_size;
         const int H = this->parameters.hop_size;
+        const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
         
         // Output
         std::vector<float> yw(NS);
         
         // A list with the indexes of the harmonics we want to interpolate
-        std::vector<int> idx_harmonics = Tools::Generate::range(0, sound.max_harmonics);
-//        std::vector<int> idx_harmonics_to_interpolate = Tools::Generate::range(0, sound.max_harmonics);
-//        l_harmonics = np.arange( sound.max_harmonics )
+        std::vector<int> idx_harmonics = Tools::Generate::range(0, MAX_HARMONICS);
+//
+        std::vector<float> harmonics_phases;
         
-        // Instead of Sound, define Sound Frame, Model, or Model frame
-        std::vector<float> harmonics_freqs;
-        std::vector<float> harmonics_mags;
-        std::vector<float> stochastic;
+        if ( sound_frame.hasPhases() )
+        {
+            harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
+        }
+        else
+        {
+            harmonics_phases = sound_frame.harmonics_phases;
+        }
 
-        std::vector<float> harmonics_freqs_to_interpolate = Tools::Get::valuesByIndex(harmonics_freqs, idx_harmonics);
-        std::vector<float> harmonics_mags_to_interpolate = Tools::Get::valuesByIndex(harmonics_mags, idx_harmonics);
-        std::vector<float> harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
-
-//        selected_play_samples.insert(selected_play_samples.end(), section_to_play.begin(), section_to_play.end());
+//        std::vector<float> harmonics_freqs_to_interpolate = Tools::Get::valuesByIndex(sound_frame.harmonics_freqs, idx_harmonics);
+//        std::vector<float> harmonics_mags_to_interpolate = Tools::Get::valuesByIndex(sound_frame.harmonics_mags, idx_harmonics);
         
+//        // Generate sines
+//        std::vector<float> y_harmonics = generateSines(harmonics_freqs_to_interpolate,
+//                                                       harmonics_mags_to_interpolate,
+//                                                       harmonics_phases,
+//                                                       NS, this->parameters.fs);
+
         // Generate sines
-        std::vector<float> y_harmonics = generateSines(harmonics_freqs_to_interpolate,
-                                                       harmonics_mags_to_interpolate,
+        std::vector<float> y_harmonics = generateSines(sound_frame.harmonics_freqs,
+                                                       sound_frame.harmonics_mags,
                                                        harmonics_phases,
                                                        NS, this->parameters.fs);
         
@@ -245,19 +255,21 @@ public:
         std::vector<float> yw_harmonics(NS);
         for (int i = 0; i < NS; i++)
         {
+            // TODO - Is this faster in two separated for loops?
             yw_harmonics[i] = y_harmonics[i] * this->window.harm[i];
             yw[i] = yw_harmonics[i];
         }
 
         // Stochastic component
-        if (sound.model->stochastic)
+        if ( sound_frame.hasStochastic() )
         {
-            std::vector<float> y_stocs = generateStocs(stochastic, H * 2, NS);
+            std::vector<float> y_stocs = generateStocs(sound_frame.stochastic, H * 2, NS);
             
             // Applying the window and saving the result on the output vector "harmonic"
             std::vector<float> yw_stocs(NS);
             for (int i = 0; i < NS; i++)
             {
+                // TODO - Is this faster in two separated for loops?
                 yw_stocs[i] = y_stocs[i] * this->window.stoc[i];
                 yw[i] += yw_stocs[i];
 //                yw_stocs[i] += y_stocs[i] * this->window.stoc[i];
@@ -267,35 +279,34 @@ public:
         return yw;
     }
     
-    std::vector<float> generateSoundFrame(Sound sound, int i_frame_length, bool append_to_generated = false)
+    std::vector<float> generateSoundFrame(Sound::Frame sound_frame, int i_frame_length, bool append_to_generated = false)
     {
-        // TODO - // Instead of Sound, define SoundFrame, Model, or Model frame
-        
         // Parameters shortcut
-        const int NS = this->parameters.fft_size;
+//        const int NS = this->parameters.fft_size;
         const int H = this->parameters.hop_size;
-        
+        const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
+
         // A list with the indexes of the harmonics we want to interpolate
-        std::vector<int> idx_harmonics = Tools::Generate::range(0, sound.max_harmonics);
+        std::vector<int> idx_harmonics = Tools::Generate::range(0, MAX_HARMONICS);
         
         // Update phases
-        if (!this->live_values.first_frame) updatePhases(sound.model->values.harmonics_freqs[0], idx_harmonics, H);
+        if (!this->live_values.first_frame) updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
         
         // Generate windowed audio frame
-        std::vector<float> windowed_audio_frame = synthesizeAudioFrame(sound);
+        std::vector<float> windowed_audio_frame = synthesizeSoundFrame(sound_frame);
         
         // Save the current frequencies to be available fot the next iteration
-        updateLastFreqs(sound.model->values.harmonics_freqs[0], idx_harmonics);
+        updateLastFreqs(sound_frame.harmonics_freqs, idx_harmonics);
         
         // Add the audio frame to the circular buffer
         updateBuffer(BufferSection::Write, BufferUpdateMode::Add, windowed_audio_frame, Channel::Mono);
         
         // Selecting the processed samples
         std::vector<float> next_frame = getBuffer(BufferSection::Play, Channel::Mono, i_frame_length);
-
-        // Update samples ready
-        this->live_values.i_samples_ready -= next_frame.size();
-
+        
+        // Update samples ready to be played
+        this->live_values.i_samples_ready += H;
+        
         return next_frame;
     }
     
@@ -411,7 +422,7 @@ private:
             
             // Concatenate "first_half" and "second_half"
             buffer_indexes = first_half;
-            buffer_indexes.insert( buffer_section.end(), second_half.begin(), second_half.end() );
+            buffer_indexes.insert( buffer_indexes.end(), second_half.begin(), second_half.end() );
         }
         else
         {
@@ -454,11 +465,12 @@ private:
         return buffer_indexes;
     }
     
-    std::vector<float> getBuffer(BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = this->parameters.fft_size)
+    std::vector<float> getBuffer(BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = 0)
     {
-        // Parameters shortcut
-        const int NS = this->parameters.fft_size;
-        const int H = this->parameters.hop_size;
+        // TODO - Check argument: int i_frame_length = this->parameters.fft_size
+//        // Parameters shortcut
+//        const int NS = this->parameters.fft_size;
+//        const int H = this->parameters.hop_size;
         
         // Output
         std::vector<float> buffer_section_samples;
@@ -585,6 +597,7 @@ private:
                 {
                     if(ploc_int+jj>size_spec_half)
                     {
+                        // TODO - Is this faster in two separated for loops?
                         real[size_spec-(ploc_int+jj)] += mag*BH_92_1001[(int)((bin_remainder+jj)*100) + BH_SIZE_BY2]*cos(ipphase[ii]);
                         imag[size_spec-(ploc_int+jj)] += -1*mag*BH_92_1001[(int)((bin_remainder+jj)*100) + BH_SIZE_BY2]*sin(ipphase[ii]);
                         

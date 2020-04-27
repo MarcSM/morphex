@@ -360,7 +360,7 @@ inline std::vector<std::complex<float>> genStocComponent(std::vector<float> stoc
     int hN = int(NS/2+1); // positive size of fft
     
     std::vector<float> pY_aux(hN);
-    std::generate(pY_aux.begin(), pY_aux.end(), RandomGenerator(0.0, 1.0));
+    std::generate(pY_aux.begin(), pY_aux.end(), Tools::Generate::random(0.0, 1.0));
     
     for (int i=0; i<pY_aux.size(); i++) pY_aux[i] = pY_aux[i] * 2 * M_PI;
     

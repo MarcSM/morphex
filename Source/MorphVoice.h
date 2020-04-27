@@ -307,7 +307,8 @@ struct MorphVoice
                 fftShift(ifft_output_real, numSamples);
                 
                 // TODO - Generate the stochastic component
-                std::vector<std::complex<float>> stoc_output = genStocComponent(stocs_morph, H, NS);
+                std::vector<std::complex<float>> stoc_output;
+//                std::vector<std::complex<float>> stoc_output = genStocComponent(stocs_morph, H, NS);
                 // TODO - Perform the IFFT (Stochastic)
                 // TODO - Apply stochastic gain
                 

@@ -10,12 +10,19 @@
 
 #pragma once
 
+namespace Core
+{
+    const static float DEFAULT_HZ = 0.0;
+    const static float DEFAULT_DB = -180.0;
+    const static int XML_DECIMAL_PLACES = 5;
+}
+
 namespace Core::Codec
 {
-    const float DEFAULT_FREQ = 0.0;
-    const float DEFAULT_MAG = -180.0;
-    const float DEFAULT_STOC = -180.0;
-    const float XML_DECIMAL_PLACES = 5;
+//    const float DEFAULT_FREQ = 0.0;
+//    const float DEFAULT_MAG = -180.0;
+//    const float DEFAULT_STOC = -180.0;
+//    const float XML_DECIMAL_PLACES = 5;
     
     // List Decoding (does not change size of arrays)
     void decodeList(std::vector<float> given_list, int abs_values = false, int decimal_places = XML_DECIMAL_PLACES)

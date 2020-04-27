@@ -49,19 +49,18 @@ public:
         
         if (this->loaded_metadata)
         {
-            this->sound->loop.start = this->loopstart;
-            this->sound->loop.end = this->loopend;
-            
+//            this->sound->loop.start = this->loopstart;
+//            this->sound->loop.end = this->loopend;
             this->loaded =true;
         }
     }
     
-    void loadSoundFromPath(std::string had_file_path)
-    {
-        this->sound = new Sound(had_file_path);
-        this->sound->loadHadFile();
-        this->loaded = true;
-    }
+//    void loadSoundFromPath(std::string had_file_path)
+//    {
+//        this->sound = new Sound(had_file_path);
+//        this->sound->loadHadFile();
+//        this->loaded = true;
+//    }
     
 private:
 };

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <math.h>
+
 #include <vector>
 #include <numeric>
 
@@ -43,11 +45,23 @@ namespace Core::Tools
             
             return result;
         }
+        
+        struct random
+        {
+            double minValue;
+            double maxValue;
+            random(double min, double max): minValue(min), maxValue(max) {}
+            
+            double operator()()
+            {
+                return (maxValue - minValue) * ( (double)std::rand() / (double)RAND_MAX ) + minValue;
+            }
+        };
     }
     
     namespace Audio
     {
-        inline static std::vector<float> applyFadeIn(std::vector<float>& given_vector, int fade_in_length)
+        inline void applyFadeIn(std::vector<float>& given_vector, int fade_in_length)
         {
             int given_vector_length = (int)given_vector.size();
             
@@ -65,7 +79,7 @@ namespace Core::Tools
             }
         }
         
-        inline std::vector<float> applyFadeOut(std::vector<float>& given_vector, int fade_out_length)
+        inline void applyFadeOut(std::vector<float>& given_vector, int fade_out_length)
         {
             int given_vector_length = (int)given_vector.size();
             
@@ -80,15 +94,19 @@ namespace Core::Tools
                 {
                     given_vector[i] = given_vector[i] * fade_out[i];
                 }
-                
-                // TODO - Generic Type instead of float
-                std::vector<float> test(0);
-                return test;
             }
         }
         
         // Fade Out
 //        reverse(v.begin() + 5, v.begin() + 8);
+    }
+    
+    namespace Midi
+    {
+        inline int toFreq(const int f_note, const float f_frequency_of_A = 440.0) {
+            return (f_frequency_of_A / 32.0) * powf( 2.0, ((f_note - 9.0) / 12.0) );
+//            return (f_frequency_of_A / 32.0) * (2.0 ** ((f_note - 9.0) / 12.0));
+        }
     }
     
     namespace Get
@@ -106,12 +124,35 @@ namespace Core::Tools
             
             return result;
         }
+        
+        template<typename T>
+        inline std::vector<T> valuesInRange(std::vector<T> given_vector, int min, int max)
+        {
+            // Output
+            std::vector<T> result;
+            
+            for (float i = min; i <= max; i++)
+            {
+                result.push_back( given_vector[i] );
+            }
+            
+            return result;
+        }
     }
     
     namespace Calculate
     {
         inline int modulo(int n, int M) {
             return ((n % M) + M) % M;
+        }
+        
+        template<typename T, typename TS>
+        inline void divideByScalar(std::vector<T> &given_vector, TS scalar) {
+            
+            for (float i = 0; i <= given_vector.size(); i++)
+            {
+                given_vector[i] /= scalar;
+            }
         }
     }
 }

@@ -59,6 +59,12 @@ inline bool hasChild(XmlElement* parent, String child_name)
     return parent->getChildByName(child_name) != nullptr;
 }
 
+/** Get a vector of floats from an xml element */
+inline std::vector<float> getVectorOfFloats(XmlElement* parent, String child_name )
+{
+    return splitFloats(parent->getChildByName(child_name)->getAllSubText().toStdString());
+}
+
 /** Get a matrix of floats from an xml element */
 inline std::vector<std::vector<float>> getMatrixOfFloats(XmlElement* parent, String child_name )
 {
@@ -133,18 +139,18 @@ inline std::vector<int> getRangeInt(int min, int max)
     return result;
 }
 
-struct RandomGenerator {
-    double minValue;
-    double maxValue;
-    RandomGenerator(double min, double max) :
-    minValue(min),
-    maxValue(max) {
-    }
-    
-    double operator()() {
-        return (maxValue - minValue) * ( (double)std::rand() / (double)RAND_MAX ) + minValue;
-    }
-};
+//struct RandomGenerator {
+//    double minValue;
+//    double maxValue;
+//    RandomGenerator(double min, double max) :
+//    minValue(min),
+//    maxValue(max) {
+//    }
+//
+//    double operator()() {
+//        return (maxValue - minValue) * ( (double)std::rand() / (double)RAND_MAX ) + minValue;
+//    }
+//};
 
 inline int CalculateModuloInt(int n, int M) {
     return ((n % M) + M) % M;

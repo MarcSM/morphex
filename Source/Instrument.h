@@ -16,16 +16,34 @@
 
 #include <vector>
 
-namespace Core { class Instrument; }
+namespace Core
+{
+    class Instrument;
+    
+    enum MorphLocation
+    {
+        // TODO - Nested enum for Left Low, Left High and NUM_LEFT_MORPH_SOUNDS
+        Left = 0,
+        // TODO - Nested enum for Right Low, Right High and NUM_RIGHT_MORPH_SOUNDS
+        Right,
+        // TODO - NUM_MORPH_LOCATIONS = NUM_LEFT_MORPH_SOUNDS + NUM_RIGHT_MORPH_SOUNDS
+        NUM_MORPH_LOCATIONS
+    };
+    
+    typedef std::array<Note*, MorphLocation::NUM_MORPH_LOCATIONS> MorphNotes;
+    typedef std::array<Sound*, MorphLocation::NUM_MORPH_LOCATIONS> MorphSounds;
+    typedef std::array<Sound::Frame, MorphLocation::NUM_MORPH_LOCATIONS> MorphSoundFrames;
+    //    typedef std::array<std::unique_ptr<Sound>, MorphLocation::NUM_MORPH_LOCATIONS> MorphSounds;
+}
 
 const static int NUM_MIDI_NOTES = 128;
 
 //const static float DEFAULT_FREQ = 0.0;
 //const static float DEFAULT_MAG = -180.0;
 //const static float DEFAULT_STOC = -180.0;
-const static float DEFAULT_HZ = 0.0;
-const static float DEFAULT_DB = -180.0;
-const static int XML_DECIMAL_PLACES = 5;
+//const static float DEFAULT_HZ = 0.0;
+//const static float DEFAULT_DB = -180.0;
+//const static int XML_DECIMAL_PLACES = 5;
 
 class Core::Instrument
 {
@@ -65,15 +83,28 @@ public:
     // Initializers
     Instrument();
     ~Instrument();
+    
+    void startNote();
+    void endNote();
+    
+    std::vector<Note*> getLoadedNotes();
+    MorphNotes getCloserNotes(float f_target_note);
+    MorphSounds getCloserSounds(float f_target_note, int i_velocity);
+    
+    Sound* getSound(float f_note, int i_velocity);
+    Sound::Frame getSoundFrame(float f_note, int i_velocity, int i_current_frame, int i_frame_length, float f_interpolation_factor = -1.0);
+    Sound::Frame morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_interpolation_factor = -1);
+    
+    std::vector<float> getNextFrame(float f_note, int i_velocity, int i_frame_length, float f_interpolation_factor = -1);
 
 private:
     
-    virtual std::vector<float> interpolateFrames(FrameType frame_type,
-                                                 float interp_factor,
-                                                 std::vector<float> frame_1,
-                                                 std::vector<float> frame_2,
-                                                 int max_harmonics,
-                                                 std::vector<int> idx_harmonics);
+    std::vector<float> interpolateFrames(FrameType frame_type,
+                                         float interp_factor,
+                                         std::vector<float> frame_1,
+                                         std::vector<float> frame_2,
+                                         int i_frame_length,
+                                         std::vector<int> idx_harmonics = std::vector<int>());
     
 //    def interpolateFrames(self, interpolation_mode, interp_factor, frame_1, frame_2, max_harmonics, harmonics = []):
 //    

@@ -157,19 +157,48 @@ public:
         std::vector<std::vector<float>> harmonics_freqs;
         std::vector<std::vector<float>> harmonics_mags;
         std::vector<std::vector<float>> harmonics_phases;
+        std::vector<std::vector<float>> sinusoidal;
         std::vector<std::vector<float>> stochastic;
+        std::vector<float> residual;
     };
     OriginalValues original;
     
-    /** Sound parameters of the actual ".had" file */
-    struct Frame
+    // TODO - Improve the Frame structure/class and maybe embedded it in Sound->Model
+    class Frame
     {
+    public:
+        enum Component
+        {
+            HarmonicsFreqs = 0,
+            HarmonicsMags,
+            HarmonicsPhases,
+            Sinusoidal,
+            Stochastic,
+            Residual
+        };
+        
         std::vector<float> harmonics_freqs;
         std::vector<float> harmonics_mags;
         std::vector<float> harmonics_phases;
         std::vector<float> sinusoidal;
         std::vector<float> stochastic;
         std::vector<float> residual;
+        
+        bool getMaxHarmonics()
+        {
+            return std::max({
+                this->harmonics_freqs.size(),
+                this->harmonics_mags.size(),
+                this->harmonics_phases.size(),
+                this->sinusoidal.size()
+            });
+        };
+        
+        bool hasHarmonics() { return this->harmonics_freqs.size() == 0; };
+        bool hasPhases() { return this->harmonics_phases.size() == 0; };
+        bool hasSinusoidal() { return this->sinusoidal.size() == 0; };
+        bool hasStochastic() { return this->stochastic.size() == 0; };
+        bool hasResidual() { return this->residual.size() == 0; };
     };
     
 //    /** Analysis output read from the ".had" file */
@@ -189,6 +218,10 @@ public:
     
     void commonInit();
     void load(String file_data, HadFileSource file_source = HadFileSource::Path);
+    
+    Sound::Frame getFrame(int i_num_frame, int i_hop_size);
+    std::vector<float> getComponentFrame(Frame::Component component_name, int i_num_frame, int i_hop_size = 0);
+    
     void synthesize();
     
     void extractFeatures();

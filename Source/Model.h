@@ -25,16 +25,16 @@ public:
     bool residual;
     
     /** Sound parameters of the actual ".had" file */
-    struct ModelValues
+    struct Values
     {
         std::vector<std::vector<float>> harmonics_freqs;
         std::vector<std::vector<float>> harmonics_mags;
         std::vector<std::vector<float>> harmonics_phases;
         std::vector<std::vector<float>> sinusoidal;
         std::vector<std::vector<float>> stochastic;
-        std::vector<std::vector<float>> residual;
+        std::vector<float> residual;
     };
-    const ModelValues &values;
+    const Values &values;
     
     Model() : values(_values) {}
     
@@ -47,6 +47,11 @@ public:
         // Matrices and lists decoding
         Codec::decodeMatrix(this->_values.harmonics_freqs, false);
         Codec::decodeMatrix(this->_values.harmonics_mags, true);
+    }
+    
+    void setMagnitudes(std::vector<std::vector<float>> harmonics_mags)
+    {
+        this->_values.harmonics_mags = harmonics_mags;
     }
     
     void setPhases(std::vector<std::vector<float>> harmonics_phases)
@@ -64,12 +69,12 @@ public:
         this->_values.stochastic = stochastic;
     }
     
-    void setResidual(std::vector<std::vector<float>> residual)
+    void setResidual(std::vector<float> residual)
     {
         this->_values.residual = residual;
     }
     
 private:
     
-    ModelValues _values;
+    Values _values;
 };
