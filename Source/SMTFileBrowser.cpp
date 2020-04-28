@@ -12,6 +12,8 @@
 
 #include "SMTConstants.h"
 
+using namespace Core;
+
 SMTFileBrowser::SMTFileBrowser(SpectralMorphingToolAudioProcessor* inProcessor,
                                int flags_,
                                const File& initialFileOrDirectory,

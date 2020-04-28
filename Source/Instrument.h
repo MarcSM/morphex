@@ -10,9 +10,7 @@
 
 #pragma once
 
-//#include "Tools.h"
 #include "Note.h"
-#include "Synthesis.h"
 
 #include <vector>
 
@@ -57,35 +55,19 @@ public:
         Stochastic          // Interpolate Stochastic components
     };
     
-    enum StateADSR
-    {
-        Attack = 0,
-        Decay,
-        Sustain,
-        Release
-    };
-    
     // Notes
     std::vector<Note*> note;
+    
+//    // Voices
+//    std::vector<Voice*> voice;
     
     // Data
     std::string name;
     std::string samples_dirpath;
-        
-    // Note playback
-    bool playing_note;
-    bool loop_mode;
-    bool adsr;
-        
-    // Synthesis
-    Synthesis synthesis;
     
     // Initializers
     Instrument();
     ~Instrument();
-    
-    void startNote();
-    void endNote();
     
     std::vector<Note*> getLoadedNotes();
     MorphNotes getCloserNotes(float f_target_note);

@@ -235,4 +235,4 @@ private:
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Sound);
 };
 
-//typedef std::array<std::unique_ptr<Sound>, 3> SoundArray;
+typedef std::array<std::unique_ptr<Core::Sound>, 3> SoundArray;

@@ -41,7 +41,7 @@ void SMTAdditionalParameters::paint(Graphics& g)
 {
     // Text label color
     g.setColour (Colours::white);
-    g.setFont(font_2);
+//    g.setFont(font_2);
     
     const int margin = 10;
     
@@ -53,8 +53,8 @@ void SMTAdditionalParameters::paint(Graphics& g)
     
     stocs_interp_factor->setBounds(slider_x, slider_y, slider_width, slider_height);
     
-    // Paint labels
-    for (int i = 0; i < mSliders.size(); i++) {
-        paintComponentLabel(g, mSliders[i]);
-    }
+//    // Paint labels
+//    for (int i = 0; i < mSliders.size(); i++) {
+//        paintComponentLabel(g, mSliders[i]);
+//    }
 }

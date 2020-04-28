@@ -11,6 +11,8 @@
 #include "SMTMainPanel.h"
 #include "SMTParameters.h"
 
+using namespace Core;
+
 SMTMainPanel::SMTMainPanel(SpectralMorphingToolAudioProcessor* inProcessor)
 :   SMTPanelBase(inProcessor)
 {

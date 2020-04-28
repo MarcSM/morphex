@@ -6,6 +6,7 @@
               pluginManufacturer="Morphex" pluginAUMainType="'aumu'">
   <MAINGROUP id="BTCZAR" name="Morphex">
     <GROUP id="{AFEC479D-5C67-2E7A-1D34-7E1570EAC1CB}" name="Core">
+      <FILE id="g7REHn" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
       <FILE id="gw5C99" name="Codec.h" compile="0" resource="0" file="Source/Codec.h"/>
       <FILE id="eNYZ5R" name="Tools.h" compile="0" resource="0" file="Source/Tools.h"/>
       <FILE id="kgfSmC" name="Model.h" compile="0" resource="0" file="Source/Model.h"/>

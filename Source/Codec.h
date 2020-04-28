@@ -25,7 +25,7 @@ namespace Core::Codec
 //    const float XML_DECIMAL_PLACES = 5;
     
     // List Decoding (does not change size of arrays)
-    void decodeList(std::vector<float> given_list, int abs_values = false, int decimal_places = XML_DECIMAL_PLACES)
+    void inline decodeList(std::vector<float> given_list, int abs_values = false, int decimal_places = XML_DECIMAL_PLACES)
     {
         for (int i = 0; i < given_list.size(); i++)
         {
@@ -38,7 +38,7 @@ namespace Core::Codec
     }
     
     // Matrix Decoding
-    void decodeMatrix(std::vector<std::vector<float>> given_matrix, bool abs_values = false, bool diff_decoding = true, int decimal_places = XML_DECIMAL_PLACES)
+    void inline decodeMatrix(std::vector<std::vector<float>> given_matrix, bool abs_values = false, bool diff_decoding = true, int decimal_places = XML_DECIMAL_PLACES)
     {
         for (int i = 0; i < sizeof(given_matrix); i++)
         {
@@ -58,7 +58,7 @@ namespace Core::Codec
     }
     
     // Matrix Padding
-    void padMatrix(std::vector<std::vector<float>> X, int max_x, int max_y, float pad_value = 0.0)
+    void inline padMatrix(std::vector<std::vector<float>> X, int max_x, int max_y, float pad_value = 0.0)
     {
         for (int i = 0; i < max_y; i++)
         {

@@ -14,6 +14,8 @@
 
 #include "Sound.h"
 
+using namespace Core;
+
 class SMTWaveformPreview:
     public Component,
     public Timer

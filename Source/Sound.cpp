@@ -123,6 +123,7 @@ namespace Core
                 // Sound
                 XmlElement *xml_sound = xml->getChildByName("sound"); // had["sound"]
                 this->fs = xml_sound->getChildByName("fs")->getAllSubText().getIntValue();
+                // TODO - Embeded binary don't have note and velocity
                 this->note = xml_sound->getChildByName("note")->getAllSubText().getIntValue();
                 this->velocity = xml_sound->getChildByName("velocity")->getAllSubText().getIntValue();
                 this->max_harmonics = xml_sound->getChildByName("max_harmonics")->getAllSubText().getIntValue();

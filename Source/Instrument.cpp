@@ -9,6 +9,7 @@
 */
 
 #include "Instrument.h"
+#include "Tools.h"
 
 namespace Core
 {
@@ -21,6 +22,17 @@ namespace Core
             this->note[i] = new Note(i);
         }
         
+//        // Voices
+//        this->voice.reserve( i_max_voices );
+//        for (int i = 0; i < i_max_voices; i++)
+//        {
+//            this->voice[i] = new Voice(i);
+//        }
+        
+//        // TODO - Put synthesis inside voice
+//        // Synthesis
+//        this->synthesis = Synthesis();
+        
         // TODO
         // self.ID = Generate and ID with current datetime, save them on the
         // hid and had and compare the ID on loading the had files to see if it matches
@@ -32,29 +44,9 @@ namespace Core
         // Data
         this->name = "";
         this->samples_dirpath = "";
-
-        // Note playback
-        this->playing_note = false;
-        this->loop_mode = true;
-        this->adsr = StateADSR::Attack;
-
-        // Synthesis
-        this->synthesis = Synthesis();
     };
     
     Instrument::~Instrument() {}
-    
-    void Instrument::startNote()
-    {
-        this->playing_note = true;
-        this->adsr = StateADSR::Attack;
-        this->synthesis.reset();
-    }
-    
-    void Instrument::endNote()
-    {
-        this->adsr = StateADSR::Release;
-    }
     
     std::vector<Note*> Instrument::getLoadedNotes()
     {
@@ -85,8 +77,6 @@ namespace Core
         MorphNotes closer_notes;
         
         // For loaded_notes sorted from min to max
-        //        for note in loaded_notes
-        
         for (int i = 0; i < loaded_notes.size(); i++)
         {
             Note* note = loaded_notes[i];
@@ -106,12 +96,12 @@ namespace Core
                 closer_notes[MorphLocation::Right] = note;
                 if (h_i_target_note <= note->value) break;
             }
-            
-            if (closer_notes[MorphLocation::Left] == NULL) closer_notes[MorphLocation::Left] = closer_notes[MorphLocation::Right];
-            if (closer_notes[MorphLocation::Right] == NULL) closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
-            
-            return closer_notes;
         }
+        
+        if (closer_notes[MorphLocation::Left] == NULL) closer_notes[MorphLocation::Left] = closer_notes[MorphLocation::Right];
+        if (closer_notes[MorphLocation::Right] == NULL) closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
+        
+        return closer_notes;
     }
     
     MorphSounds Instrument::getCloserSounds(float f_target_note, int i_velocity)
@@ -263,116 +253,6 @@ namespace Core
         }
         
         return morphed_sound_frame;
-    }
-    
-    std::vector<float> Instrument::getNextFrame(float f_note, int i_velocity, int i_frame_length, float f_interpolation_factor)
-    {
-        // If a note is being played
-        if (this->playing_note)
-        {
-            // Synthesis parameters shortcuts
-            const int i_fft_size = this->synthesis.parameters.fft_size;
-            const int i_hop_size = this->synthesis.parameters.hop_size;
-            int* i_current_frame = &this->synthesis.live_values.i_current_frame;
-            
-            // Output
-            std::vector<float> frame;
-            
-            while (this->synthesis.live_values.i_samples_ready < i_frame_length)
-            {
-                MorphSounds morph_sounds = getCloserSounds( f_note, i_velocity );
-                
-                // If ADSR is NOT on "Release" state
-                if (this->adsr != StateADSR::Release)
-                {
-                    // Compute common looping regions
-                    int max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
-                                                  morph_sounds[MorphLocation::Right]->loop.start);
-                    
-                    int min_loop_end = std::min(morph_sounds[MorphLocation::Left]->loop.end,
-                                                morph_sounds[MorphLocation::Right]->loop.end);
-                    
-                    // If loop mode is enabled
-                    if (this->loop_mode)
-                    {
-                        // Keep the current_frame pointer inside the lowest "note.loop.end"
-                        // and the highest "note.loop.start"
-                        if ( (*i_current_frame * i_hop_size) >= min_loop_end )
-                        {
-                            this->adsr = StateADSR::Sustain;
-                            *i_current_frame = int( max_loop_start / i_hop_size );
-                        }
-                    }
-                    // If "loop_mode" is NOT activated
-                    else
-                    {
-                        // If we are beyond the end loop point
-                        if (*i_current_frame >= min_loop_end)
-                        {
-                            // Switch ADSR to "Relase" mode
-                            this->adsr = StateADSR::Release;
-                        }
-                    }
-                }
-                
-                // If ADSR is on "Release" state
-                if (this->adsr == StateADSR::Release)
-                {
-                    // TODO - JUMP CURRENT FRAME TO RELEASE SECTION, if defined of course,
-                    // if not, play the rest of the other morph_sounds or shorten the whole thing
-                    // to the shortest one and apply a fade out on hramonics_mags 4 frames before the end
-                    
-                    // Get the minimum length of both notes
-                    int min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
-                                                morph_sounds[MorphLocation::Right]->max_frames);
-                    
-                    // If we are on the last frame of the shortest note
-                    if (*i_current_frame >= min_note_end)
-                    {
-                        // End note playback
-                        this->playing_note = false;
-                        this->synthesis.live_values.last_frame = true;
-                    }
-                }
-                
-                Sound::Frame sound_frame;
-                
-                if (morph_sounds[MorphLocation::Left] == morph_sounds[MorphLocation::Right])
-                {
-                    sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
-                    
-                    // Get target frequency
-                    float f_target_frequency = Tools::Midi::toFreq(f_note);
-                    
-                    // Transpose left note frequencies to the target frequency
-                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
-                                                     (Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) * f_target_frequency) );
-                }
-                else
-                {
-                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
-//                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
-                }
-                
-                // NOTE - "frame" will have "i_hop_size" more samples ready
-                // to be played after each call
-                frame = this->synthesis.generateSoundFrame(sound_frame, i_fft_size);
-                // std::vector<float> generated_sound = this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
-                // generated_sound = self.synthesis.generateSoundFrame(sound, hop_size)
-                
-                i_current_frame ++;
-            }
-            
-            // Update samples ready to be played
-            this->synthesis.live_values.i_samples_ready -= frame.size();
-            
-            return frame;
-        }
-        // If no note is being played
-        else
-        {
-            return std::vector<float>(0.0, i_frame_length);
-        }
     }
     
     std::vector<float> Instrument::interpolateFrames(FrameType frame_type,

@@ -72,8 +72,8 @@ SMTADSRParameters::~SMTADSRParameters() {}
 
 void SMTADSRParameters::paint(Graphics& g)
 {
-    // Paint labels
-    for (int i = 0; i < mSliders.size(); i++) {
-        paintComponentLabel(g, mSliders[i]);
-    }
+//    // Paint labels
+//    for (int i = 0; i < mSliders.size(); i++) {
+//        paintComponentLabel(g, mSliders[i]);
+//    }
 }

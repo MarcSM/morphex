@@ -45,7 +45,7 @@ struct MorphVoice
 :   public SynthesiserVoice
 {
     MorphVoice(AudioProcessorValueTreeState* parameters)
-    : mParameters(parameters)
+//    : mParameters(parameters)
     {
         // Create a new instrument
     }
@@ -64,14 +64,14 @@ struct MorphVoice
     }
     
     // TODO - Check if needed
-//    void setADSRSampleRate(double sampleRate)
-//    {
+    void setADSRSampleRate(double sampleRate)
+    {
 //        adsr.setSampleRate(sampleRate);
-//    }
+    }
     
 //    // TODO - Check if needed
-//    void updateAdsrParams(float attack, float decay, float sustain, float release)
-//    {
+    void updateAdsrParams(float attack, float decay, float sustain, float release)
+    {
 //        adsrParams.attack = attack;
 //        adsrParams.decay = decay;
 //        adsrParams.sustain = sustain;
@@ -79,7 +79,7 @@ struct MorphVoice
 //
 //        // Update ADSR parameters
 //        adsr.setParameters(adsrParams);
-//    }
+    }
     
 //    void reset()
 //    {
@@ -88,9 +88,9 @@ struct MorphVoice
 //        zeromem(mCircularBufferRight, sizeof(float) * MORPH_CIRCULAR_BUFFER_LENGTH);
 //    }
     
-//    void startNote( int midiNoteNumber, float velocity,
-//                    SynthesiserSound*, int /*currentPitchWheelPosition*/) override
-//    {
+    void startNote( int midiNoteNumber, float velocity,
+                    SynthesiserSound*, int /*currentPitchWheelPosition*/) override
+    {
 //        // Start ADSR envelope
 //        adsr.noteOn();
 //
@@ -115,20 +115,20 @@ struct MorphVoice
 //
 //        cycles_per_second = MidiMessage::getMidiNoteInHertz(midiNoteNumber);
 //        cycles_per_sample = cycles_per_second / getSampleRate();
-//    }
-//
-//    void stopNote(float /*velocity*/, bool allowTailOff) override
-//    {
+    }
+
+    void stopNote(float /*velocity*/, bool allowTailOff) override
+    {
 //        // Start ADSR envelope
 //        adsr.noteOff();
 //
 //        // Disable sound playback
 //        play_sound = false;
 //        clearCurrentNote();
-//    }
+    }
     
-//    void pitchWheelMoved (int /*newValue*/) override                              {}
-//    void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override    {}
+    void pitchWheelMoved (int /*newValue*/) override                              {}
+    void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override    {}
     
     void renderNextBlock (AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override
     {
