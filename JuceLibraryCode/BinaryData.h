@@ -9,10 +9,10 @@
 namespace BinaryData
 {
     extern const char*   sopranoE4_had;
-    const int            sopranoE4_hadSize = 1277279;
+    const int            sopranoE4_hadSize = 329664;
 
     extern const char*   violinB3_had;
-    const int            violinB3_hadSize = 2911776;
+    const int            violinB3_hadSize = 597321;
 
     extern const char*   morphex_logo_small_png;
     const int            morphex_logo_small_pngSize = 1540;

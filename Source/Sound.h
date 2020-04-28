@@ -210,7 +210,7 @@ public:
     Sound();
     Sound(const Sound &obj);
     Sound(std::string filepath);
-    Sound(std::string file_path, int note = NULL, int velocity = NULL);
+    Sound(std::string file_path, int note = NULL, int velocity = 1);
     Sound(String file_data, std::string filepath);
     ~Sound();
     

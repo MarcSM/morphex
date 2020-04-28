@@ -75,6 +75,8 @@ namespace Core
     // Read the file from a binary file with an hypothetical file_path
     Sound::Sound(String file_data, std::string file_path)
     {
+        this->commonInit();
+        
         // Save the file_path
         this->path = file_path;
         
@@ -133,7 +135,7 @@ namespace Core
                 
                 // Model
                 XmlElement *xml_synthesis = xml->getChildByName("synthesis"); // had["synthesis"]
-                this->model->harmonic   = hasChild(xml_synthesis, "f") and hasChild(xml_synthesis, "m");
+                this->model->harmonic   = hasChild(xml_synthesis, "f") && hasChild(xml_synthesis, "m");
                 this->model->phases     = hasChild(xml_synthesis, "p");
                 this->model->sinusoidal = hasChild(xml_synthesis, "l");
                 this->model->stochastic = hasChild(xml_synthesis, "s");
