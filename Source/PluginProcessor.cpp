@@ -31,30 +31,8 @@ SpectralMorphingToolAudioProcessor::SpectralMorphingToolAudioProcessor()
                    createParameterLayout()) /** initialize parameters */
 #endif
 {
-    sound[1] = std::make_unique<Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
-    sound[2] = std::make_unique<Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
-    
-//    int max_len, max_harmonics;
-//
-//    // Get the maximum overall shape (length, number of harmonics)
-//    std::tie(max_len, max_harmonics) = getMaxShape(sound[1]->harmonic_frequencies,
-//                                                   sound[2]->harmonic_frequencies);
-//
-//    // Zero padding the "harmonic_frequencies" vectors to have the same size
-//    sound[1]->harmonic_frequencies.resize(max_len, std::vector<float>(max_harmonics));
-//    sound[2]->harmonic_frequencies.resize(max_len, std::vector<float>(max_harmonics));
-//
-//    // Zero padding the "harmonic_magnitudes" vectors to have the same size
-//    sound[1]->harmonic_magnitudes.resize(max_len, std::vector<float>(max_harmonics));
-//    sound[2]->harmonic_magnitudes.resize(max_len, std::vector<float>(max_harmonics));
-//
-//    // Zero padding the "harmonic_phases" vectors to have the same size
-//    sound[1]->harmonic_phases.resize(max_len, std::vector<float>(max_harmonics));
-//    sound[2]->harmonic_phases.resize(max_len, std::vector<float>(max_harmonics));
-//
-//    // Zero padding the "stochastic_residual" vectors to have the same size
-//    sound[1]->stochastic_residual.resize(max_len, std::vector<float>(max_harmonics));
-//    sound[2]->stochastic_residual.resize(max_len, std::vector<float>(max_harmonics));
+//    sound[1] = std::make_unique<Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
+//    sound[2] = std::make_unique<Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
     
     // Initialize the preset manager
     mPresetManager = std::make_unique<SMTPresetManager>(this);

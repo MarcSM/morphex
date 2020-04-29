@@ -123,7 +123,7 @@ public:
     
     /** Original Sound Synthesized */
     struct SoundSynthesis {
-        std::unique_ptr<SynthesisEngine> engine;
+//        std::unique_ptr<SynthesisEngine> engine;
         std::vector<float> harmonic;
         std::vector<float> stochastic;
         std::vector<float> x;
@@ -208,9 +208,14 @@ public:
 //    std::vector<std::vector<float>> stochastic_residual;
     
     Sound();
-    Sound(const Sound &obj);
-    Sound(std::string filepath);
-    Sound(std::string file_path, int note = NULL, int velocity = 1);
+//    Sound(const Sound& obj);
+    Sound(const Sound& obj);
+//    Sound(Sound&) = default;
+//    Sound(const Sound& obj) = default;
+//    Sound &operator=(const Sound& rhs) = default;
+    //    Sound(const Sound&) = default;
+    Sound(std::string file_path);
+    Sound(std::string file_path, int note, int velocity = 1);
     Sound(String file_data, std::string filepath);
     ~Sound();
     

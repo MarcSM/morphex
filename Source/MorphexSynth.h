@@ -12,11 +12,13 @@
 
 #include "JuceHeader.h"
 
-#include "Instrument.h"
+//#include "Instrument.h"
 #include "Voice.h"
-#include "Sound.h"
+//#include "Sound.h"
 
 //#include "MorphVoice.h"
+
+//using namespace Core;
 
 class MorphexSynth
 :   public Synthesiser

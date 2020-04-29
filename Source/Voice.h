@@ -13,7 +13,7 @@
 #include "Instrument.h"
 #include "Synthesis.h"
 
-//#include "MorphSound.h"
+#include "MorphSound.h"
 #include "SMTAudioHelpers.h"
 #include "SMTHelperFunctions.h"
 
@@ -36,13 +36,19 @@ struct Voice
     bool playing_note;
     bool loop_mode;
     
-    Voice(Instrument* instrument, AudioProcessorValueTreeState* parameters)
+//    Voice(Instrument instrument, AudioProcessorValueTreeState* parameters)
+    Voice(Instrument& instrument, AudioProcessorValueTreeState* parameters)
+    : instrument(instrument)
     {
-        // Add a reference to the parent instrument
-        this->instrument = instrument;
+//        // Add a reference to the parent instrument
+//        this->instrument = &instrument;
         
         // Initialize the synthesis engine
         this->synthesis = Synthesis();
+        
+        // Default values
+        this->f_current_midi_note = 0;
+        this->f_current_velocity = 0;
     }
     
     bool canPlaySound (SynthesiserSound* synthSound) override
@@ -62,9 +68,12 @@ struct Voice
                    SynthesiserSound*, int /*currentPitchWheelPosition*/) override
     {
         // Note playback
-        this->playing_note = false;
+        this->playing_note = true;
         this->loop_mode = true;
         this->adsr = StateADSR::Attack;
+        
+        this->f_current_midi_note = (float)midiNoteNumber;
+        this->f_current_velocity = velocity;
         
         //        // Start ADSR envelope
         //        adsr.noteOn();
@@ -109,6 +118,7 @@ struct Voice
     // TODO - Check if needed
     void setADSRSampleRate(double sampleRate)
     {
+        bool trmv = false;
         //        adsr.setSampleRate(sampleRate);
     }
     
@@ -133,32 +143,49 @@ struct Voice
     
     
     
-    void pitchWheelMoved (int /*newValue*/) override                              {}
+    void pitchWheelMoved (int /*newValue*/) override
+    {
+        int semitones_range = 12;
+        
+        // TODO - Map range -12:12 semitones to 0:127
+    }
+    
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override    {}
     
     void renderNextBlock (AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override
     {
-        // TODO - Manage current_midi_note on this class
+        // TODO - Manage f_current_midi_note on this class
         
-        for (auto i_channel = outputBuffer.getNumChannels(); --i_channel >= 0;)
+        if (this->playing_note)
         {
-            //            mAttackGainSmoothed = mAttackGainSmoothed - 0.004 * (mAttackGainSmoothed - 1.0);
-            //
-            //            // TODO - This operation can be done before
-            //            int min_frame = int( std::min( mSound[1]->harmonic_frequencies.size(), mSound[2]->harmonic_frequencies.size() ) );
-            //
-            //            if ( (min_frame - mHarmonicsHead) < 12)
-            //            {
-            //                if (mDecayGainSmoothed <= 0.1) mDecayGainSmoothed = 0.0;
-            //                else mDecayGainSmoothed = mDecayGainSmoothed - 0.1;
-            //            }
-            //
-            //            auto current_sample = mCircularBufferLeft[selected_play_samples[i]] * adsr.getNextSample() * mAttackGainSmoothed * mDecayGainSmoothed * level;
-            outputBuffer.addSample (i_channel, startSample, 0.0);
+            std::vector sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
+            
+            for (int i_sample = 0; i_sample < numSamples; i_sample++)
+            {
+                float f_current_sample = sound_frame[i_sample];
+                
+                for (auto i_channel = outputBuffer.getNumChannels(); --i_channel >= 0;)
+                {
+                    //            mAttackGainSmoothed = mAttackGainSmoothed - 0.004 * (mAttackGainSmoothed - 1.0);
+                    //
+                    //            // TODO - This operation can be done before
+                    //            int min_frame = int( std::min( mSound[1]->harmonic_frequencies.size(), mSound[2]->harmonic_frequencies.size() ) );
+                    //
+                    //            if ( (min_frame - mHarmonicsHead) < 12)
+                    //            {
+                    //                if (mDecayGainSmoothed <= 0.1) mDecayGainSmoothed = 0.0;
+                    //                else mDecayGainSmoothed = mDecayGainSmoothed - 0.1;
+                    //            }
+                    //
+                    //            auto current_sample = mCircularBufferLeft[selected_play_samples[i]] * adsr.getNextSample() * mAttackGainSmoothed * mDecayGainSmoothed * level;
+                    
+                    outputBuffer.addSample (i_channel, startSample, f_current_sample);
+                }
+            }
         }
     }
     
-    std::vector<float> getNextFrame(float f_note, int i_velocity, int i_frame_length, float f_interpolation_factor)
+    std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
     {
         // If a note is being played
         if (this->playing_note)
@@ -173,7 +200,7 @@ struct Voice
             
             while (this->synthesis.live_values.i_samples_ready < i_frame_length)
             {
-                Core::MorphSounds morph_sounds = this->instrument->getCloserSounds( f_note, i_velocity );
+                Core::MorphSounds morph_sounds = this->instrument.getCloserSounds( f_note, f_velocity );
                 
                 // If ADSR is NOT on "Release" state
                 if (this->adsr != StateADSR::Release)
@@ -243,7 +270,7 @@ struct Voice
                 }
                 else
                 {
-                    sound_frame = this->instrument->morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
+                    sound_frame = this->instrument.morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
                     //                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
                 }
                 
@@ -273,8 +300,12 @@ private:
     AudioProcessorValueTreeState* mParameters;
     
     // Instrument
-    Core::Instrument* instrument;
+    Core::Instrument& instrument;
     
     // Synthesis
     Core::Synthesis synthesis;
+    
+    // Midi
+    float f_current_midi_note;
+    int f_current_velocity;
 };

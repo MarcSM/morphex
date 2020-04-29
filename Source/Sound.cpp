@@ -45,6 +45,44 @@ namespace Core
     {
         this->commonInit();
     };
+    
+    Sound::Sound(const Sound& obj)
+    {
+        // Initialize default values
+        this->loaded = obj.loaded;
+        this->analyzed = obj.analyzed;
+        this->had_file_loaded = obj.had_file_loaded;
+        
+        // Initializing default values
+        this->fs = obj.fs;
+        this->note = obj.note;
+        this->velocity = obj.velocity;
+        this->max_harmonics = obj.max_harmonics;
+        this->max_frames = obj.max_frames;
+        this->loop = obj.loop;
+        
+        // Model object
+        this->model = obj.model;
+        
+        // File
+        this->file = obj.file;
+        this->path = obj.path;
+        this->name = obj.name;
+        this->extension = obj.extension;
+        this->dirpath = obj.dirpath;
+        
+        // Analysis
+        this->analysis = obj.analysis;
+        
+        // Synthesis
+        this->synthesis = obj.synthesis;
+        
+        // Features
+        this->features = obj.features;
+        
+        // Original Values
+        this->original = obj.original;
+    };
 
     // Read the file from a file_path
     Sound::Sound(std::string file_path)
@@ -187,11 +225,11 @@ namespace Core
     //            this->harmonic_phases = getMatrixOfFloats(xml_analysis, "harmonic_phases");
     //            this->stochastic_residual = getMatrixOfFloats(xml_analysis, "stochastic_residual");
                 
-                /** Original Sound Synthesized */
-                this->synthesize();
-                
-                /** Extract Additional Features */
-                this->extractFeatures();
+//                /** Original Sound Synthesized */
+//                this->synthesize();
+//                
+//                /** Extract Additional Features */
+//                this->extractFeatures();
 
                 /** Save Original Values */
                 this->saveOriginalValues();
@@ -214,6 +252,24 @@ namespace Core
             std::cout << "Error while loading the sound\n";
         }
     };
+    
+//    // TODO - If there is no ".mif" (Morphex Instrument File)
+//    // It is necessary to preload or even pre-analyze the sound file
+//    // to locate it on the right note. Try to use copy constructors
+//    // to prevent process the whole file again.
+//    void Sound::getInstrumentFromFile(std::string file_path)
+//    {
+//        File had_file = File(file_path);
+//        file_data = had_file.loadFileAsString();
+//        return
+//
+//        XmlDocument    (    const File &     file    )
+//
+//
+//        std::unique_ptr<XmlElement> xml( XmlDocument::parse( file_data ) );
+//
+//        std::string file_path
+//    }
 
     Sound::Frame Sound::getFrame(int i_num_frame, int i_frame_length)
     {
@@ -331,24 +387,24 @@ namespace Core
     //    // TODO - Generate window dynamically
     //    std::vector<double> window;
     //    this->synthesis.parameters.window = generateSynthesisWindow();
-        
-        // Initialize the synthesis engine
-        this->synthesis.engine = std::make_unique<SynthesisEngine>();
-        
-        // Synthesize Harmonics
-        this->synthesis.harmonic = this->synthesis.engine->sineModelSynth(this->model->values.harmonics_freqs,
-                                                                          this->model->values.harmonics_mags,
-                                                                          this->model->values.harmonics_phases,
-                                                                          this->analysis.parameters.synthesis_fft_size,
-                                                                          this->analysis.parameters.hop_size,
-                                                                          this->synthesis.engine->window,
-                                                                          this->file.fs);
-        
-        // TODO - Synthesize Stochastic Component
-        this->synthesis.stochastic = this->synthesis.engine->stochasticModelSynth(this->model->values.stochastic,
-                                                                                  this->analysis.parameters.synthesis_fft_size,
-                                                                                  this->analysis.parameters.hop_size);
-        
+//
+//        // Initialize the synthesis engine
+//        this->synthesis.engine = std::make_unique<SynthesisEngine>();
+//
+//        // Synthesize Harmonics
+//        this->synthesis.harmonic = this->synthesis.engine->sineModelSynth(this->model->values.harmonics_freqs,
+//                                                                          this->model->values.harmonics_mags,
+//                                                                          this->model->values.harmonics_phases,
+//                                                                          this->analysis.parameters.synthesis_fft_size,
+//                                                                          this->analysis.parameters.hop_size,
+//                                                                          this->synthesis.engine->window,
+//                                                                          this->file.fs);
+//
+//        // TODO - Synthesize Stochastic Component
+//        this->synthesis.stochastic = this->synthesis.engine->stochasticModelSynth(this->model->values.stochastic,
+//                                                                                  this->analysis.parameters.synthesis_fft_size,
+//                                                                                  this->analysis.parameters.hop_size);
+//
     //    // Sum the harmonic and stochastic components together
     //    this->synthesis.x = yh[:min(yh.size, yst.size)]+yst[:min(yh.size, yst.size)]
     }
@@ -437,6 +493,7 @@ namespace Core
         this->original.harmonics_mags   = this->model->values.harmonics_mags;
         this->original.harmonics_phases = this->model->values.harmonics_phases;
         this->original.stochastic       = this->model->values.stochastic;
+        this->original.residual       = this->model->values.residual;
     }
 
     void Sound::normalizeMagnitudes()

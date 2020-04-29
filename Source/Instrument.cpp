@@ -16,8 +16,9 @@ namespace Core
     Instrument::Instrument()
     {
         // Notes
-        this->note.reserve( NUM_MIDI_NOTES );
-        for (int i = 0; i < NUM_MIDI_NOTES; i++)
+        this->note = std::vector<Note*>(NUM_MIDI_NOTES);
+//        this->note.resize( NUM_MIDI_NOTES, nullptr );
+        for (int i = 0; i < this->note.size(); i++)
         {
             this->note[i] = new Note(i);
         }
@@ -104,7 +105,7 @@ namespace Core
         return closer_notes;
     }
     
-    MorphSounds Instrument::getCloserSounds(float f_target_note, int i_velocity)
+    MorphSounds Instrument::getCloserSounds(float f_target_note, float f_velocity)
     {
         MorphNotes closer_notes = getCloserNotes(f_target_note);
         
@@ -118,9 +119,9 @@ namespace Core
         MorphSounds closer_sounds;
         
         // TODO - Remove this velocity bypass
-        i_velocity = 0;
-        closer_sounds[MorphLocation::Left] = closer_notes[MorphLocation::Left]->getLoadedVelocities()[i_velocity]->sound;
-        closer_sounds[MorphLocation::Right] = closer_notes[MorphLocation::Right]->getLoadedVelocities()[i_velocity]->sound;
+        int i_velocity = 0;
+        closer_sounds[MorphLocation::Left] = &closer_notes[MorphLocation::Left]->getLoadedVelocities()[i_velocity]->sound;
+        closer_sounds[MorphLocation::Right] = &closer_notes[MorphLocation::Right]->getLoadedVelocities()[i_velocity]->sound;
         
         return closer_sounds;
     }
@@ -139,9 +140,9 @@ namespace Core
 //        return morph_sound;
 //    }
     
-    Sound::Frame Instrument::getSoundFrame(float f_note, int i_velocity, int i_current_frame, int i_frame_length, float f_interpolation_factor)
+    Sound::Frame Instrument::getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_interpolation_factor)
     {
-        MorphSounds morph_sounds = getCloserSounds( f_note, i_velocity );
+        MorphSounds morph_sounds = getCloserSounds( f_note, f_velocity );
         
         if (morph_sounds[MorphLocation::Left] == morph_sounds[MorphLocation::Right])
         {

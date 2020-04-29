@@ -16,6 +16,10 @@
 
 MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 {
+    // Initialize the instrument
+    this->instrument = Core::Instrument();
+    this->instrument.name = "Test";
+    
 //    JUCE::DirectoryIterator()
     std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
     
@@ -23,33 +27,38 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     while (iter.next())
     {
-        File theFileItFound (iter.getFile());
+        File sound_file (iter.getFile());
+//        String sound_file_name = sound_file.getFullPathName();
+        std::string sound_file_name = sound_file.getFullPathName().toStdString();
+        DBG(sound_file_name);
         
-        DBG(theFileItFound.getFullPathName());
+        // TODO - Find a better approach to do this (try to avoid using copy constructor)
+        Core::Sound sound = Core::Sound( sound_file_name );
+        
+//        Core::Sound scopy = sound;
+        
+        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound = sound;
+        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loaded = true;
+//        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->setSound( sound );
+//        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loadSound( sound_file_name );
     }
     
-//    throw std::exception();
+//    std::vector<Velocity*> laoded = this->instrument.note[70]->getLoadedVelocities();
     
-    // Initialize the instrument
-    this->instrument = Core::Instrument();
-    
-    // Add some voices to our synth, to play the sounds..
+    // Add some voices to the synth
     for (int i = 0; i < MAX_VOICES; i++)
     {
-        // TODO - MorphVoice can be an instante of Intrument->Synthesis
-        
-        // Add the voice to the synth
-        this->addVoice( new Voice(&this->instrument, parameters) );
-//        this->addVoice( new MorphVoice(sound, parameters) );
+        // Add a new voice to the synth
+        this->addVoice( new Voice(this->instrument, parameters) );
     }
     
     // TODO - Maybe we should move the moprhing code from MorphVoice to MorphSound
     // and in MorphVoice manipulate the output audio buffer (already morphed) to
     // decorrelate the signal (or maybe add some "spread")
     
-//    // Add a sound for them to play
-//    this->clearSounds();
-//    this->addSound( new MorphSound() );
+    // Add a sound for them to play
+    this->clearSounds();
+    this->addSound( new MorphSound() );
 }
 
 MorphexSynth::~MorphexSynth() {}
@@ -65,7 +74,7 @@ void MorphexSynth::setCurrentPlaybackSampleRate (double sampleRate)
     {
         if( ( voice = dynamic_cast<Voice*>( this->getVoice(i) ) ) )
         {
-//            morph_voice->setADSRSampleRate(sampleRate);
+            voice->setADSRSampleRate(sampleRate);
         }
     }
     

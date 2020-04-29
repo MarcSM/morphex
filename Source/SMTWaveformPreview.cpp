@@ -63,18 +63,18 @@ void SMTWaveformPreview::paint(Graphics& g)
     int sound_name_height = 30;
     g.setColour (Colours::white);
     g.setFont(font_2);
-    g.drawText (mSound->file.name, 0, 0, getWidth(), sound_name_height, Justification::centred);
+//    g.drawText (mSound->file.name, 0, 0, getWidth(), sound_name_height, Justification::centred);
 
     // Draw the Waveform
     g.setColour (Colours::white);
-    drawWaveform(g, 0, sound_name_height, getWidth(), getHeight() - sound_name_height);
+//    drawWaveform(g, 0, sound_name_height, getWidth(), getHeight() - sound_name_height);
 }
 
 void SMTWaveformPreview::timerCallback()
 {
-    if (currentSoundDisplay != mSound->path)
-    {
-        currentSoundDisplay = mSound->path;
-        repaint();
-    }
+//    if (currentSoundDisplay != mSound->path)
+//    {
+//        currentSoundDisplay = mSound->path;
+//        repaint();
+//    }
 }

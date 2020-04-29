@@ -44,8 +44,8 @@ public:
         this->_values.harmonics_freqs = harmonics_freqs;
         this->_values.harmonics_mags = harmonics_mags;
         
-        // Matrices and lists decoding
-        Codec::decodeMatrix(this->_values.harmonics_freqs, false);
+        // Matrices decoding
+        Codec::decodeMatrix(this->_values.harmonics_freqs);
         Codec::decodeMatrix(this->_values.harmonics_mags, true);
     }
     
@@ -67,11 +67,17 @@ public:
     void setStochastic(std::vector<std::vector<float>> stochastic)
     {
         this->_values.stochastic = stochastic;
+        
+        // Matrix decoding
+        Codec::decodeMatrix(this->_values.stochastic, true);
     }
     
     void setResidual(std::vector<float> residual)
     {
         this->_values.residual = residual;
+        
+        // Vector decoding
+        Codec::decodeVector(this->_values.residual);
     }
     
 private:

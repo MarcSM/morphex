@@ -20,39 +20,65 @@ public:
     
     // Flags
     bool loaded;
-    bool loaded_metadata;
+//    bool loaded_metadata;
     
     // Initializing the harmonic analysis data structure for the .had file
-    Sound* sound;
+    Sound sound;
+//    Sound* sound;
 //    std::unique_ptr<Sound> sound;
 
-    // Midi velocity value
-    bool value;
+    // Midi values
+    int value;
+    int midi_note_value;
     
-    Velocity(int value)
+    Velocity(int midi_note_value, int value)
     {
         // Flags
         this->loaded = false;
-        this->loaded_metadata = false;
+//        this->loaded_metadata = false;
         
         // Initializing the harmonic analysis data structure for the .had file
 //        this->sound = NULL;
         
-        // Midi velocity value
+        // Midi values
         this->value = value;
+        this->midi_note_value = midi_note_value;
+    }
+    
+    void setSound(Sound sound)
+    {
+        // TODO - Check why copy constructor is not working properly
+//        this->sound = new Sound( *sound );
+//        Sound scopy = sound;
+//        Sound scopy = new Sound( sound );
+
+//        this->sound = new Sound( sound );
+//        this->sound = &sound;
+        
+        this->sound = sound;
+        this->loaded = true;
+        
+        //        if (this->loaded_metadata)
+        //        {
+        ////            this->sound->loop.start = this->loopstart;
+        ////            this->sound->loop.end = this->loopend;
+        //            this->loaded =true;
+        //        }
     }
     
 //    void loadSound(std::unique_ptr<Sound> sound)
-    void loadSound(Sound sound)
+    void loadSound(std::string file_path)
     {
-        this->sound = &sound;
+        this->sound = *new Sound(file_path, midi_note_value, value);
+//        this->sound = sound;
+        this->loaded = true;
         
-        if (this->loaded_metadata)
-        {
-//            this->sound->loop.start = this->loopstart;
-//            this->sound->loop.end = this->loopend;
-            this->loaded =true;
-        }
+//        if (this->loaded_metadata)
+//        {
+////            this->sound->loop.start = this->loopstart;
+////            this->sound->loop.end = this->loopend;
+//            this->loaded =true;
+//        }
     }
     
 //    void loadSoundFromPath(std::string had_file_path)

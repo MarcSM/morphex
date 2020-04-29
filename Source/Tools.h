@@ -97,8 +97,20 @@ namespace Core::Tools
             }
         }
         
-        // Fade Out
-//        reverse(v.begin() + 5, v.begin() + 8);
+        /** FFT shift for double data */
+        inline void fftShift(std::vector<float> data, int data_size)
+        {
+            // Even number of elements
+            if (data_size % 2)
+            {
+                std::rotate(&data[0], &data[data_size >> 1], &data[data_size]);
+            }
+            // Uneven number of elements
+            else
+            {
+                std::rotate(&data[0], &data[(data_size >> 1) + 1], &data[data_size]);
+            }
+        }
     }
     
     namespace Midi

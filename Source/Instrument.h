@@ -32,9 +32,9 @@ namespace Core
     typedef std::array<Sound*, MorphLocation::NUM_MORPH_LOCATIONS> MorphSounds;
     typedef std::array<Sound::Frame, MorphLocation::NUM_MORPH_LOCATIONS> MorphSoundFrames;
     //    typedef std::array<std::unique_ptr<Sound>, MorphLocation::NUM_MORPH_LOCATIONS> MorphSounds;
+    
+    const static int NUM_MIDI_NOTES = 128;
 }
-
-const static int NUM_MIDI_NOTES = 128;
 
 //const static float DEFAULT_FREQ = 0.0;
 //const static float DEFAULT_MAG = -180.0;
@@ -71,13 +71,13 @@ public:
     
     std::vector<Note*> getLoadedNotes();
     MorphNotes getCloserNotes(float f_target_note);
-    MorphSounds getCloserSounds(float f_target_note, int i_velocity);
+    MorphSounds getCloserSounds(float f_target_note, float f_velocity);
     
-    Sound* getSound(float f_note, int i_velocity);
-    Sound::Frame getSoundFrame(float f_note, int i_velocity, int i_current_frame, int i_frame_length, float f_interpolation_factor = -1.0);
+    Sound* getSound(float f_note, float f_velocity);
+    Sound::Frame getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_interpolation_factor = -1.0);
     Sound::Frame morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_interpolation_factor = -1);
     
-    std::vector<float> getNextFrame(float f_note, int i_velocity, int i_frame_length, float f_interpolation_factor = -1);
+    std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1);
 
 private:
     

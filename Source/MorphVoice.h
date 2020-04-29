@@ -94,8 +94,8 @@ struct MorphVoice
 //        // Start ADSR envelope
 //        adsr.noteOn();
 //
-//        // Enable sound playback
-//        play_sound = true;
+        // Enable sound playback
+        bool play_sound = true;
 //
 //        // Reset sample playback to the beginning
 //        mHarmonicsHead = 0;
@@ -119,6 +119,7 @@ struct MorphVoice
 
     void stopNote(float /*velocity*/, bool allowTailOff) override
     {
+        bool play_sound = false;
 //        // Start ADSR envelope
 //        adsr.noteOff();
 //

@@ -13,6 +13,84 @@
 #include <vector>
 #include <numeric>
 
+// TEST REMOVE
+#include "JuceHeader.h"
+
+/** Check if an xml element has any child with a given name */
+inline bool hasChild(XmlElement* parent, String child_name)
+{
+    return parent->getChildByName(child_name) != nullptr;
+}
+
+/** Split a list of ints in a string */
+inline std::vector<int> splitInts(const std::string& list_of_ints)
+{
+    std::string clean_list_of_ints = list_of_ints.substr(1, list_of_ints.size() - 2); // Removing the "[]"
+    clean_list_of_ints.erase(std::remove(clean_list_of_ints.begin(), clean_list_of_ints.end(), ','), clean_list_of_ints.end()); // Removing the ","
+    std::istringstream iss(clean_list_of_ints);
+    
+    return std::vector<int>{
+        std::istream_iterator<int>(iss),
+        std::istream_iterator<int>()
+    };
+}
+
+/** Split a list of floats in a string */
+inline std::vector<float> splitFloats(const std::string& list_of_floats, bool int_to_float = false)
+{
+    if (int_to_float)
+    {
+        std::string clean_list_of_ints = list_of_floats.substr(1, list_of_floats.size() - 2); // Removing the "[]"
+        std::replace_if(clean_list_of_ints.begin() , clean_list_of_ints.end() ,
+                        [] (const char& c) { return std::ispunct(c) ;},' ');
+        std::stringstream ss(clean_list_of_ints);
+        std::vector<float> result_float;
+        
+//        stringstream lineStream(line);
+        
+        // TODO - Check value precision (rounding when printing in scientific notation)
+//        std::vector<int> result_int;
+        
+        float num;
+        while (ss >> num) result_float.push_back(num);
+        
+//        copy(std::istream_iterator<float>(ss),
+//             std::istream_iterator<float>(),
+//             back_inserter(result_float));
+        
+//        for (int i; ss >> i;) {
+//        int i;
+//        while(ss >> i) {
+//            result_float.push_back(i);
+////            result_int.push_back(i);
+//            if (ss.peek() == ',' || ss.peek() == ' ')
+//                ss.ignore();
+//        }
+        
+        return result_float;
+//        std::string clean_list_of_floats = list_of_floats.substr(1, list_of_floats.size() - 2); // Removing the "[]"
+////        clean_list_of_floats.erase(std::remove(clean_list_of_floats.begin(), clean_list_of_floats.end(), ','), clean_list_of_floats.end()); // Removing the ","
+//        std::istringstream iss(clean_list_of_floats);
+//
+//        return std::vector<float>{
+//            std::istream_iterator<float>((float)iss),
+//            std::istream_iterator<float>()
+//        };
+    }
+    else
+    {
+        // TODO - not remove commas, just skip them
+        std::string clean_list_of_floats = list_of_floats.substr(1, list_of_floats.size() - 2); // Removing the "[]"
+        clean_list_of_floats.erase(std::remove(clean_list_of_floats.begin(), clean_list_of_floats.end(), ','), clean_list_of_floats.end()); // Removing the ","
+        std::istringstream iss(clean_list_of_floats);
+        
+        return std::vector<float>{
+            std::istream_iterator<float>(iss),
+            std::istream_iterator<float>()
+        };
+    }
+}
+
 /** Split a list of doubles in a string */
 inline std::vector<double> splitDoubles(const std::string& list_of_doubles)
 {
@@ -25,6 +103,18 @@ inline std::vector<double> splitDoubles(const std::string& list_of_doubles)
         std::istream_iterator<double>(iss),
         std::istream_iterator<double>()
     };
+}
+
+/** Get a vector of ints from an xml element */
+inline std::vector<int> getVectorOfInts(XmlElement* parent, String child_name )
+{
+    return splitInts(parent->getChildByName(child_name)->getAllSubText().toStdString());
+}
+
+/** Get a vector of floats from an xml element */
+inline std::vector<float> getVectorOfFloats(XmlElement* parent, String child_name )
+{
+    return splitFloats(parent->getChildByName(child_name)->getAllSubText().toStdString(), true);
 }
 
 /** Get a vector of doubles from an xml element */
@@ -40,29 +130,19 @@ inline std::vector<double> getVectorOfDoubles(XmlElement* parent, String child_n
     return result_vector;
 }
 
-/** Split a list of floats in a string */
-inline std::vector<float> splitFloats(const std::string& list_of_doubles)
+/** Get a matrix of ints from an xml element */
+inline std::vector<std::vector<int>> getMatrixOfInts(XmlElement* parent, String child_name )
 {
-    std::string clean_list_of_doubles = list_of_doubles.substr(1, list_of_doubles.size() - 2); // Removing the "[]"
-    clean_list_of_doubles.erase(std::remove(clean_list_of_doubles.begin(), clean_list_of_doubles.end(), ','), clean_list_of_doubles.end()); // Removing the ","
-    std::istringstream iss(clean_list_of_doubles);
+    std::vector<std::vector<int>> result_matrix;
     
-    return std::vector<float>{
-        std::istream_iterator<float>(iss),
-        std::istream_iterator<float>()
-    };
-}
-
-/** Check if an xml element has any child with a given name */
-inline bool hasChild(XmlElement* parent, String child_name)
-{
-    return parent->getChildByName(child_name) != nullptr;
-}
-
-/** Get a vector of floats from an xml element */
-inline std::vector<float> getVectorOfFloats(XmlElement* parent, String child_name )
-{
-    return splitFloats(parent->getChildByName(child_name)->getAllSubText().toStdString());
+    // For each row of the matrix
+    forEachXmlChildElementWithTagName(*parent, child, child_name)
+    {
+        auto aux = child->getAllSubText();
+        result_matrix.push_back(splitInts(child->getAllSubText().toStdString()));
+    }
+    
+    return result_matrix;
 }
 
 /** Get a matrix of floats from an xml element */
@@ -74,7 +154,7 @@ inline std::vector<std::vector<float>> getMatrixOfFloats(XmlElement* parent, Str
     forEachXmlChildElementWithTagName(*parent, child, child_name)
     {
         auto aux = child->getAllSubText();
-        result_matrix.push_back(splitFloats(child->getAllSubText().toStdString()));
+        result_matrix.push_back(splitFloats(child->getAllSubText().toStdString(), true));
     }
     
     return result_matrix;

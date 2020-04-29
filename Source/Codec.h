@@ -25,7 +25,7 @@ namespace Core::Codec
 //    const float XML_DECIMAL_PLACES = 5;
     
     // List Decoding (does not change size of arrays)
-    void inline decodeList(std::vector<float> given_list, int abs_values = false, int decimal_places = XML_DECIMAL_PLACES)
+    void inline decodeVector(std::vector<float> &given_list, int abs_values = false, int decimal_places = XML_DECIMAL_PLACES)
     {
         for (int i = 0; i < given_list.size(); i++)
         {
@@ -38,17 +38,17 @@ namespace Core::Codec
     }
     
     // Matrix Decoding
-    void inline decodeMatrix(std::vector<std::vector<float>> given_matrix, bool abs_values = false, bool diff_decoding = true, int decimal_places = XML_DECIMAL_PLACES)
+    void inline decodeMatrix(std::vector<std::vector<float>> &given_matrix, bool abs_values = false, bool diff_decoding = true, int decimal_places = XML_DECIMAL_PLACES)
     {
-        for (int i = 0; i < sizeof(given_matrix); i++)
+        for (int i = 0; i < given_matrix.size(); i++)
         {
-            decodeList(given_matrix[i], decimal_places, abs_values);
+            decodeVector(given_matrix[i], abs_values, decimal_places);
             
-            if (diff_decoding and i > 0)
+            if (diff_decoding && i > 0)
             {
-                for (int j = 0; j < sizeof(given_matrix[i]); j++)
+                for (int j = 0; j < given_matrix[i].size(); j++)
                 {
-                    if (j < sizeof(given_matrix[i-1]))
+                    if (j < given_matrix[i-1].size())
                     {
                         given_matrix[i][j] = given_matrix[i-1][j] + given_matrix[i][j];
                     }
@@ -63,9 +63,9 @@ namespace Core::Codec
         for (int i = 0; i < max_y; i++)
         {
             // TODO
-//            if (i < sizeof(X))
+//            if (i < X.size())
 //            {
-//                X[i] = X[i] + ( [pad_value] * ( max_x - sizeof(X[i]) ) )
+//                X[i] = X[i] + ( [pad_value] * ( max_x - X[i].size() ) )
 //            }
 //            else
 //            {
