@@ -346,18 +346,19 @@ namespace Core
                 
                 int i_start_sample = i_num_frame * i_frame_length;
                 int i_end_sample = i_start_sample + i_frame_length;
+                int i_vec_size = (int)vector_component.size();
                 
-                if (i_start_sample < vector_component.size() < i_end_sample)
+                if ( (i_start_sample < i_vec_size) && (i_vec_size < i_end_sample) )
                 {
-                    i_end_sample = (int)vector_component.size();
+                    i_end_sample = i_vec_size;
                 }
                 
-                std::vector<float> residual_frame(0.0, i_frame_length);
-//                std::vector<float> residual_frame_aux(0.0, i_frame_length);
+//                std::vector<float> residual_frame(i_frame_length, 0.0);
                 
                 // TODO - Check total length of component
-                std::vector<float> residual_frame_aux = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
-                
+                std::vector<float> residual_frame = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
+//                std::vector<float> residual_frame_aux = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
+
 //                if ( i_start_sample < i_end_sample < component.size() )
 //                {
 //                    //                    residual_frame_aux = Tools::Get::veluesInRange(component, i_start_sample, i_end_sample);
@@ -370,9 +371,10 @@ namespace Core
 //                    //                    residual_frame_aux = Tools::Get::veluesInRange(component, i_start_sample, component.size());
 //                }
                 
-                for (int i = 0; i < residual_frame_aux.size(); i++)
+                for (int i = 0; i < residual_frame.size(); i++)
                 {
-                    residual_frame[i] = residual_frame_aux[i];
+                    component_frame.push_back( residual_frame[i] );;
+//                    residual_frame[i] = residual_frame_aux[i];
                 }
                 
                 break;

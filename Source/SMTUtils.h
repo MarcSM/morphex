@@ -42,7 +42,8 @@ inline std::vector<float> splitFloats(const std::string& list_of_floats, bool in
     {
         std::string clean_list_of_ints = list_of_floats.substr(1, list_of_floats.size() - 2); // Removing the "[]"
         std::replace_if(clean_list_of_ints.begin() , clean_list_of_ints.end() ,
-                        [] (const char& c) { return std::ispunct(c) ;},' ');
+                        [] (const char& c) { return c == ',' ;},' ');
+//        [] (const char& c) { return std::ispunct(c) ;},' ');
         std::stringstream ss(clean_list_of_ints);
         std::vector<float> result_float;
         

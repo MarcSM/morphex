@@ -129,7 +129,7 @@ namespace Core::Tools
             // Output
             std::vector<T> result;
             
-            for (float i = 0; i <= idxs.size(); i++)
+            for (float i = 0; i < idxs.size(); i++)
             {
                 result.push_back( given_vector[i] );
             }
@@ -143,7 +143,7 @@ namespace Core::Tools
             // Output
             std::vector<T> result;
             
-            for (float i = min; i <= max; i++)
+            for (float i = min; i < max; i++)
             {
                 result.push_back( given_vector[i] );
             }

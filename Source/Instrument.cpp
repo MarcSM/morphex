@@ -164,9 +164,9 @@ namespace Core
         // Output
         Sound::Frame morphed_sound_frame;
 
-        // Get the maximum number of hamronics and sound length
-        int i_max_harmonics = std::max( morph_sounds[MorphLocation::Left]->max_harmonics, morph_sounds[MorphLocation::Right]->max_harmonics );
-        
+//        // Get the maximum number of hamronics and sound length
+//        int i_max_harmonics = std::max( morph_sounds[MorphLocation::Left]->max_harmonics, morph_sounds[MorphLocation::Right]->max_harmonics );
+//
         // Get target frequency
         float f_target_frequency = Tools::Midi::toFreq(f_target_note);
 //        float f_target_frequency = MidiMessage::getMidiNoteInHertz(int i_note);
@@ -179,6 +179,16 @@ namespace Core
             ( f_target_frequency - Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) ) /
             ( Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note) - Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) );
         }
+        
+        
+        MorphSoundFrames morph_sound_frames;
+        
+        // Select current frame
+        morph_sound_frames[MorphLocation::Left] = morph_sounds[MorphLocation::Left]->getFrame(i_current_frame, i_frame_length);
+        morph_sound_frames[MorphLocation::Right] = morph_sounds[MorphLocation::Right]->getFrame(i_current_frame, i_frame_length);
+        
+        // Get the maximum number of hamronics and sound length
+        int i_max_harmonics = std::max( morph_sound_frames[MorphLocation::Left].getMaxHarmonics(), morph_sound_frames[MorphLocation::Right].getMaxHarmonics() );
         
         // NOTE - If it doesnt sound properly, try to always give more weight
         // to the higer samples (it is necessary to define a function that,
@@ -195,11 +205,6 @@ namespace Core
         // //             explicit_fundamental = i_note
         //             return (note_hfreq / f_note_freq) * f_target_frequency
         
-        MorphSoundFrames morph_sound_frames;
-        
-        // Select current frame
-        morph_sound_frames[MorphLocation::Left] = morph_sounds[MorphLocation::Left]->getFrame(i_current_frame, i_frame_length);
-        morph_sound_frames[MorphLocation::Right] = morph_sounds[MorphLocation::Right]->getFrame(i_current_frame, i_frame_length);
         // Transpose left note frequencies to the target frequency
         Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].harmonics_freqs,
                                          (Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) * f_target_frequency) );
@@ -208,7 +213,8 @@ namespace Core
         Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Right].harmonics_freqs,
                                          (Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note) * f_target_frequency) );
         
-        if ( morphed_sound_frame.hasHarmonics() )
+        if (morph_sound_frames[MorphLocation::Left].hasHarmonics() or
+            morph_sound_frames[MorphLocation::Right].hasHarmonics())
         {
             // Interpolating the frequencies of the given harmonics
             morphed_sound_frame.harmonics_freqs =
@@ -231,7 +237,8 @@ namespace Core
         
         // TODO - Add sinusoidal component
         
-        if ( morphed_sound_frame.hasStochastic() )
+        if (morph_sound_frames[MorphLocation::Left].hasStochastic() or
+            morph_sound_frames[MorphLocation::Right].hasStochastic())
         {
             // Interpolating the stochastic components of the given harmonics
             morphed_sound_frame.stochastic =
@@ -242,7 +249,8 @@ namespace Core
                               i_max_harmonics);
         }
         
-        if ( morphed_sound_frame.hasResidual() )
+        if (morph_sound_frames[MorphLocation::Left].hasResidual() or
+            morph_sound_frames[MorphLocation::Right].hasResidual())
         {
             // Interpolating the stochastic components of the given harmonics
             morphed_sound_frame.residual =

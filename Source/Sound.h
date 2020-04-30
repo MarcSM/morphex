@@ -184,9 +184,9 @@ public:
         std::vector<float> stochastic;
         std::vector<float> residual;
         
-        bool getMaxHarmonics()
+        int getMaxHarmonics()
         {
-            return std::max({
+            return (int)std::max({
                 this->harmonics_freqs.size(),
                 this->harmonics_mags.size(),
                 this->harmonics_phases.size(),
@@ -194,11 +194,11 @@ public:
             });
         };
         
-        bool hasHarmonics() { return this->harmonics_freqs.size() == 0; };
-        bool hasPhases() { return this->harmonics_phases.size() == 0; };
-        bool hasSinusoidal() { return this->sinusoidal.size() == 0; };
-        bool hasStochastic() { return this->stochastic.size() == 0; };
-        bool hasResidual() { return this->residual.size() == 0; };
+        bool hasHarmonics() { return this->harmonics_freqs.size() > 0; };
+        bool hasPhases() { return this->harmonics_phases.size() > 0; };
+        bool hasSinusoidal() { return this->sinusoidal.size() > 0; };
+        bool hasStochastic() { return this->stochastic.size() > 0; };
+        bool hasResidual() { return this->residual.size() > 0; };
     };
     
 //    /** Analysis output read from the ".had" file */

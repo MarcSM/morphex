@@ -56,6 +56,7 @@ public:
     {
         Set = 0,    // The given frame will replace the current content of the buffer
         Add,        // The given frame will be added to the current content of the buffer
+        Delete      // The current content of the buffer will be set to 0.0
     };
     
     struct SynthesisParameters
@@ -131,7 +132,7 @@ private:
     std::vector<int> getBufferSectionIndexes(BufferSection buffer_section, int i_frame_length = 0);
     std::vector<float> getBuffer(BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = 0);
     
-    void updateBuffer(BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame, Channel selected_channel = Channel::Mono);
+    void updateBuffer(BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame = std::vector<float>(), Channel selected_channel = Channel::Mono);
     void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
     void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
     

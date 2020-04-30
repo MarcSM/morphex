@@ -35,6 +35,9 @@ namespace Core
         
         this->buffer.length = NS * NUM_FRAMES_IN_BUFFER;
         
+        // Generate synthesis windows
+        this->getWindow();
+        
         //        // Initialize buffer channels
         //        for (int i = 0; i < Channel::NUM_CHANNELS; i++)
         //        {
@@ -43,7 +46,7 @@ namespace Core
         //                      this->buffer.channels[i].end(), 0.0);
         //        }
         
-        reset();
+        this->reset();
     }
     
     Synthesis::~Synthesis(){};
@@ -51,8 +54,12 @@ namespace Core
     void Synthesis::reset()
     {
         this->live_values.i_current_frame = 0;
+        this->live_values.i_samples_ready = 0;
         this->live_values.first_frame = true;
         this->live_values.last_frame = false;
+        
+        std::vector<float> last_freqs;
+        std::vector<float> phases;
         
         this->generated.harmonics_freqs.clear();
         this->generated.harmonics_mags.clear();
@@ -103,7 +110,7 @@ namespace Core
         const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
         
         // Output
-        std::vector<float> yw(NS);
+        std::vector<float> yw(NS, 0.0);
         
         // A list with the indexes of the harmonics we want to interpolate
         std::vector<int> idx_harmonics = Tools::Generate::range(0, MAX_HARMONICS);
@@ -112,11 +119,11 @@ namespace Core
         
         if ( sound_frame.hasPhases() )
         {
-            harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
+            harmonics_phases = sound_frame.harmonics_phases;
         }
         else
         {
-            harmonics_phases = sound_frame.harmonics_phases;
+            harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
         }
         
         //        std::vector<float> harmonics_freqs_to_interpolate = Tools::Get::valuesByIndex(sound_frame.harmonics_freqs, idx_harmonics);
@@ -190,6 +197,12 @@ namespace Core
         // Update samples ready to be played
         this->live_values.i_samples_ready += H;
         
+        // Clean the part of the buffer that we must override
+        updateBuffer(BufferSection::Clean, BufferUpdateMode::Delete);
+        
+        // Update write pointer position
+        self.updateWritePointer(h)
+        
         return next_frame;
     }
     
@@ -215,9 +228,12 @@ namespace Core
         //        ow = triang( 2 * H )
         
         std::vector<float> bh(NS);
-        dsp::WindowingFunction<float>::fillWindowingTables( bh.data(), bh.size(), dsp::WindowingFunction<float>::blackmanHarris, true);
+        dsp::WindowingFunction<float>::fillWindowingTables( bh.data(), bh.size(), dsp::WindowingFunction<float>::blackmanHarris, false);
+//        dsp::WindowingFunction<float>::fillWindowingTables( bh.data(), bh.size(), dsp::WindowingFunction<float>::blackmanHarris, true);
         //        bh = blackmanharris( NS )
         //        bh = bh / sum(bh)
+        float bh_sum = std::accumulate(bh.begin(), bh.end(), 0.0);
+        Tools::Calculate::divideByScalar(bh, bh_sum);
         
         // Harmonics Window
         this->window.harm.resize(NS);
@@ -225,10 +241,22 @@ namespace Core
                   this->window.harm.end(), 0.0);
         //        this->window.harm = np.zeros( NS );
         
+//        for (int i = HNS-H; i < HNS+H; i++)
+//        {
+//            this->window.harm[i] = ow[i];
+//        }
+        
+        int j = 0;
         for (int i = HNS-H; i < HNS+H; i++)
         {
-            this->window.harm[i] = ow[i] / bh[i];
+            this->window.harm[i] = ow[j] / bh[i];
+            j ++;
         }
+        
+//        for (int i = HNS-H; i < HNS+H; i++)
+//        {
+//            this->window.harm[i] = ow[i] / bh[i];
+//        }
         //        this->window.harm[ HNS-H : HNS+H ] = ow;
         //        this->window.harm[ HNS-H : HNS+H ] = this->window.harm[ HNS-H : HNS+H ] / bh[ HNS-H : HNS+H ]
         
@@ -337,6 +365,9 @@ namespace Core
                 case BufferUpdateMode::Add:
                     this->buffer.channels[selected_channel][i] = new_value;
                     break;
+                case BufferUpdateMode::Delete:
+                    this->buffer.channels[selected_channel][i] = 0.0;
+                    break;
             }
         }
     }
@@ -366,6 +397,12 @@ namespace Core
             // Update last freq value
             this->live_values.last_freqs[i] = harmonics_freqs[i];
         }
+    }
+    
+    void Synthesis::updateWritePointer(int i_pointer_increment)
+    {
+        new_pointer_position = self.buffer.pointers.write + i_pointer_increment
+        self.buffer.pointers.write = self.getPointerInLimits(new_pointer_position)
     }
     
     std::vector<float> Synthesis::generateSines(std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs)
