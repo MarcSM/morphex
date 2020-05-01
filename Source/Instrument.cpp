@@ -188,7 +188,8 @@ namespace Core
         morph_sound_frames[MorphLocation::Right] = morph_sounds[MorphLocation::Right]->getFrame(i_current_frame, i_frame_length);
         
         // Get the maximum number of hamronics and sound length
-        int i_max_harmonics = std::max( morph_sound_frames[MorphLocation::Left].getMaxHarmonics(), morph_sound_frames[MorphLocation::Right].getMaxHarmonics() );
+        int i_max_harmonics = std::max(morph_sound_frames[MorphLocation::Left].getMaxHarmonics(),
+                                       morph_sound_frames[MorphLocation::Right].getMaxHarmonics());
         
         // NOTE - If it doesnt sound properly, try to always give more weight
         // to the higer samples (it is necessary to define a function that,
@@ -207,11 +208,13 @@ namespace Core
         
         // Transpose left note frequencies to the target frequency
         Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].harmonics_freqs,
-                                         (Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) * f_target_frequency) );
+                                         Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+        Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Left].harmonics_freqs, f_target_frequency);
         
         // Transpose right note frequencies to the target frequency
         Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Right].harmonics_freqs,
-                                         (Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note) * f_target_frequency) );
+                                         Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note));
+        Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Right].harmonics_freqs, f_target_frequency);
         
         if (morph_sound_frames[MorphLocation::Left].hasHarmonics() or
             morph_sound_frames[MorphLocation::Right].hasHarmonics())

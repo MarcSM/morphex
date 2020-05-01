@@ -41,6 +41,7 @@ class Core::Synthesis
 public:
     
     const static int MAX_HARMONICS = 100;
+    const static int FS = 44100;
     const static int FFT_SIZE = 512; // 512
     const static int HOP_SIZE = int( FFT_SIZE / 4 ); // 128
     const static int NUM_FRAMES_IN_BUFFER = 4;
@@ -95,12 +96,19 @@ public:
         
         struct Pointers
         {
-            Synthesis* parent;
+//            Synthesis& parent;
+//            Pointers(Synthesis& parent_) : parent(parent_) {}
             
+//            Synthesis* parent;
+//            Synthesis& parent;
+
             int write;
-            int clean() { return write + this->parent->parameters.fft_size; };
-            // TODO - change to minus hop_size
-            int play() { return clean() + this->parent->parameters.hop_size; };
+            // Try to use lambdas if possible
+            int clean(Synthesis* parent, int i_move_position = 0) { return parent->getPointerInLimits( write + parent->parameters.fft_size + i_move_position ); };
+//            int clean() { return this->parent->getPointerInLimits( write + this->parent->parameters.fft_size ); };
+            int play(Synthesis* parent, int i_move_position = 0) { return parent->getPointerInLimits( write - parent->parameters.fft_size + i_move_position ); };
+//            int play() { return this->parent.getPointerInLimits( write - this->parent.parameters.fft_size ); };
+//            int play() { return this->parent->getPointerInLimits( clean() + this->parent.parameters.hop_size ); };
         } pointers;
 //        SynthesisBufferPointers(parent) pointers;
         
@@ -128,10 +136,12 @@ private:
     
     void getWindow();
     
+    int getPointerInLimits(int i_pointer_position);
     std::vector<int> getBufferIndexes(int i_head, int i_tail);
     std::vector<int> getBufferSectionIndexes(BufferSection buffer_section, int i_frame_length = 0);
     std::vector<float> getBuffer(BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = 0);
     
+    void updateWritePointer(int i_pointer_increment);
     void updateBuffer(BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame = std::vector<float>(), Channel selected_channel = Channel::Mono);
     void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
     void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);

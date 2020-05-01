@@ -98,24 +98,36 @@ namespace Core::Tools
         }
         
         /** FFT shift for double data */
-        inline void fftShift(std::vector<float> data, int data_size)
+        inline void fftShift(std::vector<float> &data)
         {
-            // Even number of elements
-            if (data_size % 2)
-            {
-                std::rotate(&data[0], &data[data_size >> 1], &data[data_size]);
-            }
-            // Uneven number of elements
-            else
-            {
-                std::rotate(&data[0], &data[(data_size >> 1) + 1], &data[data_size]);
-            }
+            int data_size = (int)data.size();
+            int samples_to_shift = int( data_size / 2 );
+            
+            // If even number of elements
+            if (data_size % 2) samples_to_shift += 1;
+            
+            std::rotate(data.begin(), data.begin() + samples_to_shift, data.end());
         }
+        
+//        /** FFT shift for double data */
+//        inline void fftShift(std::vector<float> data, int data_size)
+//        {
+//            // Even number of elements
+//            if (data_size % 2)
+//            {
+//                std::rotate(&data[0], &data[data_size >> 1], &data[data_size]);
+//            }
+//            // Uneven number of elements
+//            else
+//            {
+//                std::rotate(&data[0], &data[(data_size >> 1) + 1], &data[data_size]);
+//            }
+//        }
     }
     
     namespace Midi
     {
-        inline int toFreq(const int f_note, const float f_frequency_of_A = 440.0) {
+        inline float toFreq(const float f_note, const float f_frequency_of_A = 440.0) {
             return (f_frequency_of_A / 32.0) * powf( 2.0, ((f_note - 9.0) / 12.0) );
 //            return (f_frequency_of_A / 32.0) * (2.0 ** ((f_note - 9.0) / 12.0));
         }
@@ -157,13 +169,22 @@ namespace Core::Tools
         inline int modulo(int n, int M) {
             return ((n % M) + M) % M;
         }
-        
+
         template<typename T, typename TS>
         inline void divideByScalar(std::vector<T> &given_vector, TS scalar) {
             
-            for (float i = 0; i <= given_vector.size(); i++)
+            for (float i = 0; i < given_vector.size(); i++)
             {
                 given_vector[i] /= scalar;
+            }
+        }
+        
+        template<typename T, typename TS>
+        inline void multiplyByScalar(std::vector<T> &given_vector, TS scalar) {
+            
+            for (float i = 0; i < given_vector.size(); i++)
+            {
+                given_vector[i] *= scalar;
             }
         }
     }

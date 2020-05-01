@@ -20,13 +20,10 @@ namespace Core
         // Default values
         this->parameters.fft_size = FFT_SIZE;
         this->parameters.hop_size = HOP_SIZE;
-        
-        // TODO - Find a better approach
-        // Pass the class scope to Buffer::Pointers
-        this->buffer.pointers.parent = this;
-        
+        this->parameters.fs = FS;
+
         // Parameters shortcut
-        const int NS = this->parameters.fft_size;
+                                                                                                                                                                                    const int NS = this->parameters.fft_size;
         //        const int H = this->parameters.hop_size;
         
         // TODO - Change this fixes values with the line below
@@ -35,6 +32,11 @@ namespace Core
         
         this->buffer.length = NS * NUM_FRAMES_IN_BUFFER;
         
+        // TODO - Find a better approach
+        // Pass the class scope to Buffer::Pointers
+//        this->buffer.pointers = Buffer::Pointers(*this);
+//        this->buffer.pointers.parent = this;
+
         // Generate synthesis windows
         this->getWindow();
         
@@ -76,6 +78,8 @@ namespace Core
         std::fill(this->live_values.phases.begin(),
                   this->live_values.phases.end(), 0.0);
         
+        this->buffer.pointers.write = 0;
+        
         // Clean the buffers
         //        zeromem(mCircularBufferLeft, sizeof(float) * this->buffer.length);
         //        zeromem(mCircularBufferRight, sizeof(float) * this->buffer.length);
@@ -105,6 +109,7 @@ namespace Core
     std::vector<float> Synthesis::synthesizeSoundFrame(Sound::Frame sound_frame)
     {
         // Parameters shortcut
+        const int FS = this->parameters.fs;
         const int NS = this->parameters.fft_size;
         const int H = this->parameters.hop_size;
         const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
@@ -135,11 +140,14 @@ namespace Core
         //                                                       harmonics_phases,
         //                                                       NS, this->parameters.fs);
         
+        
+        
         // Generate sines
+        // TODO - TOFIX - This does not work
         std::vector<float> y_harmonics = generateSines(sound_frame.harmonics_freqs,
                                                        sound_frame.harmonics_mags,
                                                        harmonics_phases,
-                                                       NS, this->parameters.fs);
+                                                       NS, FS);
         
         // Applying the window and saving the result on the output vector "harmonic"
         std::vector<float> yw_harmonics(NS);
@@ -180,7 +188,14 @@ namespace Core
         std::vector<int> idx_harmonics = Tools::Generate::range(0, MAX_HARMONICS);
         
         // Update phases
-        if (!this->live_values.first_frame) updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
+        if (this->live_values.first_frame)
+        {
+            this->live_values.first_frame = false;
+        }
+        else
+        {
+            updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
+        }
         
         // Generate windowed audio frame
         std::vector<float> windowed_audio_frame = synthesizeSoundFrame(sound_frame);
@@ -201,7 +216,7 @@ namespace Core
         updateBuffer(BufferSection::Clean, BufferUpdateMode::Delete);
         
         // Update write pointer position
-        self.updateWritePointer(h)
+        this->updateWritePointer(H);
         
         return next_frame;
     }
@@ -268,6 +283,13 @@ namespace Core
         //        return w
     }
     
+    int Synthesis::getPointerInLimits(int i_pointer_position)
+    {
+        return Tools::Calculate::modulo(i_pointer_position, this->buffer.length);
+//        return i_pointer_position % this->buffer.length;
+    }
+    
+    
     std::vector<int> Synthesis::getBufferIndexes(int i_head, int i_tail)
     {
         // Output
@@ -306,15 +328,15 @@ namespace Core
         {
             case BufferSection::Write:
                 buffer_indexes = getBufferIndexes(this->buffer.pointers.write,
-                                                  this->buffer.pointers.clean());
+                                                  this->buffer.pointers.clean(this));
                 break;
             case BufferSection::Clean:
-                buffer_indexes = getBufferIndexes(this->buffer.pointers.clean(),
-                                                  this->buffer.pointers.clean() + H);
+                buffer_indexes = getBufferIndexes(this->buffer.pointers.clean(this),
+                                                  this->buffer.pointers.clean(this, H));
                 break;
             case BufferSection::Play:
-                buffer_indexes = getBufferIndexes(this->buffer.pointers.play(),
-                                                  this->buffer.pointers.play() + i_frame_length);
+                buffer_indexes = getBufferIndexes(this->buffer.pointers.play(this),
+                                                  this->buffer.pointers.play(this, i_frame_length));
                 break;
             default:
                 // Return an empty vector
@@ -345,28 +367,57 @@ namespace Core
         return buffer_section_samples;
     }
     
+    void Synthesis::updateWritePointer(int i_pointer_increment)
+    {
+        int new_pointer_position = this->buffer.pointers.write + i_pointer_increment;
+        this->buffer.pointers.write = this->getPointerInLimits(new_pointer_position);
+    }
+    
     void Synthesis::updateBuffer(BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame, Channel selected_channel)
     {
         //        std::vector<float>& buffer = *this->buffer.channels[selected_channel];
+//        int i_pointer_position = 0;
         
         std::vector<int> buffer_indexes = getBufferSectionIndexes(buffer_section);
+        
+//        switch (buffer_section)
+//        {
+//            case BufferSection::Write:
+//                i_pointer_position = this->buffer.pointers.write;
+//                break;
+//            case BufferSection::Clean:
+//                i_pointer_position = this->buffer.pointers.clean(this);
+//                break;
+//            case BufferSection::Play:
+//                i_pointer_position = this->buffer.pointers.play(this);
+//                break;
+//        }
         
         // For each index
         for (int i = 0; i < buffer_indexes.size(); i++)
         {
             float new_value = 0.0;
-            if ( i < given_frame.size() ) new_value = given_frame[i];
+            if ( i < given_frame.size() ){
+                new_value = given_frame[i];
+            }
+            else
+            {
+                if (update_mode != BufferUpdateMode::Delete)
+                {
+                    DBG("CHECK THIS");
+                }
+            }
             
             switch (update_mode)
             {
                 case BufferUpdateMode::Set:
-                    this->buffer.channels[selected_channel][i] = this->buffer.channels[selected_channel][i] + new_value;
+                    this->buffer.channels[selected_channel][ buffer_indexes[i] ] = new_value;
                     break;
                 case BufferUpdateMode::Add:
-                    this->buffer.channels[selected_channel][i] = new_value;
+                    this->buffer.channels[selected_channel][ buffer_indexes[i] ] += new_value;
                     break;
                 case BufferUpdateMode::Delete:
-                    this->buffer.channels[selected_channel][i] = 0.0;
+                    this->buffer.channels[selected_channel][ buffer_indexes[i] ] = 0.0;
                     break;
             }
         }
@@ -382,27 +433,26 @@ namespace Core
             ( M_PI * ( this->live_values.phases[i] + harmonics_freqs[i] ) / this->parameters.fs ) * hop_size;
             
             // Keep phase inside 2 * pi
-            this->live_values.phases[i] = Tools::Calculate::modulo( this->live_values.phases[i], ( 2 * M_PI ) );
+            this->live_values.phases[i] = std::fmod(this->live_values.phases[i], ( 2.0 * M_PI ) );
             
             // Append to generated phases
             if (append_to_generated) this->generated.harmonics_phases.push_back( this->live_values.phases[i] );
         }
     }
     
+    // TODO - Evaluate if "idx_harmonics" will be necessary in the near future
     void Synthesis::updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics)
     {
+        int id_harmonic = 0;
+        
         // For each selected harmonic
         for (int i = 0; i < idx_harmonics.size(); i++)
         {
+            id_harmonic = idx_harmonics[i];
+            
             // Update last freq value
-            this->live_values.last_freqs[i] = harmonics_freqs[i];
+            this->live_values.last_freqs[id_harmonic] = harmonics_freqs[id_harmonic];
         }
-    }
-    
-    void Synthesis::updateWritePointer(int i_pointer_increment)
-    {
-        new_pointer_position = self.buffer.pointers.write + i_pointer_increment
-        self.buffer.pointers.write = self.getPointerInLimits(new_pointer_position)
     }
     
     std::vector<float> Synthesis::generateSines(std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs)
@@ -433,8 +483,9 @@ namespace Core
         for (int i = 0; i < NS; i++) y_harmonics[i] = Y_harmonics[i].real();
         
         // Perform an FFT shift
-        Tools::Audio::fftShift(y_harmonics, NS);
-        
+        Tools::Audio::fftShift(y_harmonics);
+//        Tools::Audio::fftShift(y_harmonics, NS);
+
         return y_harmonics;
     }
     
@@ -488,8 +539,9 @@ namespace Core
         for (int i = 0; i < NS; i++) y_stocs[i] = Y_stocs[i].real();
         
         // Perform an FFT shift
-        Tools::Audio::fftShift(y_stocs, NS);
-        
+        Tools::Audio::fftShift(y_stocs);
+//        Tools::Audio::fftShift(y_stocs, NS);
+
         return y_stocs;
     }
     

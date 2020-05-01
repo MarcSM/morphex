@@ -22,9 +22,9 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
     mMainPanel = new SMTMainPanel(&processor);
     addAndMakeVisible(mMainPanel);
     
-    mLookAndFeel = new SMTLookAndFeel();
-    setLookAndFeel(mLookAndFeel);
-    LookAndFeel::setDefaultLookAndFeel(mLookAndFeel);
+//    mLookAndFeel = new SMTLookAndFeel();
+//    setLookAndFeel(mLookAndFeel);
+//    LookAndFeel::setDefaultLookAndFeel(mLookAndFeel);
 }
 
 SpectralMorphingToolAudioProcessorEditor::~SpectralMorphingToolAudioProcessorEditor()

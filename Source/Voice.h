@@ -67,6 +67,9 @@ struct Voice
     void startNote( int midiNoteNumber, float velocity,
                    SynthesiserSound*, int /*currentPitchWheelPosition*/) override
     {
+        // Reset synthesis engine
+        this->synthesis.reset();
+        
         // Note playback
         this->playing_note = true;
         this->loop_mode = true;
@@ -103,9 +106,13 @@ struct Voice
     
     void stopNote(float /*velocity*/, bool allowTailOff = true) override
     {
-        this->adsr = StateADSR::Release;
+        // TODO - Check behaviour, this method is called when presing a note (reset?)
+        if (this->playing_note)
+        {
+            this->adsr = StateADSR::Release;
+            if (!allowTailOff) this->playing_note = false;
+        }
         
-        if (!allowTailOff) this->playing_note = false;
         
         //        // Start ADSR envelope
         //        adsr.noteOff();
@@ -266,11 +273,15 @@ struct Voice
                     
                     // Transpose left note frequencies to the target frequency
                     Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
-                                                     (Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) * f_target_frequency) );
+                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
+                    
+//                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
+//                                                     (Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) * f_target_frequency) );
                 }
                 else
                 {
-                    sound_frame = this->instrument.morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
+                     sound_frame = this->instrument.morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
                     //                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
                 }
                 
@@ -280,7 +291,7 @@ struct Voice
                 // std::vector<float> generated_sound = this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
                 // generated_sound = self.synthesis.generateSoundFrame(sound, hop_size)
                 
-                i_current_frame ++;
+                *i_current_frame += 1;
             }
             
             // Update samples ready to be played
