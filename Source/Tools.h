@@ -174,41 +174,106 @@ namespace Core::Tools
 //              writeWAVData(path.c_str(),          &buffer[0],         sampleDuration * NUM_OF_CHANNELS * sizeof(buffer[0]),   sampleRate,     NUM_OF_CHANNELS);
 //        void  writeWAVData(const char* outFile,   SampleType* buf,    size_t bufSize,                                         int sampleRate, short channels)
         
+        template <typename Word>
+        std::ostream& write_word( std::ostream& outs, Word value, unsigned size = sizeof( Word ) )
+        {
+            for (; size; --size, value >>= 8)
+                outs.put( static_cast <char> (value & 0xFF) );
+            return outs;
+        }
+        
         template <typename SampleType>
         inline bool writeSoundFile(std::vector<SampleType> given_vector, std::string sound_file_path = "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/buffer.wav")
         {
-            const char* cstr = sound_file_path.c_str();
+            const char* sound_file_path_c = sound_file_path.c_str();
+            std::ofstream f( sound_file_path_c, std::ios::binary );
             
-            std::ofstream stream(cstr, std::ios::binary);// Open file stream at "outFile" location
+            int i_channels = 2;
+            int i_sample_rate = 44100;
+            int i_byte_rate = 176400;
+//            int i_byte_rate = i_channels * i_sample_rate * sizeof(int);
+            int i_frame_size = 8;
+//            int i_frame_size = i_channels * sizeof(int);
+            int i_bits_per_sample = 16;
+//            int i_bits_per_sample = 8 * sizeof(int);
+
+            // Write the file headers
+            f << "RIFF----WAVEfmt ";                // (chunk size to be filled in later)
+            write_word( f,  16,                 4 );    // no extension data
+            write_word( f,  1,                  2 );    // PCM - integer samples
+            write_word( f,  i_channels,         2 );    // two channels (stereo file)
+            write_word( f,  i_sample_rate,      4 );    // samples per second (Hz)
+            write_word( f,  i_byte_rate,        4 );  // (Sample Rate * BitsPerSample * Channels) / 8
+//            write_word( f, 176400, 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
+            write_word( f,  i_frame_size,       2 );  // data block size (size of two integer samples, one for each channel, in bytes)
+//            write_word( f,      8, 2 );  // data block size (size of two integer samples, one for each channel, in bytes)
+            write_word( f,  i_bits_per_sample,  2 );  // number of bits per sample (use a multiple of 8)
+//            write_word( f,     16, 2 );  // number of bits per sample (use a multiple of 8)
             
-            SampleType* buf = &given_vector[0];
-            int sampleRate = 44100;
-            short channels = 1;
-            int sampleDuration = sizeof(int);
-//            int sampleDuration = sizeof(int);
-            size_t bufSize = sampleDuration * channels * given_vector.size();
+            // Write the data chunk header
+            size_t data_chunk_pos = f.tellp();
+            f << "data----";  // (chunk size to be filled in later)
             
-            /* Header */
-            stream.write("RIFF", 4);                                        // sGroupID (RIFF = Resource Interchange File Format)
-            write<int>(stream, 36 + bufSize);                               // dwFileLength
-            stream.write("WAVE", 4);                                        // sRiffType
+            constexpr double max_amplitude = 32760;  // "volume"
             
-            /* Format Chunk */
-            stream.write("fmt ", 4);                                        // sGroupID (fmt = format)
-            write<int>(stream, 16);                                         // Chunk size (of Format Chunk)
-            write<short>(stream, 3);                                        // Format (3 = FLOAT)
-//            write<short>(stream, 1);                                        // Format (1 = PCM)
-            write<short>(stream, channels);                                 // Channels
-            write<int>(stream, sampleRate);                                 // Sample Rate
-            write<int>(stream, sampleRate * channels * sizeof(SampleType)); // Byterate
-            write<short>(stream, channels * sizeof(SampleType));            // Frame size aka Block align
-            write<short>(stream, 8 * sizeof(SampleType));                   // Bits per sample
+            // Write the audio samples
+            for (int n = 0; n < given_vector.size(); n++)
+            {
+                write_word( f, (int)(given_vector[n] * max_amplitude), 2 );
+                write_word( f, (int)0, 2 );
+            }
             
-            /* Data Chunk */
-            stream.write("data", 4);                                        // sGroupID (data)
-            stream.write((const char*)&bufSize, 4);                         // Chunk size (of Data, and thus of bufferSize)
-            stream.write((const char*)buf, bufSize);                        // The samples DATA!!!
+            // (We'll need the final file size to fix the chunk sizes above)
+            size_t file_length = f.tellp();
+            
+            // Fix the data chunk header to contain the data size
+            f.seekp( data_chunk_pos + 4 );
+            write_word( f, file_length - data_chunk_pos + 8 );
+            
+            // Fix the file header to contain the proper RIFF chunk size, which is (file size - 8) bytes
+            f.seekp( 0 + 4 );
+            write_word( f, file_length - 8, 4 );
+            
+            return true;
         }
+        
+//        template <typename SampleType>
+//        inline bool writeSoundFile(std::vector<SampleType> given_vector, std::string sound_file_path = "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/buffer.wav")
+//        {
+//            const char* cstr = sound_file_path.c_str();
+//
+//            std::ofstream stream(cstr, std::ios::binary);// Open file stream at "outFile" location
+//
+//            SampleType* buf = &given_vector[0];
+//            int sampleRate = 44100;
+//            short channels = 1;
+//            int sampleDuration = sizeof(int);
+////            int sampleDuration = sizeof(int);
+//            size_t bufSize = sampleDuration * channels * given_vector.size();
+//
+//            /* Header */
+//            stream.write("RIFF", 4);                                        // sGroupID (RIFF = Resource Interchange File Format)
+//            write<int>(stream, 36 + bufSize);                               // dwFileLength
+//            stream.write("WAVE", 4);                                        // sRiffType
+//
+//            /* Format Chunk */
+//            stream.write("fmt ", 4);                                        // sGroupID (fmt = format)
+//            write<int>(stream, 16);                                         // Chunk size (of Format Chunk)
+////            write<int>(stream, 16);                                         // Chunk size (of Format Chunk)
+//            write<short>(stream, 3);                                        // Format (3 = FLOAT)
+////            write<short>(stream, 3);                                        // Format (3 = FLOAT)
+////            write<short>(stream, 1);                                        // Format (1 = PCM)
+//            write<short>(stream, channels);                                 // Channels
+//            write<int>(stream, sampleRate);                                 // Sample Rate
+//            write<int>(stream, sampleRate * channels * sizeof(SampleType)); // Byterate
+//            write<short>(stream, channels * sizeof(SampleType));            // Frame size aka Block align
+//            write<short>(stream, 8 * sizeof(SampleType));                   // Bits per sample
+//
+//            /* Data Chunk */
+//            stream.write("data", 4);                                        // sGroupID (data)
+//            stream.write((const char*)&bufSize, 4);                         // Chunk size (of Data, and thus of bufferSize)
+//            stream.write((const char*)buf, bufSize);                        // The samples DATA!!!
+//        }
         
         //        inline bool writeSoundFile(std::vector<float> given_vector, String sound_file_path = "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/buffer.flac")
 //        {
