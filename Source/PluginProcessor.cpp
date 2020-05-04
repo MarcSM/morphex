@@ -32,10 +32,10 @@ parameters(*this,                   /** reference to processor */
            createParameterLayout()) /** initialize parameters */
 #endif
 {
-    sound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
-    sound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
+//    sound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
+//    sound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
     
-    int max_len, max_harmonics;
+//    int max_len, max_harmonics;
     
 //    // Get the maximum overall shape (length, number of harmonics)
 //    std::tie(max_len, max_harmonics) = getMaxShape(sound[1]->model->values.harmonics_freqs,
@@ -195,15 +195,15 @@ void SpectralMorphingToolAudioProcessor::getStateInformation (MemoryBlock& destD
     
     XmlElement* presetBody = new XmlElement("MPF_Preset");
     
-    // Save the path of the sound 1
-    std::string sound_1_collection_path = sound[1]->path;
-    removeSubStr(sound_1_collection_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() );
-    presetBody->setAttribute(SOUND_FILE_1_PATH_PARAMETER_ID, sound_1_collection_path);
-    
-    // Save the path of the sound 2
-    std::string sound_2_collection_path = sound[2]->path;
-    removeSubStr(sound_2_collection_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() );
-    presetBody->setAttribute(SOUND_FILE_2_PATH_PARAMETER_ID, sound_2_collection_path);
+//    // Save the path of the sound 1
+//    std::string sound_1_collection_path = sound[1]->path;
+//    removeSubStr(sound_1_collection_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() );
+//    presetBody->setAttribute(SOUND_FILE_1_PATH_PARAMETER_ID, sound_1_collection_path);
+//
+//    // Save the path of the sound 2
+//    std::string sound_2_collection_path = sound[2]->path;
+//    removeSubStr(sound_2_collection_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() );
+//    presetBody->setAttribute(SOUND_FILE_2_PATH_PARAMETER_ID, sound_2_collection_path);
     
     mPresetManager->getXmlForPreset(presetBody);
     
@@ -266,8 +266,8 @@ void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, 
             if (!error_loading_sounds)
             {
                 // Load the sounds
-                sound[1]->load(sound_1_file_path);
-                sound[2]->load(sound_2_file_path);
+//                sound[1]->load(sound_1_file_path);
+//                sound[2]->load(sound_2_file_path);
                 
                 // Load the preset parameters
                 mPresetManager->loadPresetForXml(subChild);

@@ -21,7 +21,7 @@ class MorphexSynth
 {
 public:
     
-    MorphexSynth(SoundArray& sound, AudioProcessorValueTreeState* parameters);
+    MorphexSynth(AudioProcessorValueTreeState* parameters);
     ~MorphexSynth();
     
     void setCurrentPlaybackSampleRate (double sampleRate) override;
@@ -37,7 +37,7 @@ protected:
     
 private:
     
-    SoundArray& mSound;
+    SoundArray mSound;
     
     double currentSampleRate;
 };

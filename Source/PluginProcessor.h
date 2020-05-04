@@ -74,7 +74,7 @@ public:
         return midiState;
     }
     
-    SoundArray sound;
+//    SoundArray sound;
     
 private:
     
@@ -99,7 +99,7 @@ private:
         return { params.begin(), params.end() };
     }
     
-    MorphexSynth mMorphexSynth { sound, &parameters };
+    MorphexSynth mMorphexSynth { &parameters };
     
     MidiKeyboardState midiState;
     MidiMessageCollector midiCollector;

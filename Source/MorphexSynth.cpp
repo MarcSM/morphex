@@ -12,14 +12,16 @@
 
 #include "SMTConstants.h"
 
-MorphexSynth::MorphexSynth(SoundArray& sound, AudioProcessorValueTreeState* parameters)
-:   mSound(sound)
+MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 {
+    mSound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
+    mSound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
+    
     // Add some voices to our synth, to play the sounds..
     for (int i = 0; i < MAX_VOICES; i++)
     {
         // Add the voice to the synth
-        this->addVoice( new MorphVoice(sound, parameters) );
+        this->addVoice( new MorphVoice(mSound, parameters) );
     }
     
     // TODO - Maybe we should move the moprhing code from MorphVoice to MorphSound

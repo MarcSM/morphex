@@ -452,7 +452,7 @@ bool SMTFileBrowser::keyPressed (const KeyPress& key)
         if (chosenFiles.size() > 0)
         {
             // mSound1Panel->loading_sound();
-            mProcessor->sound[1]->load(chosenFiles[0].getFullPathName().toStdString());
+//            mProcessor->sound[1]->load(chosenFiles[0].getFullPathName().toStdString());
             // mSound1Panel->repaint();
         }
     }
@@ -463,7 +463,7 @@ bool SMTFileBrowser::keyPressed (const KeyPress& key)
         if (chosenFiles.size() > 0)
         {
             // mSound2Panel->loading_sound();
-            mProcessor->sound[2]->load(chosenFiles[0].getFullPathName().toStdString());
+//            mProcessor->sound[2]->load(chosenFiles[0].getFullPathName().toStdString());
             // mSound2Panel->repaint();
         }
     }

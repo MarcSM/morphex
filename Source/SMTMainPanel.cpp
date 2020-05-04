@@ -23,14 +23,14 @@ SMTMainPanel::SMTMainPanel(SpectralMorphingToolAudioProcessor* inProcessor)
     addAndMakeVisible(mTopPanel);
     
     // Sound 1 Panel
-    mSound1Panel = new SMTSoundPanel(inProcessor, inProcessor->sound[1]);
-    mSound1Panel->setTopLeftPosition(0, TOP_PANEL_HEIGHT);
-    addAndMakeVisible(mSound1Panel);
+//    mSound1Panel = new SMTSoundPanel(inProcessor, inProcessor->sound[1]);
+//    mSound1Panel->setTopLeftPosition(0, TOP_PANEL_HEIGHT);
+//    addAndMakeVisible(mSound1Panel);
     
     // Sound 2 Panel
-    mSound2Panel = new SMTSoundPanel(inProcessor, inProcessor->sound[2]);
-    mSound2Panel->setTopLeftPosition(MAIN_PANEL_WIDTH - SOUND_PANEL_WIDTH, TOP_PANEL_HEIGHT);
-    addAndMakeVisible(mSound2Panel);
+//    mSound2Panel = new SMTSoundPanel(inProcessor, inProcessor->sound[2]);
+//    mSound2Panel->setTopLeftPosition(MAIN_PANEL_WIDTH - SOUND_PANEL_WIDTH, TOP_PANEL_HEIGHT);
+//    addAndMakeVisible(mSound2Panel);
     
     // Center Panel
     mCenterPanel = new SMTCenterPanel(inProcessor);
