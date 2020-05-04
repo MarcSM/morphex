@@ -220,18 +220,18 @@ inline std::vector<int> getRangeInt(int min, int max)
     return result;
 }
 
-//struct RandomGenerator {
-//    double minValue;
-//    double maxValue;
-//    RandomGenerator(double min, double max) :
-//    minValue(min),
-//    maxValue(max) {
-//    }
-//
-//    double operator()() {
-//        return (maxValue - minValue) * ( (double)std::rand() / (double)RAND_MAX ) + minValue;
-//    }
-//};
+struct RandomGenerator {
+    double minValue;
+    double maxValue;
+    RandomGenerator(double min, double max) :
+    minValue(min),
+    maxValue(max) {
+    }
+
+    double operator()() {
+        return (maxValue - minValue) * ( (double)std::rand() / (double)RAND_MAX ) + minValue;
+    }
+};
 
 inline int CalculateModuloInt(int n, int M) {
     return ((n % M) + M) % M;

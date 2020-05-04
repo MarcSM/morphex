@@ -1,31 +1,27 @@
 /*
-  ==============================================================================
-
-    MorphexSynth.h
-    Created: 21 Jul 2019 1:05:43pm
-    Author:  Marc Sanchez Martinez
-
-  ==============================================================================
-*/
+ ==============================================================================
+ 
+ MorphexSynth.h
+ Created: 21 Jul 2019 1:05:43pm
+ Author:  Marc Sanchez Martinez
+ 
+ ==============================================================================
+ */
 
 #pragma once
 
 #include "JuceHeader.h"
 
-//#include "Instrument.h"
-#include "Voice.h"
-//#include "Sound.h"
+#include "Sound.h"
 
-//#include "MorphVoice.h"
-
-//using namespace Core;
+#include "MorphVoice.h"
 
 class MorphexSynth
 :   public Synthesiser
 {
 public:
     
-    MorphexSynth(AudioProcessorValueTreeState* parameters);
+    MorphexSynth(SoundArray& sound, AudioProcessorValueTreeState* parameters);
     ~MorphexSynth();
     
     void setCurrentPlaybackSampleRate (double sampleRate) override;
@@ -37,15 +33,12 @@ public:
     
 protected:
     
-    OwnedArray<Voice> voices;
+    OwnedArray<MorphVoice> voices;
     
 private:
     
-//    Voices mVoice;
-//    SoundArray& mSound;
-
-    double currentSampleRate;
+    SoundArray& mSound;
     
-    // Instrument
-    Core::Instrument instrument;
+    double currentSampleRate;
 };
+

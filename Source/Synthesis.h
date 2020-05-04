@@ -81,6 +81,7 @@ public:
     
     struct SynthesisGenerated
     {
+        std::vector<float> y;
         std::vector<float> harmonics_freqs;
         std::vector<float> harmonics_mags;
         std::vector<float> harmonics_phases;
@@ -132,6 +133,9 @@ public:
     std::vector<float> synthesizeSoundFrame(Sound::Frame sound_frame);
     std::vector<float> generateSoundFrame(Sound::Frame sound_frame, int i_frame_length, bool append_to_generated = false);
     
+    void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
+    void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
+    
 private:
     
     void getWindow();
@@ -143,8 +147,8 @@ private:
     
     void updateWritePointer(int i_pointer_increment);
     void updateBuffer(BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame = std::vector<float>(), Channel selected_channel = Channel::Mono);
-    void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
-    void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
+//    void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
+//    void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
     
     std::vector<float> generateSines(std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs);
     std::vector<float> generateStocs(std::vector<float> stocs_morph, int H, int NS);

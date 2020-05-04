@@ -31,9 +31,10 @@ namespace Core
         this->velocity = NULL;
         this->max_harmonics = 0;
         this->max_frames = 0;
+        this->sound_length = 0;
         this->loop.start = 0;
         this->loop.end = 0;
-        
+
         // Model object
         this->model = new Model();
         
@@ -218,6 +219,21 @@ namespace Core
                 this->analysis.parameters.synthesis_fft_size = xml_parameters->getChildByName("synthesis_fft_size")->getAllSubText().getIntValue();
                 this->analysis.parameters.hop_size = xml_parameters->getChildByName("hop_size")->getAllSubText().getIntValue();
                 
+                // Fix missing data
+                
+                if (this->max_frames == 0)
+                {
+                    this->max_frames = (int)std::max({
+                        this->model->values.harmonics_freqs.size(),
+                        this->model->values.harmonics_mags.size(),
+                        this->model->values.harmonics_phases.size(),
+                        this->model->values.sinusoidal.size()
+                    });
+                };
+                this->sound_length = this->max_frames * this->analysis.parameters.hop_size;
+                if (this->loop.end == 0) this->loop.end = this->sound_length;
+                
+                
     //            /** Analysis Output Values */
     //            XmlElement *xml_analysis = xml->getChildByName("output")->getChildByName("values"); // had["output"]
     //            this->harmonic_frequencies = getMatrixOfFloats(xml_analysis, "harmonic_frequencies");
@@ -228,17 +244,21 @@ namespace Core
 //                /** Original Sound Synthesized */
 //                this->synthesize();
 //                
-//                /** Extract Additional Features */
-//                this->extractFeatures();
+                /** Extract Additional Features */
+                this->extractFeatures();
 
                 /** Save Original Values */
                 this->saveOriginalValues();
                 
-//                /** Normalize magnitudes on load by default */
-//                this->normalizeMagnitudes();
+                /** Normalize magnitudes on load by default */
+                this->normalizeMagnitudes();
                 
                 /** Updating flags */
                 this->had_file_loaded = true;
+                
+                
+                // TODO - Test
+                this->loaded = true;
                 
                 /* TODO? - Refreshing the UI (waveform visualization) */
             }

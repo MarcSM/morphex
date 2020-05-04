@@ -1,12 +1,12 @@
 /*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
+ ==============================================================================
+ 
+ This file was auto-generated!
+ 
+ It contains the basic framework code for a JUCE plugin processor.
+ 
+ ==============================================================================
+ */
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -14,25 +14,48 @@
 #include "SMTConstants.h"
 #include "SMTUtils.h"
 
+
 //==============================================================================
 SpectralMorphingToolAudioProcessor::SpectralMorphingToolAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-    : AudioProcessor (BusesProperties()
-        #if ! JucePlugin_IsMidiEffect
-            #if ! JucePlugin_IsSynth
-               .withInput  ("Input",  AudioChannelSet::stereo(), true)
-            #endif
-               .withOutput ("Output", AudioChannelSet::stereo(), true)
-        #endif
-        ),
-        parameters(*this,                   /** reference to processor */
-                   nullptr,                 /** null pointer to undoManager (optional) */
-                   juce::Identifier("SMT"), /** valueTree identifier */
-                   createParameterLayout()) /** initialize parameters */
+: AudioProcessor (BusesProperties()
+#if ! JucePlugin_IsMidiEffect
+#if ! JucePlugin_IsSynth
+                  .withInput  ("Input",  AudioChannelSet::stereo(), true)
+#endif
+                  .withOutput ("Output", AudioChannelSet::stereo(), true)
+#endif
+                  ),
+parameters(*this,                   /** reference to processor */
+           nullptr,                 /** null pointer to undoManager (optional) */
+           juce::Identifier("SMT"), /** valueTree identifier */
+           createParameterLayout()) /** initialize parameters */
 #endif
 {
-//    sound[1] = std::make_unique<Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
-//    sound[2] = std::make_unique<Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
+    sound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
+    sound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
+    
+    int max_len, max_harmonics;
+    
+//    // Get the maximum overall shape (length, number of harmonics)
+//    std::tie(max_len, max_harmonics) = getMaxShape(sound[1]->model->values.harmonics_freqs,
+//                                                   sound[2]->model->values.harmonics_freqs);
+    
+//    // Zero padding the "harmonic_frequencies" vectors to have the same size
+//    sound[1]->model->values.harmonics_freqs.resize(max_len, std::vector<float>(max_harmonics));
+//    sound[2]->model->values.harmonics_freqs.resize(max_len, std::vector<float>(max_harmonics));
+//
+//    // Zero padding the "harmonic_magnitudes" vectors to have the same size
+//    sound[1]->model->values.harmonics_mags.resize(max_len, std::vector<float>(max_harmonics));
+//    sound[2]->model->values.harmonics_mags.resize(max_len, std::vector<float>(max_harmonics));
+//
+//    // Zero padding the "harmonic_phases" vectors to have the same size
+//    sound[1]->model->values.harmonics_phases.resize(max_len, std::vector<float>(max_harmonics));
+//    sound[2]->model->values.harmonics_phases.resize(max_len, std::vector<float>(max_harmonics));
+    
+    // Zero padding the "stochastic_residual" vectors to have the same size
+//    sound[1]->stochastic_residual.resize(max_len, std::vector<float>(max_harmonics));
+//    sound[2]->stochastic_residual.resize(max_len, std::vector<float>(max_harmonics));
     
     // Initialize the preset manager
     mPresetManager = std::make_unique<SMTPresetManager>(this);
@@ -50,29 +73,29 @@ const String SpectralMorphingToolAudioProcessor::getName() const
 
 bool SpectralMorphingToolAudioProcessor::acceptsMidi() const
 {
-    #if JucePlugin_WantsMidiInput
-        return true;
-    #else
-        return false;
-    #endif
+#if JucePlugin_WantsMidiInput
+    return true;
+#else
+    return false;
+#endif
 }
 
 bool SpectralMorphingToolAudioProcessor::producesMidi() const
 {
-    #if JucePlugin_ProducesMidiOutput
-        return true;
-    #else
-        return false;
-    #endif
+#if JucePlugin_ProducesMidiOutput
+    return true;
+#else
+    return false;
+#endif
 }
 
 bool SpectralMorphingToolAudioProcessor::isMidiEffect() const
 {
-    #if JucePlugin_IsMidiEffect
-        return true;
-    #else
-        return false;
-    #endif
+#if JucePlugin_IsMidiEffect
+    return true;
+#else
+    return false;
+#endif
 }
 
 double SpectralMorphingToolAudioProcessor::getTailLengthSeconds() const
@@ -83,7 +106,7 @@ double SpectralMorphingToolAudioProcessor::getTailLengthSeconds() const
 int SpectralMorphingToolAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    // so this should be at least 1, even if you're not really implementing programs.
 }
 
 int SpectralMorphingToolAudioProcessor::getCurrentProgram()
@@ -121,23 +144,23 @@ void SpectralMorphingToolAudioProcessor::releaseResources()
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool SpectralMorphingToolAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-    #if JucePlugin_IsMidiEffect
-        ignoreUnused (layouts);
-        return true;
-    #else
-        // This is the place where you check if the layout is supported.
-        // In this template code we only support stereo.
-        if (layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
-            return false;
+#if JucePlugin_IsMidiEffect
+    ignoreUnused (layouts);
+    return true;
+#else
+    // This is the place where you check if the layout is supported.
+    // In this template code we only support stereo.
+    if (layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+        return false;
     
-        // This checks if the input layout matches the output layout
-        #if ! JucePlugin_IsSynth
-            if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-                return false;
-        #endif
-
-        return true;
-    #endif
+    // This checks if the input layout matches the output layout
+#if ! JucePlugin_IsSynth
+    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+        return false;
+#endif
+    
+    return true;
+#endif
 }
 #endif
 
@@ -261,3 +284,4 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new SpectralMorphingToolAudioProcessor();
 }
+

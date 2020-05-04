@@ -63,6 +63,7 @@ namespace Core
         std::vector<float> last_freqs;
         std::vector<float> phases;
         
+        this->generated.y.clear();
         this->generated.harmonics_freqs.clear();
         this->generated.harmonics_mags.clear();
         this->generated.harmonics_phases.clear();
@@ -153,26 +154,30 @@ namespace Core
         std::vector<float> yw_harmonics(NS);
         for (int i = 0; i < NS; i++)
         {
+            // Test
+            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
+            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
+            
             // TODO - Is this faster in two separated for loops?
             yw_harmonics[i] = y_harmonics[i] * this->window.harm[i];
             yw[i] = yw_harmonics[i];
         }
         
-        // Stochastic component
-        if ( sound_frame.hasStochastic() )
-        {
-            std::vector<float> y_stocs = generateStocs(sound_frame.stochastic, H * 2, NS);
-            
-            // Applying the window and saving the result on the output vector "harmonic"
-            std::vector<float> yw_stocs(NS);
-            for (int i = 0; i < NS; i++)
-            {
-                // TODO - Is this faster in two separated for loops?
-                yw_stocs[i] = y_stocs[i] * this->window.stoc[i];
-                yw[i] += yw_stocs[i];
-                //                yw_stocs[i] += y_stocs[i] * this->window.stoc[i];
-            }
-        }
+//        // Stochastic component
+//        if ( sound_frame.hasStochastic() )
+//        {
+//            std::vector<float> y_stocs = generateStocs(sound_frame.stochastic, H * 2, NS);
+//            
+//            // Applying the window and saving the result on the output vector "harmonic"
+//            std::vector<float> yw_stocs(NS);
+//            for (int i = 0; i < NS; i++)
+//            {
+//                // TODO - Is this faster in two separated for loops?
+//                yw_stocs[i] = y_stocs[i] * this->window.stoc[i];
+//                yw[i] += yw_stocs[i];
+//                //                yw_stocs[i] += y_stocs[i] * this->window.stoc[i];
+//            }
+//        }
         
         return yw;
     }
@@ -200,6 +205,15 @@ namespace Core
         // Generate windowed audio frame
         std::vector<float> windowed_audio_frame = synthesizeSoundFrame(sound_frame);
         
+        // TODO - Test
+        Tools::Audio::writeSoundFile(windowed_audio_frame, "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/windowed_audio_frame.wav");
+        
+        
+        // Test
+        this->live_values.i_samples_ready += H;
+        this->updateWritePointer(H);
+        return windowed_audio_frame;
+        
         // Save the current frequencies to be available fot the next iteration
         updateLastFreqs(sound_frame.harmonics_freqs, idx_harmonics);
         
@@ -209,6 +223,9 @@ namespace Core
         // Selecting the processed samples
         std::vector<float> next_frame = getBuffer(BufferSection::Play, Channel::Mono, i_frame_length);
         
+        // TODO - Test
+//        Tools::Audio::writeSoundFile(next_frame, "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/next_frame.wav");
+        
         // Update samples ready to be played
         this->live_values.i_samples_ready += H;
         
@@ -217,6 +234,15 @@ namespace Core
         
         // Update write pointer position
         this->updateWritePointer(H);
+        
+//        DBG("\n- - - - - - - - - - - - - - - -");
+//        DBG("\nthis->buffer.pointers.write: ");
+//        DBG(this->buffer.pointers.write);
+//        DBG("\nthis->buffer.pointers.clean(this): ");
+//        DBG(this->buffer.pointers.clean(this));
+//        DBG("\nthis->buffer.pointers.play(this): ");
+//        DBG(this->buffer.pointers.play(this));
+//        DBG("\n- - - - - - - - - - - - - - - -");
         
         return next_frame;
     }
@@ -361,7 +387,7 @@ namespace Core
         // For each index
         for (int i = 0; i < buffer_indexes.size(); i++)
         {
-            buffer_section_samples.push_back( this->buffer.channels[selected_channel][i] );
+            buffer_section_samples.push_back( this->buffer.channels[selected_channel][ buffer_indexes[i] ] );
         }
         
         return buffer_section_samples;
@@ -425,15 +451,19 @@ namespace Core
     
     void Synthesis::updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated)
     {
+        int id_harmonic = 0;
+        
         // For each selected harmonic
         for (int i = 0; i < idx_harmonics.size(); i++)
         {
+            id_harmonic = idx_harmonics[i];
+            
             // Update phase value
-            this->live_values.phases[i] +=
-            ( M_PI * ( this->live_values.phases[i] + harmonics_freqs[i] ) / this->parameters.fs ) * hop_size;
+            this->live_values.phases[id_harmonic] +=
+            ( M_PI * ( this->live_values.phases[id_harmonic] + harmonics_freqs[id_harmonic] ) / this->parameters.fs ) * hop_size;
             
             // Keep phase inside 2 * pi
-            this->live_values.phases[i] = std::fmod(this->live_values.phases[i], ( 2.0 * M_PI ) );
+            this->live_values.phases[id_harmonic] = std::fmod(this->live_values.phases[id_harmonic], ( 2.0 * M_PI ) );
             
             // Append to generated phases
             if (append_to_generated) this->generated.harmonics_phases.push_back( this->live_values.phases[i] );

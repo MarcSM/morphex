@@ -73,7 +73,8 @@ public:
     int velocity;
     int max_harmonics;
     int max_frames;
-    
+    int sound_length;
+
     struct SoundLoop {
         int start;
         int end;

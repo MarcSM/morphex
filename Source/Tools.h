@@ -10,10 +10,13 @@
 
 #pragma once
 
+#include "JuceHeader.h"
+
 #include <math.h>
 
 #include <vector>
 #include <numeric>
+#include <fstream>
 
 namespace Core::Tools
 {
@@ -109,19 +112,175 @@ namespace Core::Tools
             std::rotate(data.begin(), data.begin() + samples_to_shift, data.end());
         }
         
-//        /** FFT shift for double data */
-//        inline void fftShift(std::vector<float> data, int data_size)
+        /** FFT shift for double data */
+        inline void fftShift_d(float* data, int data_size)
+        {
+            // even number of elements
+            if (data_size % 2)
+                std::rotate(&data[0], &data[data_size >> 1], &data[data_size]);
+            // even number of elements
+            else
+                std::rotate(&data[0], &data[(data_size >> 1) + 1], &data[data_size]);
+        }
+        
+        inline void resample(std::vector<float>& given_vector)
+        {
+//            double OutputsampleRate = 44100;
+//
+//            juce::File SrcFile = juce::File(/Input wav file path/);
+//
+//            juce::FileInputStream* InputStream = SrcFile.createInputStream();
+//
+//            if(InputStream == NULL)
+//            {
+//                return false;
+//            }
+//
+//            juce::AudioFormat *WavFormat = new juce::WavAudioFormat();
+//
+//            juce::AudioFormatReader *WavFormatReader = WavFormat->createReaderFor (InputStream, true);
+//
+//            if(WavFormatReader == NULL)
+//            {
+//                SAFE_DELETE(InputStream);
+//                return false;
+//            }
+//
+//            juce::AudioFormatReaderSource *WavReaderSource = new juce::AudioFormatReaderSource(WavFormatReader,false);
+//
+//            juce::ResamplingAudioSource *Resample = new juce::ResamplingAudioSource(WavReaderSource,false);
+//            Resample->setResamplingRatio(WavFormatReader->sampleRate/(double)OutputsampleRate); Resample->prepareToPlay(128,(double)OutputsampleRate);
+        }
+        
+        inline void readSoundFile(std::string sound_file_path)
+        {
+//            File file (sound_file_path);
+//            AudioFormatManager formatManager;
+//            formatManager.registerBasicFormats();
+//            ScopedPointer<AudioFormatReader> reader = formatManager.createReaderFor(file);
+//            if (reader != 0)
+//            {
+//                AudioSampleBuffer buffer(reader->numChannels, reader->lengthInSamples);
+//                buffer.readFromAudioReader(reader, 0, reader->lengthInSamples, 0, true, true);
+//                float* firstChannelSamples = buffer.getSampleData(0, 0);
+//            }
+        }
+        
+        template <typename T>
+        void write(std::ofstream& stream, const T& t) {
+            stream.write((const char*)&t, sizeof(T));
+        }
+        
+//              writeWAVData(path.c_str(),          &buffer[0],         sampleDuration * NUM_OF_CHANNELS * sizeof(buffer[0]),   sampleRate,     NUM_OF_CHANNELS);
+//        void  writeWAVData(const char* outFile,   SampleType* buf,    size_t bufSize,                                         int sampleRate, short channels)
+        
+        template <typename SampleType>
+        inline bool writeSoundFile(std::vector<SampleType> given_vector, std::string sound_file_path = "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/buffer.wav")
+        {
+            const char* cstr = sound_file_path.c_str();
+            
+            std::ofstream stream(cstr, std::ios::binary);// Open file stream at "outFile" location
+            
+            SampleType* buf = &given_vector[0];
+            int sampleRate = 44100;
+            short channels = 1;
+            int sampleDuration = sizeof(int);
+//            int sampleDuration = sizeof(int);
+            size_t bufSize = sampleDuration * channels * given_vector.size();
+            
+            /* Header */
+            stream.write("RIFF", 4);                                        // sGroupID (RIFF = Resource Interchange File Format)
+            write<int>(stream, 36 + bufSize);                               // dwFileLength
+            stream.write("WAVE", 4);                                        // sRiffType
+            
+            /* Format Chunk */
+            stream.write("fmt ", 4);                                        // sGroupID (fmt = format)
+            write<int>(stream, 16);                                         // Chunk size (of Format Chunk)
+            write<short>(stream, 3);                                        // Format (3 = FLOAT)
+//            write<short>(stream, 1);                                        // Format (1 = PCM)
+            write<short>(stream, channels);                                 // Channels
+            write<int>(stream, sampleRate);                                 // Sample Rate
+            write<int>(stream, sampleRate * channels * sizeof(SampleType)); // Byterate
+            write<short>(stream, channels * sizeof(SampleType));            // Frame size aka Block align
+            write<short>(stream, 8 * sizeof(SampleType));                   // Bits per sample
+            
+            /* Data Chunk */
+            stream.write("data", 4);                                        // sGroupID (data)
+            stream.write((const char*)&bufSize, 4);                         // Chunk size (of Data, and thus of bufferSize)
+            stream.write((const char*)buf, bufSize);                        // The samples DATA!!!
+        }
+        
+        //        inline bool writeSoundFile(std::vector<float> given_vector, String sound_file_path = "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/buffer.flac")
 //        {
-//            // Even number of elements
-//            if (data_size % 2)
+//            const int samples_to_write = (int)given_vector.size();
+//            const float** channels[1][samples_to_write];
+//
+//            for( int i=0; i < samples_to_write; i++)
 //            {
-//                std::rotate(&data[0], &data[data_size >> 1], &data[data_size]);
+//                channels[1][i] = *given_vector[i];
 //            }
-//            // Uneven number of elements
-//            else
-//            {
-//                std::rotate(&data[0], &data[(data_size >> 1) + 1], &data[data_size]);
-//            }
+//
+//            for (int i = 0; i < 1; ++i)
+//                convertFloatsToInts (channels[i], channels[i], samples_to_write);
+//
+////            const float* const* channels;
+////            channels = given_vector[0].data();
+////            channels = &given_vector[0];
+////            float* audio = &given_vector[0];
+////            *audio[0] = given_vector[0].data();
+////            *audio[0] =
+////            *audio[0] = given_vector[0];
+//
+//
+////            const float *audio = &given_vector[0];
+////            int samples_to_write = (int)given_vector.size();
+//
+//            double output_sample_rate = 44100;//Does not Work for 96000
+//
+////            juce::File SrcFile = juce::File(/Input wav file path/);
+////
+////            juce::FileInputStream* InputStream = SrcFile.createInputStream();
+////
+////            double InputLength = (double) WavFormatReader->lengthInSamples;
+////
+////            double TotalSamplestoWrite = (int) (InputLength/(_wavFormatReader->sampleRate/OutputsampleRate));
+////
+//            juce::File FlacFile = juce::File(sound_file_path);
+//
+//            juce::FileOutputStream* OutputStream = NULL;
+//            juce::AudioFormatWriter* AudioFormatWriter = NULL;
+//            juce::AudioFormat *AudioRenderer = NULL;
+//
+//            AudioRenderer = new juce::FlacAudioFormat();
+//            OutputStream = FlacFile.createOutputStream();
+//
+//            if(OutputStream == NULL)
+//                return false;
+//
+//            AudioFormatWriter = AudioRenderer->createWriterFor (OutputStream, output_sample_rate, 2, 24, NULL, 0);
+//
+//            //Works if bitspersample is 16
+//
+//            bool Success = AudioFormatWriter->writeFromFloatArrays(channels, 1, samples_to_write);
+////            bool Success = AudioFormatWriter->writeFromFloatArrays(audio, 1, samples_to_write);
+//
+////
+//////            for (int i=0; i<buffer->getNumChannels(); i++) // loop over all available channels
+//////            { // more code...
+//////            outputTo = outputFiles[i].createOutputStream();
+//////            writer = wavFormat->createWriterFor(outputTo, 44100, 1, 16, NULL, 0);
+////            oneChannelBuffer.writeToAudioWriter( AudioFormatWriter, 0, OneChannelBuffer.getNumSamples());
+//////            oneChannelBuffer.writeToAudioWriter( writer, 0, OneChannelBuffer.getNumSamples());
+////            delete writer;
+////            oneChannelBuffer.clear();
+////            }
+//
+//
+//            OutputStream->flush();
+////            SAFE_DELETE(AudioFormatWriter);
+//
+//            return Success;
+////            slowCopyWavFileWithNewMetadata
 //        }
     }
     

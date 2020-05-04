@@ -72,11 +72,23 @@ namespace Core
         int l_i_target_note = round(f_target_note);
         int h_i_target_note = ceil(f_target_note);
         
+        MorphNotes closer_notes{};
+        
+        closer_notes[MorphLocation::Left] = this->note[64];
+        closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
+        
+        return closer_notes;
+        
         std::vector<Note*> loaded_notes = getLoadedNotes();
         
-        // Output
-        MorphNotes closer_notes;
+        // Output (use "{}" to ensure "nullptr" initialization)
+//        MorphNotes closer_notes{};
         
+//        closer_notes[MorphLocation::Left] = loaded_notes[0];
+//        closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
+//
+//        return closer_notes;
+
         // For loaded_notes sorted from min to max
         for (int i = 0; i < loaded_notes.size(); i++)
         {
@@ -99,8 +111,8 @@ namespace Core
             }
         }
         
-        if (closer_notes[MorphLocation::Left] == NULL) closer_notes[MorphLocation::Left] = closer_notes[MorphLocation::Right];
-        if (closer_notes[MorphLocation::Right] == NULL) closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
+        if (closer_notes[MorphLocation::Left] == nullptr) closer_notes[MorphLocation::Left] = closer_notes[MorphLocation::Right];
+        if (closer_notes[MorphLocation::Right] == nullptr) closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
         
         return closer_notes;
     }
