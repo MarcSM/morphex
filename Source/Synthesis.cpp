@@ -245,9 +245,9 @@ namespace Core
 //        DBG("\n- - - - - - - - - - - - - - - -");
         
         // TODO - Test
-        return windowed_audio_frame;
+//        return windowed_audio_frame;
 
-//        return next_frame;
+        return next_frame;
     }
     
     void Synthesis::getWindow()
@@ -464,8 +464,6 @@ namespace Core
             // Update phase value
             this->live_values.phases[id_harmonic] +=
             ( M_PI * ( this->live_values.last_freqs[id_harmonic] + harmonics_freqs[id_harmonic] ) / this->parameters.fs ) * hop_size;
-//            ( M_PI * ( this->live_values.phases[id_harmonic] + harmonics_freqs[id_harmonic] ) / this->parameters.fs ) * hop_size;
-//            this->live_values.last_freqs[id_harmonic] = harmonics_freqs[id_harmonic];
             
             // Keep phase inside 2 * pi
             this->live_values.phases[id_harmonic] = std::fmod( this->live_values.phases[id_harmonic], ( 2.0 * M_PI ) );

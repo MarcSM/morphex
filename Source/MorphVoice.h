@@ -423,14 +423,14 @@ struct MorphVoice
                 sound_frame.stochastic = std::vector<float>(0);
                 sound_frame.residual = std::vector<float>(0);
 
-                std::vector<float> frame = this->synthesis.generateSoundFrame(sound_frame, 512);
+                std::vector<float> test_frame = this->synthesis.generateSoundFrame(sound_frame, 512);
 
 //                this->syntheis.generateSoundFrame(Sound::Frame sound_frame, int i_frame_length, bool append_to_generated)
 
-                for (int i = 0; i < numSamples; i++)
-                {
-                    ifft_output_real_2[i] = frame[i];
-                }
+//                for (int i = 0; i < numSamples; i++)
+//                {
+//                    ifft_output_real_2[i] = frame[i];
+//                }
                 
                 
                 
@@ -488,7 +488,9 @@ struct MorphVoice
                 for (int i=0; i<selected_write_samples.size(); i++)
                 {
 //                    mCircularBufferLeft[selected_write_samples[i]] += mSynthesis->window[i] * ifft_output_real[i];
-                    mCircularBufferLeft[selected_write_samples[i]] += mSynthesis->window[i] * ifft_output_real_2[i];
+                    mCircularBufferLeft[selected_write_samples[i]] += test_frame[i];
+//                    mCircularBufferLeft[selected_write_samples[i]] += mSynthesis->window[i] * frame[i];
+//                    mCircularBufferLeft[selected_write_samples[i]] += mSynthesis->window[i] * ifft_output_real_2[i];
 //                    mCircularBufferLeft[selected_write_samples[i]] += ifft_output_real_2[i];
                 }
                 
