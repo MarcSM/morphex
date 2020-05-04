@@ -15,6 +15,7 @@
 #include "Instrument.h"
 #include "Sound.h"
 
+//#include "Voice.h"
 #include "MorphVoice.h"
 
 using namespace Core;

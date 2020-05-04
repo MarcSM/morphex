@@ -27,7 +27,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 
     DirectoryIterator iter (File (instrument_folder), true, "*.had");
     
-    int i = 1;
+//    int i = 1;
     while (iter.next())
     {
         File sound_file (iter.getFile());
@@ -55,6 +55,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     for (int i = 0; i < MAX_VOICES; i++)
     {
         // Add the voice to the synth
+//        this->addVoice( new Voice(this->instrument, parameters) );
         this->addVoice( new MorphVoice(this->instrument, parameters) );
 //        this->addVoice( new MorphVoice(mSound, parameters) );
     }

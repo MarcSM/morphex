@@ -176,8 +176,9 @@ struct Voice
         
         if (this->playing_note)
         {
-            float* sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
-//            std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
+//            float* sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
+//            float* sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
+            std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
 
 //            float* sound_data = sound_frame.data();
 //            float* sound_data[1] = {sound_frame.data()};
@@ -214,8 +215,9 @@ struct Voice
         }
     }
     
-//    std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
-    float* getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
+//    std::vector<float> 'getNextFrame'(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
+//    float* getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
+    std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
     {
         // If a note is being played
         if (this->playing_note)
@@ -228,210 +230,152 @@ struct Voice
             // Output
             std::vector<float> frame;
             
-            // Test
-//            int H = 128;
-//            this->live_values.i_samples_ready += H;
-//            this->synthesis->updateWritePointer(H);
-            
-            Core::MorphSounds morph_sounds = this->instrument.getCloserSounds( f_note, f_velocity );
-            
-            // Get the minimum length of both notes
-            int min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
-                                        morph_sounds[MorphLocation::Right]->max_frames);
-            
-            // If we are on the last frame of the shortest note
-            if (*i_current_frame >= min_note_end)
-            {
-                // End note playback
-                this->playing_note = false;
-                this->synthesis.live_values.last_frame = true;
-            }
-            
-            Sound::Frame sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
-            
-            *i_current_frame += 1;
-            
-//            frame = this->synthesis.generateSoundFrame(sound_frame, i_fft_size);
-            
-            // A list with the indexes of the harmonics we want to interpolate
-            std::vector<int> idx_harmonics = Tools::Generate::range(0, sound_frame.getMaxHarmonics());
-            
-            std::vector<float> harmonics_phases = Tools::Get::valuesByIndex(this->synthesis.live_values.phases, idx_harmonics);
-            
-            // Generate sines
-            std::vector<std::complex<float>> generated_sines(0);
-            generated_sines = genSpecSines(sound_frame.harmonics_freqs, sound_frame.harmonics_mags, harmonics_phases, 512, 44100);
-//            generated_sines = genSpecSines(freqs_morph, mags_morph, phase_morph, NS, sample_rate);
-
-            
-            this->synthesis.updatePhases(sound_frame.harmonics_freqs, idx_harmonics, 128);
-            
-//            // Keep the frequencies for the next iteration
-//            last_freqs.resize(freqs_morph.size());
-//            for (int i=0; i<last_freqs.size(); i++) last_freqs[i] = freqs_morph[i];
-//
-            this->synthesis.updateLastFreqs(sound_frame.harmonics_freqs, idx_harmonics);
-            
-            float* generated_sines_real;
-            juce::dsp::Complex<float>* ifft_output;
-            float* ifft_output_real;
-            
-            juce::dsp::Complex<float>* ifft_stocs_output;
-            
-            generated_sines_real = new float[512];
-            ifft_output = new juce::dsp::Complex<float>[512];
-            ifft_output_real = new float[512];
-            
-            ifft_stocs_output = new juce::dsp::Complex<float>[512];
-            
-//            // Perform the IFFT (Harmonics)
-//            this->synthesis.fft->perform(generated_sines.data(), ifft_output, true);
-            
-            // Perform the IFFT (Harmonics)
-            mSynthesis->fft->perform(generated_sines.data(), ifft_output, true);
-            
-            // Get the real part, we don't get the second half because it's empty
-            for (int i = 0; i < i_frame_length; i++) ifft_output_real[i] = ifft_output[i].real();
-            
-            // Perform an FFT shift
-            Tools::Audio::fftShift_d(ifft_output_real, i_frame_length);
-            
-            float* mCircularBufferLeft = new float[512];
-            
-            
-            // Applying the window and saving the result on the buffer
-            for (int i=0; i<512; i++)
-            {
-                mCircularBufferLeft[i] += mSynthesis->window[i] * ifft_output_real[i];
-            }
-            
-//            // Applying the window and saving the result on the buffer
-//            for (int i=0; i<512; i++)
+//            // Test
+////            int H = 128;
+////            this->live_values.i_samples_ready += H;
+////            this->synthesis->updateWritePointer(H);
+//            
+//            Core::MorphSounds morph_sounds = this->instrument.getCloserSounds( f_note, f_velocity );
+//            
+//            // Get the minimum length of both notes
+//            int min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
+//                                        morph_sounds[MorphLocation::Right]->max_frames);
+//            
+//            // If we are on the last frame of the shortest note
+//            if (*i_current_frame >= min_note_end)
 //            {
-//                mCircularBufferLeft[i] = ifft_output_real[i];
-////                mCircularBufferLeft[selected_write_samples[i]] += mSynthesis->window[i] * ifft_output_real[i];
+//                // End note playback
+//                this->playing_note = false;
+//                this->synthesis.live_values.last_frame = true;
 //            }
-            
-            return mCircularBufferLeft;
-//            return frame;
+//            
+//            Sound::Frame sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+//            
+//            *i_current_frame += 1;
+//            
+////            frame = this->synthesis.generateSoundFrame(sound_frame, i_fft_size);
+//            
+//            // A list with the indexes of the harmonics we want to interpolate
+//
+////            return frame;
 
             
             
             
             
             
-//            while (this->synthesis.live_values.i_samples_ready < i_frame_length)
-//            {
-//                Core::MorphSounds morph_sounds = this->instrument.getCloserSounds( f_note, f_velocity );
-//
-//                // If ADSR is NOT on "Release" state
-//                if (this->adsr != StateADSR::Release)
-//                {
-//                    // Compute common looping regions
-//                    int max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
-//                                                  morph_sounds[MorphLocation::Right]->loop.start);
-//
-//                    int min_loop_end = std::min(morph_sounds[MorphLocation::Left]->loop.end,
-//                                                morph_sounds[MorphLocation::Right]->loop.end);
-//
-//                    // If loop mode is enabled
-////                    if (this->loop_mode)
+            while (this->synthesis.live_values.i_samples_ready < i_frame_length)
+            {
+                Core::MorphSounds morph_sounds = this->instrument.getCloserSounds( f_note, f_velocity );
+
+                // If ADSR is NOT on "Release" state
+                if (this->adsr != StateADSR::Release)
+                {
+                    // Compute common looping regions
+                    int max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
+                                                  morph_sounds[MorphLocation::Right]->loop.start);
+
+                    int min_loop_end = std::min(morph_sounds[MorphLocation::Left]->loop.end,
+                                                morph_sounds[MorphLocation::Right]->loop.end);
+
+                    // If loop mode is enabled
 //                    if (this->loop_mode)
-//                    {
-//                        // Keep the current_frame pointer inside the lowest "note.loop.end"
-//                        // and the highest "note.loop.start"
-//                        if ( (*i_current_frame * i_hop_size) >= min_loop_end )
-//                        {
-//                            this->adsr = StateADSR::Sustain;
-//                            *i_current_frame = int( max_loop_start / i_hop_size );
-//                        }
-//                    }
-//                    // If "loop_mode" is NOT activated
-//                    else
-//                    {
-//                        // If we are beyond the end loop point
-//                        if (*i_current_frame >= min_loop_end)
-//                        {
-//                            // Switch ADSR to "Relase" mode
-//                            this->adsr = StateADSR::Release;
-//                        }
-//                    }
-//                }
+                    if (this->loop_mode)
+                    {
+                        // Keep the current_frame pointer inside the lowest "note.loop.end"
+                        // and the highest "note.loop.start"
+                        if ( (*i_current_frame * i_hop_size) >= min_loop_end )
+                        {
+                            this->adsr = StateADSR::Sustain;
+                            *i_current_frame = int( max_loop_start / i_hop_size );
+                        }
+                    }
+                    // If "loop_mode" is NOT activated
+                    else
+                    {
+                        // If we are beyond the end loop point
+                        if (*i_current_frame >= min_loop_end)
+                        {
+                            // Switch ADSR to "Relase" mode
+                            this->adsr = StateADSR::Release;
+                        }
+                    }
+                }
+
+                // If ADSR is on "Release" state
+                if (this->adsr == StateADSR::Release)
+                {
+                    // TODO - JUMP CURRENT FRAME TO RELEASE SECTION, if defined of course,
+                    // if not, play the rest of the other morph_sounds or shorten the whole thing
+                    // to the shortest one and apply a fade out on hramonics_mags 4 frames before the end
+
+                    // Get the minimum length of both notes
+                    int min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
+                                                morph_sounds[MorphLocation::Right]->max_frames);
+
+                    // If we are on the last frame of the shortest note
+                    if (*i_current_frame >= min_note_end)
+                    {
+                        // End note playback
+                        this->playing_note = false;
+                        this->synthesis.live_values.last_frame = true;
+                    }
+                }
+
+                Sound::Frame sound_frame;
+
+//                if (morph_sounds[MorphLocation::Left] == morph_sounds[MorphLocation::Right])
+                if (true)
+                {
+                    sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+
+//                    // Get target frequency
+//                    float f_target_frequency = Tools::Midi::toFreq(f_note);
 //
-//                // If ADSR is on "Release" state
-//                if (this->adsr == StateADSR::Release)
-//                {
-//                    // TODO - JUMP CURRENT FRAME TO RELEASE SECTION, if defined of course,
-//                    // if not, play the rest of the other morph_sounds or shorten the whole thing
-//                    // to the shortest one and apply a fade out on hramonics_mags 4 frames before the end
-//
-//                    // Get the minimum length of both notes
-//                    int min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
-//                                                morph_sounds[MorphLocation::Right]->max_frames);
-//
-//                    // If we are on the last frame of the shortest note
-//                    if (*i_current_frame >= min_note_end)
-//                    {
-//                        // End note playback
-//                        this->playing_note = false;
-//                        this->synthesis.live_values.last_frame = true;
-//                    }
-//                }
-//
-//                Sound::Frame sound_frame;
-//
-////                if (morph_sounds[MorphLocation::Left] == morph_sounds[MorphLocation::Right])
-//                if (true)
-//                {
-//                    sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
-//
-////                    // Get target frequency
-////                    float f_target_frequency = Tools::Midi::toFreq(f_note);
-////
-////                    // Transpose left note frequencies to the target frequency
-////                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
-////                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
-////                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
-//                }
-//                else
-//                {
-//                     sound_frame = this->instrument.morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
-//                    //                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
-//                }
-//
-//
-//                // TODO - TEST
-////                frame = std::vector<float>(i_frame_length, 0.0);
-////                this->synthesis.live_values.i_samples_ready += 128;
-////                *i_current_frame += 1;
-////                continue;
-//
-//                // NOTE - "frame" will have "i_hop_size" more samples ready
-//                // to be played after each call
-//                frame = this->synthesis.generateSoundFrame(sound_frame, i_fft_size);
-//
-////                // TODO - TEST
-////                this->synthesis.live_values.i_samples_ready += 128;
-////                frame = std::vector<float>(i_frame_length, 0.0);
-//
-//                // std::vector<float> generated_sound = this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
-//                // generated_sound = self.synthesis.generateSoundFrame(sound, hop_size)
-//
+//                    // Transpose left note frequencies to the target frequency
+//                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
+//                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+//                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
+                }
+                else
+                {
+                     sound_frame = this->instrument.morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
+                    //                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
+                }
+
+
+                // TODO - TEST
+//                frame = std::vector<float>(i_frame_length, 0.0);
+//                this->synthesis.live_values.i_samples_ready += 128;
 //                *i_current_frame += 1;
-//            }
-//
-//            // Update samples ready to be played
-//            this->synthesis.live_values.i_samples_ready -= frame.size();
-//
+//                continue;
+
+                // NOTE - "frame" will have "i_hop_size" more samples ready
+                // to be played after each call
+                frame = this->synthesis.generateSoundFrame(sound_frame, i_fft_size);
+
+//                // TODO - TEST
+//                this->synthesis.live_values.i_samples_ready += 128;
+//                frame = std::vector<float>(i_frame_length, 0.0);
+
+                // std::vector<float> generated_sound = this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
+                // generated_sound = self.synthesis.generateSoundFrame(sound, hop_size)
+
+                *i_current_frame += 1;
+            }
+
+            // Update samples ready to be played
+            this->synthesis.live_values.i_samples_ready -= frame.size();
+
 //            DBG("\n* * * * FRAME DELIVERED * * * *\n");
-//
-//            return frame;
+
+            return frame;
         }
         // If note is NOT being played
         else
         {
-            return new float[512];
-//            return std::vector<float>(i_frame_length, 0.0);
+//            return new float[512];
+            return std::vector<float>(i_frame_length, 0.0);
         }
     }
     
