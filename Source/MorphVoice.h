@@ -208,6 +208,8 @@ struct MorphVoice
 //        if (play_sound && numSamples == 512 && morph_sounds[Core::MorphLocation::Left]->loaded && morph_sounds[Core::MorphLocation::Right]->loaded)
         if (play_sound && numSamples == 512)
         {
+            int* i_current_frame = &this->synthesis.live_values.i_current_frame;
+            
             morph_sounds = this->instrument.getCloserSounds( f_current_midi_note, f_current_velocity );
             
 //            int max_len, max_harmonics;
@@ -268,6 +270,54 @@ struct MorphVoice
             
             float freqs_interp_factor = 0.0;
             float mags_interp_factor = 0.0;
+            
+            for (int i_buffer = 1; i_buffer <= number_of_steps; i_buffer++)
+            {
+                // Output
+                Core::Sound::Frame sound_frame;
+                
+                // TODO - Improve the name tagging for the components of a frame
+                sound_frame.harmonics_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[*i_current_frame];
+                sound_frame.harmonics_mags = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_mags[*i_current_frame];;
+//                sound_frame.harmonics_freqs = freqs_morph;
+//                sound_frame.harmonics_mags = mags_morph;
+                //                sound_frame.harmonics_phases = aux_phase_morph;
+                sound_frame.harmonics_phases = std::vector<float>(0);
+                sound_frame.stochastic = std::vector<float>(0);
+                sound_frame.residual = std::vector<float>(0);
+                
+                std::vector<float> test_frame = this->synthesis.generateSoundFrame(sound_frame, 512);
+                
+                *i_current_frame += 1;
+                
+                if (i_buffer % number_of_steps == 0)
+                {
+                    for (int i=0; i<numSamples; i++)
+                    {
+                        for (auto i_channel = outputBuffer.getNumChannels(); --i_channel >= 0;)
+                        {
+                            mAttackGainSmoothed = mAttackGainSmoothed - 0.004 * (mAttackGainSmoothed - 1.0);
+                            
+//                            // TODO - This operation can be done before
+//                            int min_frame = int( std::min( morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs.size(), morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_freqs.size() ) );
+//
+//                            if ( (min_frame - mHarmonicsHead) < 12)
+//                            {
+//                                if (mDecayGainSmoothed <= 0.1) mDecayGainSmoothed = 0.0;
+//                                else mDecayGainSmoothed = mDecayGainSmoothed - 0.1;
+//                            }
+                            
+                            
+                            auto current_sample = test_frame[i] * adsr.getNextSample() * mAttackGainSmoothed * mDecayGainSmoothed * level;
+                            outputBuffer.addSample (i_channel, startSample, current_sample);
+                        }
+                        
+                        ++startSample;
+                    }
+                }
+            }
+            
+            return;
             
             for (int i_buffer = 1; i_buffer <= number_of_steps; i_buffer++)
             {

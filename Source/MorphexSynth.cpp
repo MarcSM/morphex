@@ -60,6 +60,10 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 //        this->addVoice( new MorphVoice(mSound, parameters) );
     }
     
+    // TODO - NOTE: If we enter on release stated, there is no way back, the
+    // sound goes always down, even if a new sound is selected in a pitchbend from the instrument
+    // also on stop note, jump to the release section of the sound (all 4 morph sounds)
+    
     // TODO - Maybe we should move the moprhing code from MorphVoice to MorphSound
     // and in MorphVoice manipulate the output audio buffer (already morphed) to
     // decorrelate the signal (or maybe add some "spread")
