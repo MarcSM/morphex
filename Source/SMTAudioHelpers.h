@@ -41,7 +41,7 @@ enum class FrameInterpolationMode
 //{
 //    // Default initialization
 //    std::vector<float> interpolated_frame(frame_1.size(), 0.0);
-//    
+//
 //    // Harmonics Initialization
 //    if (interpolation_mode == FrameInterpolationMode::Harmonics)
 //    {
@@ -54,15 +54,15 @@ enum class FrameInterpolationMode
 //        // Fill with -100.0
 //        std::fill(interpolated_frame.begin(),interpolated_frame.end(), -100.0);
 //    }
-//    
+//
 //    int i_harmonic_to_interpolate;
-//    
+//
 //    for (int i = 0; i < harmonics.size(); i++)
 //    {
 //        i_harmonic_to_interpolate = harmonics[i];
 //        interpolated_frame[i_harmonic_to_interpolate] = (1-interp_factor) * frame_1[i_harmonic_to_interpolate] + interp_factor * frame_2[i_harmonic_to_interpolate];
 //    }
-//    
+//
 //    return interpolated_frame;
 //}
 

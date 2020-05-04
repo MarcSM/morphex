@@ -70,7 +70,8 @@ struct MorphVoice
         generated_sines_real = new float[mDAW_Buffer_Size];
         ifft_output = new juce::dsp::Complex<float>[mDAW_Buffer_Size];
         ifft_output_real = new float[mDAW_Buffer_Size];
-        
+        ifft_output_real_2 = new float[mDAW_Buffer_Size];
+
         ifft_stocs_output = new juce::dsp::Complex<float>[mDAW_Buffer_Size];
         
         NS = 512; // size of fft used in synthesis - 512
@@ -164,11 +165,23 @@ struct MorphVoice
         mAttackGainSmoothed = 0.0;
         mDecayGainSmoothed = 1.0;
         
-        last_freqs.resize(0);
-        phase_morph.resize(0);
-        std::generate(phase_morph.begin(), phase_morph.end(), RandomGenerator(0.0, 0.0));
+//        last_freqs.resize(0);
+//        phase_morph.resize(0);
         
-        for (int i=0; i<phase_morph.size(); i++) phase_morph[i] = 2 * M_PI * phase_morph[i];
+        int MAX_HARMONICS = 100;
+        
+        this->last_freqs.resize(MAX_HARMONICS);
+        this->phase_morph.resize(MAX_HARMONICS);
+        
+        std::fill(this->last_freqs.begin(),
+                  this->last_freqs.end(), 0.0);
+        
+        std::fill(this->phase_morph.begin(),
+                  this->phase_morph.end(), 0.0);
+        
+//        std::generate(phase_morph.begin(), phase_morph.end(), RandomGenerator(0.0, 0.0));
+
+//        for (int i=0; i<phase_morph.size(); i++) phase_morph[i] = 2 * M_PI * phase_morph[i];
         
         cycles_per_second = MidiMessage::getMidiNoteInHertz(midiNoteNumber);
         cycles_per_sample = cycles_per_second / getSampleRate();
@@ -205,8 +218,8 @@ struct MorphVoice
 //
 //            std::vector<int> idx_harmonics = Tools::Generate::range(0, sound_frame.getMaxHarmonics());
             
-            last_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0];
-            phase_morph.resize(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0].size(), 0.0);
+//            last_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0];
+//            phase_morph.resize(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0].size(), 0.0);
             
 //            morph_sounds[Core::MorphLocation::Left] = std::make_unique<Core::Sound>(morph_sounds[Core::MorphLocation::Left]);
 //            morph_sounds[Core::MorphLocation::Right] = std::make_unique<Core::Sound>(morph_sounds[Core::MorphLocation::Right]);
@@ -222,26 +235,39 @@ struct MorphVoice
             // The two sounds must have the same "fs" at this point
             sample_rate = morph_sounds[Core::MorphLocation::Left]->fs;
             
-            if (last_freqs.size() <= 0)
-            {
-                // Initialize last_freqs with the first harmonic frequencies frame
-                last_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0];
-            }
             
-            if (phase_morph.size() <= 0)
-            {
-                // Initialize the phases randomly
-                phase_morph.resize(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0].size(), 0.0);
-                std::generate(phase_morph.begin(), phase_morph.end(), RandomGenerator(0.0, 1.0));
-                for (int i=0; i<phase_morph.size(); i++) phase_morph[i] = 2 * M_PI * phase_morph[i];
-            }
+            int max_len, max_harmonics;
+        
+            // Get the maximum overall shape (length, number of harmonics)
+//            std::tie(max_len, max_harmonics) = getMaxShape(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs,
+//                                                           morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_freqs);
+
+            max_len = 406;
+            max_harmonics = 69;
             
-            float freqs_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_freqs_interp_factor]);
-            float mags_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_mags_interp_factor]);
-            //            float stocs_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_stocs_interp_factor]);
-            //            float stocs_gain = *mParameters->getRawParameterValue(SMTParameterID[kParameter_stocs_gain]);
+//            if (last_freqs.size() <= 0)
+//            {
+//                // Initialize last_freqs with the first harmonic frequencies frame
+//                last_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0];
+//            }
+//
+//            if (phase_morph.size() <= 0)
+//            {
+//                // Initialize the phases randomly
+//                phase_morph.resize(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0].size(), 0.0);
+//                std::generate(phase_morph.begin(), phase_morph.end(), RandomGenerator(0.0, 1.0));
+//                for (int i=0; i<phase_morph.size(); i++) phase_morph[i] = 2 * M_PI * phase_morph[i];
+//            }
+//
+//            float freqs_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_freqs_interp_factor]);
+//            float mags_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_mags_interp_factor]);
+//            //            float stocs_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_stocs_interp_factor]);
+//            //            float stocs_gain = *mParameters->getRawParameterValue(SMTParameterID[kParameter_stocs_gain]);
             float min_harmonic_frame = 0; // TODO add this as a parameter (slider?)
             float max_harmonic_frame = 40000; // TODO add this as a parameter (slider?)
+            
+            float freqs_interp_factor = 0.0;
+            float mags_interp_factor = 0.0;
             
             for (int i_buffer = 1; i_buffer <= number_of_steps; i_buffer++)
             {
@@ -350,27 +376,63 @@ struct MorphVoice
                 }
                 
                 // Generating the phases
-                for (int i=0; i<last_freqs.size(); i++) phase_morph[i] += ( (M_PI * (last_freqs[i] + freqs_morph[i])) / sample_rate ) * H;
+                for (int i=0; i<freqs_morph.size(); i++) phase_morph[i] += ( (M_PI * (last_freqs[i] + freqs_morph[i])) / sample_rate ) * H;
                 
                 // Keep phases inside 2 * pi
-                for (int i=0; i<phase_morph.size(); i++) phase_morph[i] = std::fmod(phase_morph[i], (2*M_PI) );
+                for (int i=0; i<freqs_morph.size(); i++) phase_morph[i] = std::fmod(phase_morph[i], (2*M_PI) );
                 
+                std::vector<float> aux_phase_morph;
+                
+                for (int i=0; i<freqs_morph.size(); i++)
+                {
+                    aux_phase_morph.push_back(phase_morph[i]);
+                }
+                
+//                // Generating the phases
+//                for (int i=0; i<last_freqs.size(); i++) phase_morph[i] += ( (M_PI * (last_freqs[i] + freqs_morph[i])) / sample_rate ) * H;
+//
+//                // Keep phases inside 2 * pi
+//                for (int i=0; i<phase_morph.size(); i++) phase_morph[i] = std::fmod(phase_morph[i], (2*M_PI) );
+
                 // Generate sines
                 std::vector<std::complex<float>> generated_sines(0);
-                generated_sines = genSpecSines(freqs_morph, mags_morph, phase_morph, NS, sample_rate);
-                
+                generated_sines = genSpecSines(freqs_morph, mags_morph, aux_phase_morph, NS, sample_rate);
+//                generated_sines = genSpecSines(freqs_morph, mags_morph, phase_morph, NS, sample_rate);
+
                 // Keep the frequencies for the next iteration
                 last_freqs.resize(freqs_morph.size());
                 for (int i=0; i<last_freqs.size(); i++) last_freqs[i] = freqs_morph[i];
-                
+
                 // Perform the IFFT (Harmonics)
                 mSynthesis->fft->perform(generated_sines.data(), ifft_output, true);
-                
+
                 // Get the real part, we don't get the second half because it's empty
                 for (int i = 0; i < numSamples; i++) ifft_output_real[i] = ifft_output[i].real();
-                
+
                 // Perform an FFT shift
                 fftShift(ifft_output_real, numSamples);
+                
+                // Output
+                Core::Sound::Frame sound_frame;
+
+                // TODO - Improve the name tagging for the components of a frame
+                sound_frame.harmonics_freqs = freqs_morph; 
+                sound_frame.harmonics_mags = mags_morph;
+//                sound_frame.harmonics_phases = aux_phase_morph;
+                sound_frame.harmonics_phases = std::vector<float>(0);
+                sound_frame.stochastic = std::vector<float>(0);
+                sound_frame.residual = std::vector<float>(0);
+
+                std::vector<float> frame = this->synthesis.generateSoundFrame(sound_frame, 512);
+
+//                this->syntheis.generateSoundFrame(Sound::Frame sound_frame, int i_frame_length, bool append_to_generated)
+
+                for (int i = 0; i < numSamples; i++)
+                {
+                    ifft_output_real_2[i] = frame[i];
+                }
+                
+                
                 
                 // TODO - Generate the stochastic component
                 //                std::vector<std::complex<float>> stoc_output = genStocComponent(stocs_morph, H, NS);
@@ -425,7 +487,9 @@ struct MorphVoice
                 // Applying the window and saving the result on the buffer
                 for (int i=0; i<selected_write_samples.size(); i++)
                 {
-                    mCircularBufferLeft[selected_write_samples[i]] += mSynthesis->window[i] * ifft_output_real[i];
+//                    mCircularBufferLeft[selected_write_samples[i]] += mSynthesis->window[i] * ifft_output_real[i];
+                    mCircularBufferLeft[selected_write_samples[i]] += mSynthesis->window[i] * ifft_output_real_2[i];
+//                    mCircularBufferLeft[selected_write_samples[i]] += ifft_output_real_2[i];
                 }
                 
                 if (i_buffer % number_of_steps == 0)
@@ -469,8 +533,10 @@ struct MorphVoice
                             
                             auto current_sample = mCircularBufferLeft[selected_play_samples[i]] * adsr.getNextSample() * mAttackGainSmoothed * mDecayGainSmoothed * level;
                             
-                            // TODO - Test
-                            this->synthesis.generated.y.push_back( current_sample );
+                            if (i_channel == 0){
+                                // TODO - Test
+                                this->synthesis.generated.y.push_back( current_sample );
+                            }
                             
                             outputBuffer.addSample (i_channel, startSample, current_sample);
                         }
@@ -588,7 +654,8 @@ private:
     float* generated_sines_real;
     juce::dsp::Complex<float>* ifft_output;
     float* ifft_output_real;
-    
+    float* ifft_output_real_2;
+
     juce::dsp::Complex<float>* ifft_stocs_output;
     
     // Sample section to clean

@@ -154,9 +154,9 @@ namespace Core
         std::vector<float> yw_harmonics(NS);
         for (int i = 0; i < NS; i++)
         {
-            // Test
-            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
-            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
+//            // Test
+//            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
+//            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
             
             // TODO - Is this faster in two separated for loops?
             yw_harmonics[i] = y_harmonics[i] * this->window.harm[i];
@@ -196,6 +196,7 @@ namespace Core
         if (this->live_values.first_frame)
         {
             this->live_values.first_frame = false;
+            updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
         }
         else
         {
@@ -206,13 +207,12 @@ namespace Core
         std::vector<float> windowed_audio_frame = synthesizeSoundFrame(sound_frame);
         
         // TODO - Test
-        Tools::Audio::writeSoundFile(windowed_audio_frame, "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/windowed_audio_frame.wav");
-        
+//        Tools::Audio::writeSoundFile(windowed_audio_frame, "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/windowed_audio_frame.wav");
         
         // Test
-        this->live_values.i_samples_ready += H;
-        this->updateWritePointer(H);
-        return windowed_audio_frame;
+//        this->live_values.i_samples_ready += H;
+//        this->updateWritePointer(H);
+//        return windowed_audio_frame;
         
         // Save the current frequencies to be available fot the next iteration
         updateLastFreqs(sound_frame.harmonics_freqs, idx_harmonics);
@@ -244,7 +244,10 @@ namespace Core
 //        DBG(this->buffer.pointers.play(this));
 //        DBG("\n- - - - - - - - - - - - - - - -");
         
-        return next_frame;
+        // TODO - Test
+        return windowed_audio_frame;
+
+//        return next_frame;
     }
     
     void Synthesis::getWindow()
@@ -460,10 +463,12 @@ namespace Core
             
             // Update phase value
             this->live_values.phases[id_harmonic] +=
-            ( M_PI * ( this->live_values.phases[id_harmonic] + harmonics_freqs[id_harmonic] ) / this->parameters.fs ) * hop_size;
+            ( M_PI * ( this->live_values.last_freqs[id_harmonic] + harmonics_freqs[id_harmonic] ) / this->parameters.fs ) * hop_size;
+//            ( M_PI * ( this->live_values.phases[id_harmonic] + harmonics_freqs[id_harmonic] ) / this->parameters.fs ) * hop_size;
+//            this->live_values.last_freqs[id_harmonic] = harmonics_freqs[id_harmonic];
             
             // Keep phase inside 2 * pi
-            this->live_values.phases[id_harmonic] = std::fmod(this->live_values.phases[id_harmonic], ( 2.0 * M_PI ) );
+            this->live_values.phases[id_harmonic] = std::fmod( this->live_values.phases[id_harmonic], ( 2.0 * M_PI ) );
             
             // Append to generated phases
             if (append_to_generated) this->generated.harmonics_phases.push_back( this->live_values.phases[i] );
