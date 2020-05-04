@@ -33,38 +33,38 @@ enum class FrameInterpolationMode
  * @param interp_factor double - interpolation factor
  * @return interpolated_frame list of doubles - interpolated frame
  */
-inline std::vector<float> interpolateFrames(std::vector<float> frame_1,
-                                            std::vector<float> frame_2,
-                                            std::vector<int> harmonics,
-                                            float interp_factor,
-                                            FrameInterpolationMode interpolation_mode)
-{
-    // Default initialization
-    std::vector<float> interpolated_frame(frame_1.size(), 0.0);
-    
-    // Harmonics Initialization
-    if (interpolation_mode == FrameInterpolationMode::Harmonics)
-    {
-        // Fill with 0.0
-        std::fill(interpolated_frame.begin(),interpolated_frame.end(), 0.0);
-    }
-    // Magnitudes Initialization
-    else if (interpolation_mode == FrameInterpolationMode::Magnitudes)
-    {
-        // Fill with -100.0
-        std::fill(interpolated_frame.begin(),interpolated_frame.end(), -100.0);
-    }
-    
-    int i_harmonic_to_interpolate;
-    
-    for (int i = 0; i < harmonics.size(); i++)
-    {
-        i_harmonic_to_interpolate = harmonics[i];
-        interpolated_frame[i_harmonic_to_interpolate] = (1-interp_factor) * frame_1[i_harmonic_to_interpolate] + interp_factor * frame_2[i_harmonic_to_interpolate];
-    }
-    
-    return interpolated_frame;
-}
+//inline std::vector<float> interpolateFrames(std::vector<float> frame_1,
+//                                            std::vector<float> frame_2,
+//                                            std::vector<int> harmonics,
+//                                            float interp_factor,
+//                                            FrameInterpolationMode interpolation_mode)
+//{
+//    // Default initialization
+//    std::vector<float> interpolated_frame(frame_1.size(), 0.0);
+//    
+//    // Harmonics Initialization
+//    if (interpolation_mode == FrameInterpolationMode::Harmonics)
+//    {
+//        // Fill with 0.0
+//        std::fill(interpolated_frame.begin(),interpolated_frame.end(), 0.0);
+//    }
+//    // Magnitudes Initialization
+//    else if (interpolation_mode == FrameInterpolationMode::Magnitudes)
+//    {
+//        // Fill with -100.0
+//        std::fill(interpolated_frame.begin(),interpolated_frame.end(), -100.0);
+//    }
+//    
+//    int i_harmonic_to_interpolate;
+//    
+//    for (int i = 0; i < harmonics.size(); i++)
+//    {
+//        i_harmonic_to_interpolate = harmonics[i];
+//        interpolated_frame[i_harmonic_to_interpolate] = (1-interp_factor) * frame_1[i_harmonic_to_interpolate] + interp_factor * frame_2[i_harmonic_to_interpolate];
+//    }
+//    
+//    return interpolated_frame;
+//}
 
 inline void genspecsines_C(float *iploc, float *ipmag, float *ipphase, int n_peaks, float *real, float*imag, int size_spec)
 {

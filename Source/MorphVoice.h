@@ -12,6 +12,7 @@
 
 #include "MorphSound.h"
 
+#include "Instrument.h"
 #include "Sound.h"
 
 #include "Synthesis.h"
@@ -21,6 +22,8 @@
 #include "SMTHelperFunctions.h"
 
 #include "SMTParameters.h"
+
+#include "Tools.h"
 
 enum class HarmonicTranspositionMode
 {
@@ -39,9 +42,16 @@ enum class MagnitudeProcessingMode
 struct MorphVoice
 :   public SynthesiserVoice
 {
-    MorphVoice(SoundArray& sound, AudioProcessorValueTreeState* parameters)
-    : mSound(sound)
+    MorphVoice(Core::Instrument& instrument, AudioProcessorValueTreeState* parameters)
+    : instrument(instrument)
     {
+        // Initialize the synthesis engine
+        this->synthesis = Core::Synthesis();
+        
+        // Default values
+        this->f_current_midi_note = 0;
+        this->f_current_velocity = 0;
+        
         play_sound = false;
         one_shot = true;
         
@@ -73,9 +83,6 @@ struct MorphVoice
         mCircularBufferRight = new float[MORPH_CIRCULAR_BUFFER_LENGTH];
         
         // Initialize the synthesis engine
-        this->synthesis = Core::Synthesis();
-        
-        // Initialize the synthesis engine
         mSynthesis = std::make_unique<SynthesisEngine>();
         
         reset();
@@ -83,16 +90,18 @@ struct MorphVoice
     
     bool canPlaySound (SynthesiserSound* synthSound) override
     {
-//        return true;
+        return true;
         
-        if (mSound[1]->loaded && mSound[2]->loaded)
-        {
-            return dynamic_cast<MorphSound*> (synthSound) != nullptr;
-        }
-        else
-        {
-            return false;
-        }
+        // return !playing_note
+        
+//        if (morph_sounds[Core::MorphLocation::Left]->loaded && morph_sounds[Core::MorphLocation::Right]->loaded)
+//        {
+//            return dynamic_cast<MorphSound*> (synthSound) != nullptr;
+//        }
+//        else
+//        {
+//            return false;
+//        }
     }
     
     void setADSRSampleRate(double sampleRate)
@@ -138,6 +147,9 @@ struct MorphVoice
         // Reset synthesis engine
         this->synthesis.reset();
         
+        this->f_current_midi_note = (float)midiNoteNumber;
+        this->f_current_velocity = velocity;
+        
         // Start ADSR envelope
         adsr.noteOn();
         
@@ -153,9 +165,7 @@ struct MorphVoice
         mDecayGainSmoothed = 1.0;
         
         last_freqs.resize(0);
-        last_freqs = mSound[1]->model->values.harmonics_freqs[0];
         phase_morph.resize(0);
-        phase_morph.resize(mSound[1]->model->values.harmonics_freqs[0].size(), 0.0);
         std::generate(phase_morph.begin(), phase_morph.end(), RandomGenerator(0.0, 0.0));
         
         for (int i=0; i<phase_morph.size(); i++) phase_morph[i] = 2 * M_PI * phase_morph[i];
@@ -182,8 +192,25 @@ struct MorphVoice
     
     void renderNextBlock (AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override
     {
-        if (play_sound && numSamples == 512 && mSound[1]->loaded && mSound[2]->loaded)
+//        if (play_sound && numSamples == 512 && morph_sounds[Core::MorphLocation::Left]->loaded && morph_sounds[Core::MorphLocation::Right]->loaded)
+        if (play_sound && numSamples == 512)
         {
+            morph_sounds = this->instrument.getCloserSounds( f_current_midi_note, f_current_velocity );
+            
+//            int max_len, max_harmonics;
+//
+//            // Get the maximum overall shape (length, number of harmonics)
+//            std::tie(max_len, max_harmonics) = getMaxShape(sound[1]->model->values.harmonics_freqs,
+//                                                           sound[2]->model->values.harmonics_freqs);
+//
+//            std::vector<int> idx_harmonics = Tools::Generate::range(0, sound_frame.getMaxHarmonics());
+            
+            last_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0];
+            phase_morph.resize(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0].size(), 0.0);
+            
+//            morph_sounds[Core::MorphLocation::Left] = std::make_unique<Core::Sound>(morph_sounds[Core::MorphLocation::Left]);
+//            morph_sounds[Core::MorphLocation::Right] = std::make_unique<Core::Sound>(morph_sounds[Core::MorphLocation::Right]);
+
             float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
             float adsr_decay = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_decay]);
             float adsr_sustain = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_sustain]);
@@ -193,18 +220,18 @@ struct MorphVoice
             updateAdsrParams(adsr_attack, adsr_decay, adsr_sustain, adsr_release);
             
             // The two sounds must have the same "fs" at this point
-            sample_rate = mSound[1]->fs;
+            sample_rate = morph_sounds[Core::MorphLocation::Left]->fs;
             
             if (last_freqs.size() <= 0)
             {
                 // Initialize last_freqs with the first harmonic frequencies frame
-                last_freqs = mSound[1]->model->values.harmonics_freqs[0];
+                last_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0];
             }
             
             if (phase_morph.size() <= 0)
             {
                 // Initialize the phases randomly
-                phase_morph.resize(mSound[1]->model->values.harmonics_freqs[0].size(), 0.0);
+                phase_morph.resize(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[0].size(), 0.0);
                 std::generate(phase_morph.begin(), phase_morph.end(), RandomGenerator(0.0, 1.0));
                 for (int i=0; i<phase_morph.size(); i++) phase_morph[i] = 2 * M_PI * phase_morph[i];
             }
@@ -219,8 +246,8 @@ struct MorphVoice
             for (int i_buffer = 1; i_buffer <= number_of_steps; i_buffer++)
             {
                 // Get the non-zero values of each frame
-                non_zero_harmonic_frequencies_1 = getNonZeroIndices(mSound[1]->model->values.harmonics_freqs[mHarmonicsHead]);
-                non_zero_harmonic_frequencies_2 = getNonZeroIndices(mSound[2]->model->values.harmonics_freqs[mHarmonicsHead]);
+                non_zero_harmonic_frequencies_1 = getNonZeroIndices(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[mHarmonicsHead]);
+                non_zero_harmonic_frequencies_2 = getNonZeroIndices(morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_freqs[mHarmonicsHead]);
                 
                 // Interpolating the harmonics of the matching harmonics
                 std::vector<int> harmonics(0);
@@ -232,22 +259,32 @@ struct MorphVoice
                 std::vector<float> sound_harmonic_frequencies[3];
                 
                 // If harmonic transposition mode is predominant fundamental normalization
+//                if (harmonic_transp_mode == HarmonicTranspositionMode::PredominantFundamental)
                 if (harmonic_transp_mode == HarmonicTranspositionMode::PredominantFundamental)
                 {
-                    for (int i_sound=1; i_sound<=2; i_sound++)
+                    for (int i_sound=0; i_sound<=1; i_sound++)
                     {
                         // Get the harmonic frequencies for this sound
-                        sound_harmonic_frequencies[i_sound] = mSound[i_sound]->model->values.harmonics_freqs[mHarmonicsHead];
+                        sound_harmonic_frequencies[i_sound] = morph_sounds[i_sound]->model->values.harmonics_freqs[mHarmonicsHead];
                         
                         // Check to avoid divide by zero
-//                        if (mSound[i_sound]->features.predominant_note > 0)
-//                        if (mSound[i_sound]->features.predominant_note > 0)
-                        if (mSound[i_sound]->note > 0)
+//                        if (morph_sounds[i_sound]->features.predominant_note > 0)
+//                        if (morph_sounds[i_sound]->features.predominant_note > 0)
+                        if (morph_sounds[i_sound]->note > 0)
                         {
                             // Recalculate the harmonics for the current midi note
                             for (int i=0; i<sound_harmonic_frequencies[i_sound].size(); i++)
                             {
-                                sound_harmonic_frequencies[i_sound][i] = (sound_harmonic_frequencies[i_sound][i] / mSound[i_sound]->note) * cycles_per_second;
+                                float aux_harm = sound_harmonic_frequencies[i_sound][i];
+                                float aux_freq = Core::Tools::Midi::toFreq(morph_sounds[i_sound]->note);
+                                float aux_current_freq = Core::Tools::Midi::toFreq(f_current_midi_note);
+                                sound_harmonic_frequencies[i_sound][i] = (aux_harm / aux_freq ) * aux_current_freq;
+                                
+//                                Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].harmonics_freqs,
+//                                                                 Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+//                                Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Left].harmonics_freqs, f_target_frequency);
+                                
+//                                sound_harmonic_frequencies[i_sound][i] = (sound_harmonic_frequencies[i_sound][i] / morph_sounds[i_sound]->note) * cycles_per_second;
                             }
                         }
                     }
@@ -255,28 +292,43 @@ struct MorphVoice
                 else
                 {
                     // No changes will be made to the frequencies
-                    sound_harmonic_frequencies[1] = mSound[1]->model->values.harmonics_freqs[mHarmonicsHead];
-                    sound_harmonic_frequencies[2] = mSound[2]->model->values.harmonics_freqs[mHarmonicsHead];
+                    sound_harmonic_frequencies[1] = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[mHarmonicsHead];
+                    sound_harmonic_frequencies[2] = morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_freqs[mHarmonicsHead];
                 }
+                
+                freqs_interp_factor = 0.0;
+                mags_interp_factor = 0.0;
                 
                 // Interpolating the frequencies of the matching harmonics
                 std::vector<float> freqs_morph(0);
-                freqs_morph = interpolateFrames(sound_harmonic_frequencies[1],
-                                                sound_harmonic_frequencies[2],
-                                                harmonics, freqs_interp_factor,
-                                                FrameInterpolationMode::Harmonics);
+                freqs_morph = instrument.interpolateFrames(Core::Instrument::FrameType::Frequencies,
+                                                            freqs_interp_factor,
+                                                            sound_harmonic_frequencies[1],
+                                                            sound_harmonic_frequencies[2],
+                                                            harmonics.size(),
+                                                            harmonics);
+//                freqs_morph = interpolateFrames(sound_harmonic_frequencies[1],
+//                                                sound_harmonic_frequencies[2],
+//                                                harmonics, freqs_interp_factor,
+//                                                FrameInterpolationMode::Harmonics);
                 
                 // Interpolating the magnitudes of the matching harmonics
                 std::vector<float> mags_morph(0);
-                mags_morph = interpolateFrames(mSound[1]->model->values.harmonics_mags[mHarmonicsHead],
-                                               mSound[2]->model->values.harmonics_mags[mHarmonicsHead],
-                                               harmonics, mags_interp_factor,
-                                               FrameInterpolationMode::Magnitudes);
+                mags_morph = instrument.interpolateFrames(Core::Instrument::FrameType::Magnitudes,
+                                                           mags_interp_factor,
+                                                           morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_mags[mHarmonicsHead],
+                                                           morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_mags[mHarmonicsHead],
+                                                           harmonics.size(),
+                                                           harmonics);
+//                mags_morph = interpolateFrames(morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_mags[mHarmonicsHead],
+//                                               morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_mags[mHarmonicsHead],
+//                                               harmonics, mags_interp_factor,
+//                                               FrameInterpolationMode::Magnitudes);
                 
                 //                // Interpolating the stochastic component of the matching harmonics
                 //                std::vector<float> stocs_morph(0);
-                //                stocs_morph = interpolateFrames(mSound[1]->stochastic_residual[mHarmonicsHead],
-                //                                                mSound[2]->stochastic_residual[mHarmonicsHead],
+                //                stocs_morph = interpolateFrames(morph_sounds[Core::MorphLocation::Left]->stochastic_residual[mHarmonicsHead],
+                //                                                morph_sounds[Core::MorphLocation::Right]->stochastic_residual[mHarmonicsHead],
                 //                                                harmonics, stocs_interp_factor,
                 //                                                FrameInterpolationMode::Stochastic);
                 
@@ -407,7 +459,7 @@ struct MorphVoice
                             mAttackGainSmoothed = mAttackGainSmoothed - 0.004 * (mAttackGainSmoothed - 1.0);
                             
                             // TODO - This operation can be done before
-                            int min_frame = int( std::min( mSound[1]->model->values.harmonics_freqs.size(), mSound[2]->model->values.harmonics_freqs.size() ) );
+                            int min_frame = int( std::min( morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs.size(), morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_freqs.size() ) );
                             
                             if ( (min_frame - mHarmonicsHead) < 12)
                             {
@@ -438,8 +490,8 @@ struct MorphVoice
                 
                 // If we have reached the end of the sounds
                 if (mHarmonicsHead >= max_harmonic_frame ||
-                    mHarmonicsHead >= mSound[1]->model->values.harmonics_freqs.size() ||
-                    mHarmonicsHead >= mSound[2]->model->values.harmonics_freqs.size() )
+                    mHarmonicsHead >= morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs.size() ||
+                    mHarmonicsHead >= morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_freqs.size() )
                 {
                     // Prepare the header for the next loop
                     mHarmonicsHead = min_harmonic_frame;
@@ -453,14 +505,24 @@ struct MorphVoice
                 }
                 
                 // TODO Just in case (control this in the min max range)
-                if (mHarmonicsHead >= mSound[1]->model->values.harmonics_freqs.size() ||
-                    mHarmonicsHead >= mSound[2]->model->values.harmonics_freqs.size() )
+                if (mHarmonicsHead >= morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs.size() ||
+                    mHarmonicsHead >= morph_sounds[Core::MorphLocation::Right]->model->values.harmonics_freqs.size() )
                     mHarmonicsHead = 0;
             }
         }
     }
     
 private:
+    
+    AudioProcessorValueTreeState* mParameters;
+    Core::Instrument& instrument;
+    Core::Synthesis synthesis;
+    
+    // Midi
+    float f_current_midi_note;
+    int f_current_velocity;
+    
+    Core::MorphSounds morph_sounds;
     
     // Note playback
     bool play_sound;
@@ -478,7 +540,7 @@ private:
     // TODO - Change this parameter for a pointer from MorphSynth
     MagnitudeProcessingMode magnitude_process_mode;
     
-    AudioProcessorValueTreeState* mParameters;
+    
     
     int NS; // Size of fft used in synthesis - 512
     int H; // Hop size (it has to be 1/4 of NS) - 128
@@ -509,9 +571,6 @@ private:
     
     // Clean pointer
     int mTailCleanPointer;
-    
-    // Synthesis
-    Core::Synthesis synthesis;
     
     // Synthesis
     std::unique_ptr<SynthesisEngine> mSynthesis;
@@ -560,5 +619,5 @@ private:
     ADSR adsr;
     ADSR::Parameters adsrParams;
     
-    SoundArray& mSound;
+//    SoundArray& mSound;
 };

@@ -78,8 +78,6 @@ public:
     Sound::Frame morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_interpolation_factor = -1);
     
     std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1);
-
-private:
     
     std::vector<float> interpolateFrames(FrameType frame_type,
                                          float interp_factor,
@@ -87,6 +85,14 @@ private:
                                          std::vector<float> frame_2,
                                          int i_frame_length,
                                          std::vector<int> idx_harmonics = std::vector<int>());
+private:
+    
+//    std::vector<float> interpolateFrames(FrameType frame_type,
+//                                         float interp_factor,
+//                                         std::vector<float> frame_1,
+//                                         std::vector<float> frame_2,
+//                                         int i_frame_length,
+//                                         std::vector<int> idx_harmonics = std::vector<int>());
     
 //    def interpolateFrames(self, interpolation_mode, interp_factor, frame_1, frame_2, max_harmonics, harmonics = []):
 //    

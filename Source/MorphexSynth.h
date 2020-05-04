@@ -12,9 +12,12 @@
 
 #include "JuceHeader.h"
 
+#include "Instrument.h"
 #include "Sound.h"
 
 #include "MorphVoice.h"
+
+using namespace Core;
 
 class MorphexSynth
 :   public Synthesiser
@@ -37,8 +40,10 @@ protected:
     
 private:
     
-    SoundArray mSound;
+    Instrument instrument;
     
+    SoundArray mSound;
+
     double currentSampleRate;
 };
 

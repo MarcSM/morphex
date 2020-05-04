@@ -14,14 +14,49 @@
 
 MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 {
-    mSound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
-    mSound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
+//    mSound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
+//    mSound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
+    
+    // Initialize the instrument
+    this->instrument = Instrument();
+    this->instrument.name = "Test";
+
+    //    JUCE::DirectoryIterator()
+    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Morph";
+    //    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
+
+    DirectoryIterator iter (File (instrument_folder), true, "*.had");
+    
+    int i = 1;
+    while (iter.next())
+    {
+        File sound_file (iter.getFile());
+    //        String sound_file_name = sound_file.getFullPathName();
+        std::string sound_file_name = sound_file.getFullPathName().toStdString();
+        DBG(sound_file_name);
+
+        // TODO - Find a better approach to do this (try to avoid using copy constructor)
+        Core::Sound sound = Core::Sound( sound_file_name );
+
+    //        Core::Sound scopy = sound;
+        
+//        mSound[i] = std::make_unique<Core::Sound>(sound_file_name);
+//
+//        i++;
+        
+        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound = sound;
+        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loaded = true;
+        
+    //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->setSound( sound );
+    //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loadSound( sound_file_name );
+    }
     
     // Add some voices to our synth, to play the sounds..
     for (int i = 0; i < MAX_VOICES; i++)
     {
         // Add the voice to the synth
-        this->addVoice( new MorphVoice(mSound, parameters) );
+        this->addVoice( new MorphVoice(this->instrument, parameters) );
+//        this->addVoice( new MorphVoice(mSound, parameters) );
     }
     
     // TODO - Maybe we should move the moprhing code from MorphVoice to MorphSound
