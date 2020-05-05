@@ -34,9 +34,9 @@ struct Voice
         Release
     } adsr;
     
-    // Note playback
-    bool playing_note;
-    bool loop_mode;
+//    // Note playback
+//    bool playing_note;
+//    bool loop_mode;
     
 //    Voice(Instrument instrument, AudioProcessorValueTreeState* parameters)
     Voice(Instrument& instrument, AudioProcessorValueTreeState* parameters)
@@ -54,6 +54,7 @@ struct Voice
         // Note playback
         this->playing_note = false;
         this->loop_mode = true;
+        this->hold_note = false;
         this->track_velocity = false; // High CPU usage
         
         // Sounds
@@ -64,7 +65,7 @@ struct Voice
     
     bool canPlaySound (SynthesiserSound* synthSound) override
     {
-        return !this->playing_note;
+        return dynamic_cast<MorphSound*> (synthSound) != nullptr;
     }
     
     void startNote( int midiNoteNumber, float velocity,
@@ -76,7 +77,6 @@ struct Voice
         // Note playback
         this->adsr = StateADSR::Attack;
         this->playing_note = true;
-        this->loop_mode = false;
         
         this->f_current_midi_note = (float)midiNoteNumber;
         this->f_current_velocity = velocity;
@@ -178,7 +178,7 @@ struct Voice
                     auto current_sample = f_current_sample * mAttackGainSmoothed * mDecayGainSmoothed * level;
 //                    auto current_sample = f_current_sample * adsr.getNextSample() * mAttackGainSmoothed * mDecayGainSmoothed * level;
 
-                    outputBuffer.addSample (i_channel, startSample, f_current_sample);
+                    outputBuffer.addSample (i_channel, startSample, current_sample);
                 }
                 
                 ++startSample;
@@ -225,8 +225,6 @@ struct Voice
             
             while (this->synthesis.live_values.i_samples_ready < i_frame_length)
             {
-                
-                
 //                float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
 //                float adsr_decay = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_decay]);
 //                float adsr_sustain = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_sustain]);
@@ -234,12 +232,14 @@ struct Voice
 //
 //                // Update ADSR parameters
 //                updateAdsrParams(adsr_attack, adsr_decay, adsr_sustain, adsr_release);
+                
+                int i_current_sample = *i_current_frame * i_hop_size;
 
                 // If ADSR is NOT on "Release" state
                 if (this->adsr != StateADSR::Release)
                 {
                     if (this->adsr != StateADSR::Sustain and
-                        ( (*i_current_frame * i_hop_size) >= this->max_loop_start ) )
+                        ( i_current_sample >= this->max_loop_start ) )
                     {
                         this->adsr = StateADSR::Sustain;
                     }
@@ -249,7 +249,7 @@ struct Voice
                     {
                         // Keep the current_frame pointer inside the lowest "note.loop.end"
                         // and the highest "note.loop.start"
-                        if ( (*i_current_frame * i_hop_size) >= this->min_loop_end )
+                        if ( i_current_sample >= this->min_loop_end )
                         {
                             *i_current_frame = int( this->max_loop_start / i_hop_size );
                         }
@@ -258,7 +258,7 @@ struct Voice
                     else
                     {
                         // If we are beyond the end loop point
-                        if ( (*i_current_frame * i_hop_size) >= this->min_loop_end)
+                        if ( i_current_sample >= this->min_loop_end)
                         {
                             // Switch ADSR to "Relase" mode
                             this->adsr = StateADSR::Release;
@@ -272,6 +272,11 @@ struct Voice
                     // TODO - JUMP CURRENT FRAME TO RELEASE SECTION, if defined of course,
                     // if not, play the rest of the other morph_sounds or shorten the whole thing
                     // to the shortest one and apply a fade out on hramonics_mags 4 frames before the end
+                    
+                    if ( ( i_current_sample < this->min_loop_end ) or this->hold_note )
+                    {
+                        *i_current_frame = int( this->min_loop_end / i_hop_size );
+                    }
                 }
                 
                 // If we are on the last frame of the shortest note
@@ -299,7 +304,7 @@ struct Voice
                 }
                 else
                 {
-                    sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_frame_length);
+//                    sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_frame_length);
 //                    sound_frame = this->instrument.morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
                     //                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
                 }
@@ -343,6 +348,7 @@ private:
     // Note playback
     bool playing_note;
     bool loop_mode;
+    bool hold_note;
     bool track_velocity;
     
     // Sounds
@@ -350,4 +356,8 @@ private:
     int max_loop_start;
     int min_loop_end;
     int min_note_end;
+    
+    double level = 0.0;
+    double mAttackGainSmoothed = 0.0;
+    double mDecayGainSmoothed = 0.0;
 };

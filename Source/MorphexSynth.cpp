@@ -56,16 +56,16 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     {
         // Add the voice to the synth
 //        this->addVoice( new Voice(this->instrument, parameters) );
-        this->addVoice( new MorphVoice(this->instrument, parameters) );
-//        this->addVoice( new MorphVoice(mSound, parameters) );
+        this->addVoice( new Voice(this->instrument, parameters) );
+//        this->addVoice( new Voice(mSound, parameters) );
     }
     
     // TODO - NOTE: If we enter on release stated, there is no way back, the
     // sound goes always down, even if a new sound is selected in a pitchbend from the instrument
     // also on stop note, jump to the release section of the sound (all 4 morph sounds)
     
-    // TODO - Maybe we should move the moprhing code from MorphVoice to MorphSound
-    // and in MorphVoice manipulate the output audio buffer (already morphed) to
+    // TODO - Maybe we should move the moprhing code from Voice to MorphSound
+    // and in Voice manipulate the output audio buffer (already morphed) to
     // decorrelate the signal (or maybe add some "spread")
     
     // Add a sound for them to play
@@ -79,12 +79,12 @@ void MorphexSynth::setCurrentPlaybackSampleRate (double sampleRate)
 {
     currentSampleRate = sampleRate;
     
-    MorphVoice* morph_voice;
+    Voice* morph_voice;
     
     // Set new sample rate to ADSR for each voice instance
     for (int i=0; i < this->getNumVoices();i++)
     {
-        if( ( morph_voice = dynamic_cast<MorphVoice*>( this->getVoice(i) ) ) )
+        if( ( morph_voice = dynamic_cast<Voice*>( this->getVoice(i) ) ) )
         {
             morph_voice->setADSRSampleRate(sampleRate);
         }

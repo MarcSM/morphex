@@ -118,8 +118,8 @@
     </GROUP>
     <GROUP id="{AE3F5129-A357-44A3-5200-C0035B16DD0C}" name="Assets">
       <GROUP id="{5D9C3E8A-AF11-EC02-719E-C4792FC59B6E}" name="Sounds">
-        <FILE id="NhASlw" name="soprano-E4.had" compile="0" resource="1" file="../../../Documents/Audio Plugins/Morphex/had files/soprano-E4.had"/>
-        <FILE id="Eh4hUM" name="violin-B3.had" compile="0" resource="1" file="../../../Documents/Audio Plugins/Morphex/had files/violin-B3.had"/>
+        <FILE id="whEo7k" name="soprano-E4.had" compile="0" resource="1" file="../../../Research/Repos/morphex-research/data/instruments/Morph/soprano-E4.had"/>
+        <FILE id="TuXgxI" name="violin-B3.had" compile="0" resource="1" file="../../../Research/Repos/morphex-research/data/instruments/Morph/violin-B3.had"/>
       </GROUP>
       <GROUP id="{9FFC6437-B955-888F-5958-311B4D3E97CA}" name="Images">
         <GROUP id="{AD3D7109-2980-41D2-CF8D-6D8897780DF4}" name="Logos">

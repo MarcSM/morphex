@@ -63,12 +63,13 @@ namespace Core
         std::vector<float> last_freqs;
         std::vector<float> phases;
         
-        this->generated.y.clear();
-        this->generated.harmonics_freqs.clear();
-        this->generated.harmonics_mags.clear();
-        this->generated.harmonics_phases.clear();
-        this->generated.residual.clear();
-        this->generated.stochastic.clear();
+        // TODO - Change "clear()", be aware of CPU
+//        this->generated.y.clear();
+//        this->generated.harmonics_freqs.clear();
+//        this->generated.harmonics_mags.clear();
+//        this->generated.harmonics_phases.clear();
+//        this->generated.residual.clear();
+//        this->generated.stochastic.clear();
         
         this->live_values.last_freqs.resize(MAX_HARMONICS);
         this->live_values.phases.resize(MAX_HARMONICS);

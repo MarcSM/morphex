@@ -310,7 +310,7 @@ namespace Core
     {
         // Output
         std::vector<float> component_frame;
-        
+
         switch (component_name)
         {
             case Frame::Component::HarmonicsFreqs:
@@ -346,6 +346,7 @@ namespace Core
                 {
                     for(int i = 0; i < matrix_component[i_num_frame].size(); i++)
                     {
+//                        component_frame[i] = matrix_component[i_num_frame][i];
                         component_frame.push_back( matrix_component[i_num_frame][i] );
                     }
                 }
@@ -357,6 +358,8 @@ namespace Core
                     {
                         std::fill(empty_frame.begin(), empty_frame.end(), DEFAULT_DB);
                     }
+                    
+                    component_frame = empty_frame;
                 }
                 break;
             }
@@ -375,8 +378,46 @@ namespace Core
                 
 //                std::vector<float> residual_frame(i_frame_length, 0.0);
                 
-                // TODO - Check total length of component
+//                // TODO - Check total length of component
+//                // Output
+//                std::vector<float> residual_frame(i_frame_length, 0.0);
+                
+//                if ( i_num_frame < vector_component.size() )
+//                {
+//                    for(int i = 0; i < vector_component.size(); i++)
+//                    {
+//                        component_frame[i] = vector_component[i];
+////                        component_frame.push_back( vector_component[i] );
+//                    }
+//                }
+//                else
+//                {
+//                    std::vector<float> empty_frame(DEFAULT_HZ, this->max_harmonics);
+//
+//                    if (component_name == Frame::Component::HarmonicsMags)
+//                    {
+//                        std::fill(empty_frame.begin(), empty_frame.end(), DEFAULT_DB);
+//                    }
+//                }
+                
                 std::vector<float> residual_frame = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
+                
+                for (int i = 0; i < residual_frame.size(); i++)
+                {
+//                    component_frame[i] = residual_frame[i];
+                    component_frame.push_back( residual_frame[i] );
+                }
+                
+//                std::vector<float> residual_frame_aux;
+//
+//                // TODO - Check total length of component
+//                if (i_vec_size > 0) residual_frame_aux = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
+//
+//                for (int i = 0; i < residual_frame_aux.size(); i++)
+//                {
+//                    residual_frame[i] = residual_frame_aux[i];
+//                }
+                
 //                std::vector<float> residual_frame_aux = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
 
 //                if ( i_start_sample < i_end_sample < component.size() )
@@ -391,11 +432,28 @@ namespace Core
 //                    //                    residual_frame_aux = Tools::Get::veluesInRange(component, i_start_sample, component.size());
 //                }
                 
-                for (int i = 0; i < residual_frame.size(); i++)
-                {
-                    component_frame.push_back( residual_frame[i] );;
-//                    residual_frame[i] = residual_frame_aux[i];
-                }
+//                for (int i = 0; i < residual_frame.size(); i++)
+//                {
+//                    component_frame.push_back( residual_frame[i] );;
+////                    residual_frame[i] = residual_frame_aux[i];
+//                }
+                
+//                if ( i_num_frame < residual_frame.size() )
+//                {
+//                    for(int i = 0; i < residual_frame.size(); i++)
+//                    {
+//                        component_frame.push_back( residual_frame[i] );
+//                    }
+//                }
+//                else
+//                {
+//                    std::vector<float> empty_frame(DEFAULT_HZ, this->max_harmonics);
+//
+//                    if (component_name == Frame::Component::HarmonicsMags)
+//                    {
+//                        std::fill(empty_frame.begin(), empty_frame.end(), DEFAULT_DB);
+//                    }
+//                }
                 
                 break;
             }

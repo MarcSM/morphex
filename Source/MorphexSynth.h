@@ -15,8 +15,8 @@
 #include "Instrument.h"
 #include "Sound.h"
 
-//#include "Voice.h"
-#include "MorphVoice.h"
+#include "Voice.h"
+//#include "MorphVoice.h"
 
 using namespace Core;
 
@@ -37,7 +37,7 @@ public:
     
 protected:
     
-    OwnedArray<MorphVoice> voices;
+    OwnedArray<Voice> voices;
     
 private:
     
