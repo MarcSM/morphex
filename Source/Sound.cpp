@@ -233,6 +233,8 @@ namespace Core
                 this->sound_length = this->max_frames * this->analysis.parameters.hop_size;
                 if (this->loop.end == 0) this->loop.end = this->sound_length;
                 
+                // TODO TEST - Temporal override
+                this->loop.end = (this->max_frames - 24) * this->analysis.parameters.hop_size;
                 
     //            /** Analysis Output Values */
     //            XmlElement *xml_analysis = xml->getChildByName("output")->getChildByName("values"); // had["output"]

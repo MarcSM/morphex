@@ -104,6 +104,9 @@ struct Voice
     
     void stopNote(float /*velocity*/, bool allowTailOff = true) override
     {
+        // TODO TEST - Temporal override
+        allowTailOff = false;
+        
         // Release ADSR envelope
         this->adsr = StateADSR::Release;
         if (!allowTailOff)
@@ -158,13 +161,13 @@ struct Voice
             {
                 float f_current_sample = sound_frame[i_sample];
                 
+                mAttackGainSmoothed = mAttackGainSmoothed - 0.004 * (mAttackGainSmoothed - 1.0);
+                
 //                // Test
 //                this->synthesis.generated.y.push_back( f_current_sample );
                 
                 for (auto i_channel = outputBuffer.getNumChannels(); --i_channel >= 0;)
                 {
-                    mAttackGainSmoothed = mAttackGainSmoothed - 0.004 * (mAttackGainSmoothed - 1.0);
-                    
                     //            // TODO - This operation can be done before
                     //            int min_frame = int( std::min( mSound[1]->harmonic_frequencies.size(), mSound[2]->harmonic_frequencies.size() ) );
                     //
@@ -291,16 +294,35 @@ struct Voice
 
                 if (morph_sounds[MorphLocation::Left] == morph_sounds[MorphLocation::Right])
                 {
-                    sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+//                    sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+
+                    if ( *i_current_frame >= this->min_note_end-1)
+                    {
+                        sound_frame.harmonics_freqs = std::vector<float>(0);;
+                        sound_frame.harmonics_mags = std::vector<float>(0);
+                    }
+                    else{
+                        sound_frame.harmonics_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[*i_current_frame];
+                        sound_frame.harmonics_mags = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_mags[*i_current_frame];
+                    }
+                    sound_frame.harmonics_phases = std::vector<float>(0);
+                    sound_frame.stochastic = std::vector<float>(0);
+                    sound_frame.residual = std::vector<float>(0);
 
                     // Get target frequency
                     float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
-//                    float f_target_frequency = Tools::Midi::toFreq(f_note);
-
-                    // Transpose left note frequencies to the target frequency
-                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
-                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
-                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
+////                    float f_target_frequency = Tools::Midi::toFreq(f_note);
+                    
+                    // Recalculate the harmonics for the current midi note
+                    for (int i=0; i<sound_frame.harmonics_freqs.size(); i++)
+                    {
+                        sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note)) * f_target_frequency;
+                    }
+//
+//                    // Transpose left note frequencies to the target frequency
+//                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
+//                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+//                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
                 }
                 else
                 {
@@ -317,6 +339,7 @@ struct Voice
 //                continue;
 
                 // NOTE - "frame" will have "i_hop_size" more samples ready to be played after each call
+                // TODO - This function needs to be optimized
                 frame = this->synthesis.generateSoundFrame(sound_frame, i_fft_size);
 
                 *i_current_frame += 1;
