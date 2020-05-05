@@ -246,6 +246,11 @@ namespace Core
         
         // TODO - Test
 //        return windowed_audio_frame;
+        
+        if (this->live_values.last_frame)
+        {
+            
+        }
 
         return next_frame;
     }
