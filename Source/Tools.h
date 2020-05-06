@@ -38,7 +38,7 @@ namespace Core::Tools
             // Output
             std::vector<float> result;
             
-            for (float i = min; i <= max; i += increment)
+            for (float i = min; i < max; i += increment)
             {
                 result.push_back(i);
             }
@@ -64,14 +64,16 @@ namespace Core::Tools
     
     namespace Audio
     {
-        inline void applyFadeIn(std::vector<float>& given_vector, int fade_in_length)
+        inline void applyFadeIn(std::vector<float>& given_vector, int fade_in_length = 0)
         {
             int given_vector_length = (int)given_vector.size();
+            
+            if (fade_in_length == 0) fade_in_length = given_vector_length;
             
             // The given vector must be at least 3 elements long
             if (given_vector_length > 2 and given_vector_length >= fade_in_length)
             {
-                float increment = fade_in_length / 1.0;
+                float increment = 1.0 / fade_in_length;
                 
                 std::vector<float> fade_in = Core::Tools::Generate::range(0.0, 1.0, increment);
                 
@@ -82,18 +84,22 @@ namespace Core::Tools
             }
         }
         
-        inline void applyFadeOut(std::vector<float>& given_vector, int fade_out_length)
+        inline void applyFadeOut(std::vector<float>& given_vector, int fade_out_length = 0)
         {
             int given_vector_length = (int)given_vector.size();
+            
+            if (fade_out_length == 0) fade_out_length = given_vector_length;
             
             // The given vector must be at least 3 elements long
             if (given_vector_length > 2 and given_vector_length >= fade_out_length)
             {
-                float increment = fade_out_length / 1.0;
+                float increment = 1.0 / fade_out_length;
                 
                 std::vector<float> fade_out = Tools::Generate::range(0.0, 1.0, increment);
                 
-                for (int i = given_vector_length; i < given_vector_length - fade_out_length; i--)
+                int first_sample = given_vector_length - fade_out_length;
+                
+                for (int i = given_vector_length; i > first_sample; i--)
                 {
                     given_vector[i] = given_vector[i] * fade_out[i];
                 }

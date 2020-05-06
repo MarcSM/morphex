@@ -71,6 +71,9 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     // Add a sound for them to play
     this->clearSounds();
     this->addSound( new MorphSound() );
+    
+    // TODO TEST
+    this->setNoteStealingEnabled (false);
 }
 
 MorphexSynth::~MorphexSynth() {}

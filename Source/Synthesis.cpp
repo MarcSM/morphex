@@ -196,7 +196,7 @@ namespace Core
         // Update phases
         if (this->live_values.first_frame)
         {
-            this->live_values.first_frame = false;
+//            this->live_values.first_frame = false;
             updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
         }
         else
@@ -210,6 +210,20 @@ namespace Core
         // TODO - Test
 //        Tools::Audio::writeSoundFile(windowed_audio_frame, "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/windowed_audio_frame.wav");
         
+        if (this->live_values.first_frame)
+        {
+            // Apply fade in
+            Tools::Audio::applyFadeIn(windowed_audio_frame);
+            this->live_values.first_frame = false;
+        }
+            
+        if (this->live_values.last_frame)
+        {
+            // Apply fade out
+            Tools::Audio::applyFadeOut(windowed_audio_frame);
+            this->live_values.last_frame = false;
+        }
+                
         // Test
 //        this->live_values.i_samples_ready += H;
 //        this->updateWritePointer(H);

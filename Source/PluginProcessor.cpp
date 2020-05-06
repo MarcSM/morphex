@@ -130,6 +130,9 @@ void SpectralMorphingToolAudioProcessor::changeProgramName (int index, const Str
 //==============================================================================
 void SpectralMorphingToolAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    ignoreUnused(samplesPerBlock);
+//    lastSampleRate = sampleRate
+    
     // Pre-playback initializations
     midiCollector.reset(sampleRate);
     mMorphexSynth.setCurrentPlaybackSampleRate(sampleRate);
@@ -166,6 +169,8 @@ bool SpectralMorphingToolAudioProcessor::isBusesLayoutSupported (const BusesLayo
 
 void SpectralMorphingToolAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    buffer.clear();
+    
     // Get next midi events
     midiState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     

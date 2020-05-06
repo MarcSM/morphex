@@ -6,18 +6,18 @@
               pluginManufacturer="Morphex" pluginAUMainType="'aumu'">
   <MAINGROUP id="BTCZAR" name="Morphex">
     <GROUP id="{AFEC479D-5C67-2E7A-1D34-7E1570EAC1CB}" name="Core">
-      <FILE id="g7REHn" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
-      <FILE id="gw5C99" name="Codec.h" compile="0" resource="0" file="Source/Codec.h"/>
       <FILE id="eNYZ5R" name="Tools.h" compile="0" resource="0" file="Source/Tools.h"/>
+      <FILE id="gw5C99" name="Codec.h" compile="0" resource="0" file="Source/Codec.h"/>
       <FILE id="kgfSmC" name="Model.h" compile="0" resource="0" file="Source/Model.h"/>
-      <FILE id="Y6vTzi" name="Velocity.h" compile="0" resource="0" file="Source/Velocity.h"/>
-      <FILE id="bJMRxG" name="Note.h" compile="0" resource="0" file="Source/Note.h"/>
-      <FILE id="czN4sx" name="Sound.cpp" compile="1" resource="0" file="Source/Sound.cpp"/>
-      <FILE id="KjFQMd" name="Sound.h" compile="0" resource="0" file="Source/Sound.h"/>
-      <FILE id="RHAO02" name="Instrument.cpp" compile="1" resource="0" file="Source/Instrument.cpp"/>
       <FILE id="rtwFXM" name="Instrument.h" compile="0" resource="0" file="Source/Instrument.h"/>
-      <FILE id="EO6CzR" name="Synthesis.cpp" compile="1" resource="0" file="Source/Synthesis.cpp"/>
+      <FILE id="RHAO02" name="Instrument.cpp" compile="1" resource="0" file="Source/Instrument.cpp"/>
+      <FILE id="bJMRxG" name="Note.h" compile="0" resource="0" file="Source/Note.h"/>
+      <FILE id="Y6vTzi" name="Velocity.h" compile="0" resource="0" file="Source/Velocity.h"/>
+      <FILE id="KjFQMd" name="Sound.h" compile="0" resource="0" file="Source/Sound.h"/>
+      <FILE id="czN4sx" name="Sound.cpp" compile="1" resource="0" file="Source/Sound.cpp"/>
+      <FILE id="g7REHn" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
       <FILE id="TnaLsd" name="Synthesis.h" compile="0" resource="0" file="Source/Synthesis.h"/>
+      <FILE id="EO6CzR" name="Synthesis.cpp" compile="1" resource="0" file="Source/Synthesis.cpp"/>
     </GROUP>
     <GROUP id="{4E5E0A46-E03E-E82E-84AF-6D34C82A5934}" name="Entities">
       <FILE id="i5U6Ym" name="MorphSound.h" compile="0" resource="0" file="Source/MorphSound.h"/>

@@ -17,7 +17,7 @@ const static std::string PLUGIN_NAME = ProjectInfo::projectName;
 const static std::string PLUGIN_VERSION = ProjectInfo::versionString;
 
 // Synthesis
-const static int MAX_VOICES = 5;
+const static int MAX_VOICES = 10;
 
 // Timers
 const static int WAVEFORM_PREVIEW_UI_REFRESH_TIMER_CALLBACK = 5000; // 0.5 seconds
