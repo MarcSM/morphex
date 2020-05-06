@@ -55,6 +55,9 @@ namespace Core
     
     void Synthesis::reset()
     {
+        // TODO TEST
+        Core::Tools::Audio::writeSoundFile(this->generated.y);
+        
         this->live_values.i_current_frame = 0;
         this->live_values.i_samples_ready = 0;
         this->live_values.first_frame = true;
@@ -64,7 +67,7 @@ namespace Core
         std::vector<float> phases;
         
         // TODO - Change "clear()", be aware of CPU
-//        this->generated.y.clear();
+        this->generated.y.resize(0);
 //        this->generated.harmonics_freqs.clear();
 //        this->generated.harmonics_mags.clear();
 //        this->generated.harmonics_phases.clear();
@@ -194,15 +197,19 @@ namespace Core
         std::vector<int> idx_harmonics = Tools::Generate::range(0, MAX_HARMONICS);
         
         // Update phases
-        if (this->live_values.first_frame)
-        {
-//            this->live_values.first_frame = false;
-            updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
-        }
-        else
+        if (!this->live_values.first_frame)
         {
             updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
         }
+//        if (this->live_values.first_frame)
+//        {
+////            this->live_values.first_frame = false;
+////            updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
+//        }
+//        else
+//        {
+//            updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
+//        }
         
         // Generate windowed audio frame
         std::vector<float> windowed_audio_frame = synthesizeSoundFrame(sound_frame);
@@ -262,10 +269,10 @@ namespace Core
         // TODO - Test
 //        return windowed_audio_frame;
         
-        if (this->live_values.last_frame)
-        {
-            
-        }
+//        if (this->live_values.last_frame)
+//        {
+//
+//        }
 
         return next_frame;
     }

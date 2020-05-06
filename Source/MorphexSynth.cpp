@@ -56,7 +56,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     {
         // Add the voice to the synth
 //        this->addVoice( new Voice(this->instrument, parameters) );
-        this->addVoice( new Voice(this->instrument, parameters) );
+        this->addVoice( new Voice(this->instrument, parameters, i) );
 //        this->addVoice( new Voice(mSound, parameters) );
     }
     

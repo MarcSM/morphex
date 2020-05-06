@@ -174,6 +174,8 @@ void SpectralMorphingToolAudioProcessor::processBlock (AudioBuffer<float>& buffe
     // Get next midi events
     midiState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     
+    // TODO CHECK - (buffer, midiMessages, -> 0 <- , buffer.getNumSamples());
+    
     // Get the synth to process the midi events and generate its output
     mMorphexSynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }

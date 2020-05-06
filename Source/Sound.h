@@ -187,12 +187,16 @@ public:
         
         int getMaxHarmonics()
         {
-            return (int)std::max({
+            int max_harmonics = (int)std::max({
                 this->harmonics_freqs.size(),
                 this->harmonics_mags.size(),
                 this->harmonics_phases.size(),
                 this->sinusoidal.size()
             });
+            
+            if (max_harmonics > 0) max_harmonics--;
+            
+            return max_harmonics;
         };
         
         bool hasHarmonics() { return this->harmonics_freqs.size() > 0; };

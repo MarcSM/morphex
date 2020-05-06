@@ -17,10 +17,13 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+    
     setSize(MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT);
     
-    mMainPanel = new SMTMainPanel(&processor);
-    addAndMakeVisible(mMainPanel);
+    // TODO TEST - Disable UI
+//    mMainPanel = new SMTMainPanel(&processor);
+//    addAndMakeVisible(mMainPanel);
+    // TODO TEST - Disable UI
     
 //    mLookAndFeel = new SMTLookAndFeel();
 //    setLookAndFeel(mLookAndFeel);
