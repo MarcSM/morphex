@@ -74,53 +74,53 @@ namespace Core
         
         MorphNotes closer_notes{};
         
-        closer_notes[MorphLocation::Left] = this->note[59];
-        closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
-//        closer_notes[MorphLocation::Right] = this->note[64];
-        
-        return closer_notes;
-        
-//        std::vector<Note*> loaded_notes = getLoadedNotes();
-//
-//        // Output (use "{}" to ensure "nullptr" initialization)
-////        MorphNotes closer_notes{};
-//
-////        closer_notes[MorphLocation::Left] = loaded_notes[0];
-////        closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
-////
-////        return closer_notes;
-//
-//        // For loaded_notes sorted from min to max
-//        for (int i = 0; i < loaded_notes.size(); i++)
-//        {
-//            Note* note = loaded_notes[i];
-//
-//            if (note->value < l_i_target_note)
-//            {
-//                closer_notes[MorphLocation::Left] = note;
-//            }
-//            else if (h_i_target_note < note->value)
-//            {
-//                closer_notes[MorphLocation::Right] = note;
-//                break;
-//            }
-//            else
-//            {
-//                closer_notes[MorphLocation::Left] = note;
-//                closer_notes[MorphLocation::Right] = note;
-//                if (h_i_target_note <= note->value) break;
-//            }
-//        }
-//
-//        if (closer_notes[MorphLocation::Left] == nullptr) closer_notes[MorphLocation::Left] = closer_notes[MorphLocation::Right];
-//        if (closer_notes[MorphLocation::Right] == nullptr) closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
+//        closer_notes[MorphLocation::Left] = this->note[59];
+//        closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
+////        closer_notes[MorphLocation::Right] = this->note[64];
 //
 //        return closer_notes;
+        
+        std::vector<Note*> loaded_notes = getLoadedNotes();
+
+        // Output (use "{}" to ensure "nullptr" initialization)
+//        MorphNotes closer_notes{};
+
+//        closer_notes[MorphLocation::Left] = loaded_notes[0];
+//        closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
+//
+//        return closer_notes;
+
+        // For loaded_notes sorted from min to max
+        for (int i = 0; i < loaded_notes.size(); i++)
+        {
+            Note* note = loaded_notes[i];
+
+            if (note->value < l_i_target_note)
+            {
+                closer_notes[MorphLocation::Left] = note;
+            }
+            else if (h_i_target_note < note->value)
+            {
+                closer_notes[MorphLocation::Right] = note;
+                break;
+            }
+            else
+            {
+                closer_notes[MorphLocation::Left] = note;
+                closer_notes[MorphLocation::Right] = note;
+                if (h_i_target_note <= note->value) break;
+            }
+        }
+
+        if (closer_notes[MorphLocation::Left] == nullptr) closer_notes[MorphLocation::Left] = closer_notes[MorphLocation::Right];
+        if (closer_notes[MorphLocation::Right] == nullptr) closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
+
+        return closer_notes;
     }
     
     MorphSounds Instrument::getCloserSounds(float f_target_note, float f_velocity)
     {
-//        MorphNotes closer_notes = getCloserNotes(f_target_note);
+        MorphNotes closer_notes = getCloserNotes(f_target_note);
         
         // TODO - Select the closest velocity for range
         // NOTE: or interpolate velocities, if so, target also current
@@ -131,18 +131,18 @@ namespace Core
         // Output
         MorphSounds closer_sounds;
         
-        closer_sounds[MorphLocation::Left] = &this->note[59]->velocity[1]->sound;
-        closer_sounds[MorphLocation::Right] = closer_sounds[MorphLocation::Left];
-//        closer_sounds[MorphLocation::Right] = &this->note[59]->velocity[1]->sound;
-
-        return closer_sounds;
-        
-//        // TODO - Remove this velocity bypass
-//        int i_velocity = 0;
-//        closer_sounds[MorphLocation::Left] = &closer_notes[MorphLocation::Left]->getLoadedVelocities()[i_velocity]->sound;
-//        closer_sounds[MorphLocation::Right] = &closer_notes[MorphLocation::Right]->getLoadedVelocities()[i_velocity]->sound;
+//        closer_sounds[MorphLocation::Left] = &this->note[59]->velocity[1]->sound;
+//        closer_sounds[MorphLocation::Right] = closer_sounds[MorphLocation::Left];
+////        closer_sounds[MorphLocation::Right] = &this->note[59]->velocity[1]->sound;
 //
 //        return closer_sounds;
+        
+//        // TODO - Remove this velocity bypass
+        int i_velocity = 0;
+        closer_sounds[MorphLocation::Left] = &closer_notes[MorphLocation::Left]->getLoadedVelocities()[i_velocity]->sound;
+        closer_sounds[MorphLocation::Right] = &closer_notes[MorphLocation::Right]->getLoadedVelocities()[i_velocity]->sound;
+//
+        return closer_sounds;
     }
     
 //    Sound* Instrument::getSound(float f_note, int i_velocity)
@@ -180,6 +180,11 @@ namespace Core
     // among iterations.
     Sound::Frame Instrument::morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_interpolation_factor)
     {
+//        if (i_current_frame >= 88)
+//        {
+//            DBG("Bug is coming");
+//        }
+        
         // Output
         Sound::Frame morphed_sound_frame;
 
@@ -301,18 +306,18 @@ namespace Core
         // Output
         std::vector<float> interpolated_frame(i_frame_length, 0.0);
         
-        int len_frame_1 = 0;
-        int len_frame_2 = 0;
+        int len_frame_1 = (int)frame_1.size();
+        int len_frame_2 = (int)frame_2.size();
 
         // Magnitudes
         if (frame_type == FrameType::Magnitudes)
         {
             
-            len_frame_1 = (int)count_if(frame_1.begin(), frame_1.end(),
-                                        [](float value) { return value > DEFAULT_DB; });
-            
-            len_frame_2 = (int)count_if(frame_2.begin(), frame_2.end(),
-                                        [](float value) { return value > DEFAULT_DB; });
+//            len_frame_1 = (int)count_if(frame_1.begin(), frame_1.end(),
+//                                        [](float value) { return value > DEFAULT_DB; });
+//
+//            len_frame_2 = (int)count_if(frame_2.begin(), frame_2.end(),
+//                                        [](float value) { return value > DEFAULT_DB; });
             
             // Fill with -180.0
             std::fill(interpolated_frame.begin(), interpolated_frame.end(), DEFAULT_DB);
@@ -320,11 +325,11 @@ namespace Core
         // Harmonics (and everything else)
         else
         {
-            len_frame_1 = (int)count_if(frame_1.begin(), frame_1.end(),
-                                        [](float value) { return value > DEFAULT_HZ; });
-            
-            len_frame_2 = (int)count_if(frame_2.begin(), frame_2.end(),
-                                        [](float value) { return value > DEFAULT_HZ; });
+//            len_frame_1 = (int)count_if(frame_1.begin(), frame_1.end(),
+//                                        [](float value) { return value > DEFAULT_HZ; });
+//
+//            len_frame_2 = (int)count_if(frame_2.begin(), frame_2.end(),
+//                                        [](float value) { return value > DEFAULT_HZ; });
             
             // Fill with 0.0
             std::fill(interpolated_frame.begin(), interpolated_frame.end(), DEFAULT_HZ);

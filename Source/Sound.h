@@ -194,8 +194,8 @@ public:
                 this->sinusoidal.size()
             });
             
-            if (max_harmonics > 0) max_harmonics--;
-            
+//            if (max_harmonics > 0) max_harmonics--;
+
             return max_harmonics;
         };
         

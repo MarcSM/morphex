@@ -317,15 +317,13 @@ struct Voice
                 sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
 
                 // Get target frequency
-//                float f_target_frequency = 440.0;
                 float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
+                float f_note_frequency = Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note);
 
-////                    float f_target_frequency = Tools::Midi::toFreq(f_note);
-                
                 // Recalculate the harmonics for the current midi note
                 for (int i=0; i<sound_frame.harmonics_freqs.size(); i++)
                 {
-                    sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note)) * f_target_frequency;
+                    sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / f_note_frequency) * f_target_frequency;
                 }
 //
 //                    // Transpose left note frequencies to the target frequency
@@ -335,7 +333,29 @@ struct Voice
             }
             else
             {
-//                    sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_frame_length);
+//                sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+//
+//                // Get target frequency
+//                float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
+//                float f_note_frequency = Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note);
+//
+//                // Recalculate the harmonics for the current midi note
+//                for (int i=0; i<sound_frame.harmonics_freqs.size(); i++)
+//                {
+//                    sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / f_note_frequency) * f_target_frequency;
+//                }
+                
+//                if (*i_current_frame >= 89)
+//                {
+//                    DBG(String(voice_ID) + " - VOICE ID");
+//                    DBG("*i_current_frame: " + String(*i_current_frame));
+//                    DBG("Bug is coming");
+//                }
+                
+                // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
+                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
+                
+//                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_frame_length);
 //                    sound_frame = this->instrument.morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
                 //                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
             }
@@ -345,6 +365,13 @@ struct Voice
             this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
 
             *i_current_frame += 1;
+            
+            if ( *i_current_frame > this->min_note_end)
+            {
+                // End note playback
+                this->playing_note = false;
+//                this->synthesis.live_values.last_frame = true;
+            }
         }
         
         // Selecting the processed samples
