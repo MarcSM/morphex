@@ -33,6 +33,12 @@ namespace Core
     typedef std::array<Sound::Frame, MorphLocation::NUM_MORPH_LOCATIONS> MorphSoundFrames;
     //    typedef std::array<std::unique_ptr<Sound>, MorphLocation::NUM_MORPH_LOCATIONS> MorphSounds;
     
+    enum class Interpolation
+    {
+        Manual = 0,
+        FrequencyBased
+    };
+    
     const static int NUM_MIDI_NOTES = 128;
 }
 
@@ -46,6 +52,12 @@ namespace Core
 class Core::Instrument
 {
 public:
+    
+    enum class Mode
+    {
+        Morphing = 0,
+        FullRange
+    };
     
     enum FrameType
     {
@@ -65,6 +77,13 @@ public:
     std::string name;
     std::string samples_dirpath;
     
+    // Mode
+    Mode mode = Mode::Morphing;
+    
+    // Interpolation
+    Interpolation iterpolation_mode = Interpolation::Manual;
+//    Interpolation iterpolation_mode = Interpolation::FrequencyBased;
+
     // Initializers
     Instrument();
     ~Instrument();
@@ -74,10 +93,10 @@ public:
     MorphSounds getCloserSounds(float f_target_note, float f_velocity);
     
     Sound* getSound(float f_note, float f_velocity);
-    Sound::Frame getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_interpolation_factor = -1.0);
-    Sound::Frame morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_interpolation_factor = -1);
+    Sound::Frame getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
+    Sound::Frame morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_freqs_interp_factor = -1, float f_mags_interp_factor = -1);
     
-    std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1);
+    std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
     
     std::vector<float> interpolateFrames(FrameType frame_type,
                                          float interp_factor,

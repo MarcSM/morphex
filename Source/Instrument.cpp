@@ -90,25 +90,39 @@ namespace Core
 //
 //        return closer_notes;
 
-        // For loaded_notes sorted from min to max
-        for (int i = 0; i < loaded_notes.size(); i++)
+        // Instrument::Mode::Morphing
+        if (this->mode == Instrument::Mode::Morphing)
         {
-            Note* note = loaded_notes[i];
+            int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
+            
+            for (int i = 0; i < i_notes_to_load; i++)
+            {
+                closer_notes[i] = loaded_notes[i];
+            }
+        }
+        // Instrument::Mode::FullRange
+        else
+        {
+            // For loaded_notes sorted from min to max
+            for (int i = 0; i < loaded_notes.size(); i++)
+            {
+                Note* note = loaded_notes[i];
 
-            if (note->value < l_i_target_note)
-            {
-                closer_notes[MorphLocation::Left] = note;
-            }
-            else if (h_i_target_note < note->value)
-            {
-                closer_notes[MorphLocation::Right] = note;
-                break;
-            }
-            else
-            {
-                closer_notes[MorphLocation::Left] = note;
-                closer_notes[MorphLocation::Right] = note;
-                if (h_i_target_note <= note->value) break;
+                if (note->value < l_i_target_note)
+                {
+                    closer_notes[MorphLocation::Left] = note;
+                }
+                else if (h_i_target_note < note->value)
+                {
+                    closer_notes[MorphLocation::Right] = note;
+                    break;
+                }
+                else
+                {
+                    closer_notes[MorphLocation::Left] = note;
+                    closer_notes[MorphLocation::Right] = note;
+                    if (h_i_target_note <= note->value) break;
+                }
             }
         }
 
@@ -159,7 +173,7 @@ namespace Core
 //        return morph_sound;
 //    }
     
-    Sound::Frame Instrument::getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_interpolation_factor)
+    Sound::Frame Instrument::getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor)
     {
         MorphSounds morph_sounds = getCloserSounds( f_note, f_velocity );
         
@@ -169,7 +183,7 @@ namespace Core
         }
         else
         {
-            return morphSoundFrames(f_note, morph_sounds, i_current_frame, i_frame_length, f_interpolation_factor);
+            return morphSoundFrames(f_note, morph_sounds, i_current_frame, i_frame_length, f_freqs_interp_factor, f_mags_interp_factor);
         }
     }
     
@@ -178,7 +192,7 @@ namespace Core
     // The second one is two have the maximum starting loop point and the minimum ending
     // loop point, the loop section will be smaller but it will sound homogeneous
     // among iterations.
-    Sound::Frame Instrument::morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_interpolation_factor)
+    Sound::Frame Instrument::morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor)
     {
 //        if (i_current_frame >= 88)
 //        {
@@ -197,13 +211,25 @@ namespace Core
         
         // Interpolation factor is calculated taking into account
         // how far is each note from the target frequency (normalized)
-        if (f_interpolation_factor == -1)
+        if (this->iterpolation_mode == Interpolation::FrequencyBased)
         {
-            f_interpolation_factor =
-            ( f_target_frequency - Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) ) /
-            ( Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note) - Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) );
+//            if (f_freqs_interp_factor == -1)
+            if (morph_sounds[MorphLocation::Left]->note == morph_sounds[MorphLocation::Right]->note)
+            {
+                f_freqs_interp_factor = 0.0;
+            }
+            else
+            {
+                f_freqs_interp_factor =
+                ( f_target_frequency - Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) ) /
+                ( Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note) - Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note) );
+            }
+            
+            f_mags_interp_factor = f_freqs_interp_factor;
         }
         
+        float f_stocs_interp_factor = f_freqs_interp_factor;
+        float f_residual_interp_factor = f_freqs_interp_factor;
         
         MorphSoundFrames morph_sound_frames;
         
@@ -246,7 +272,7 @@ namespace Core
             // Interpolating the frequencies of the given harmonics
             morphed_sound_frame.harmonics_freqs =
             interpolateFrames(FrameType::Frequencies,
-                              f_interpolation_factor,
+                              f_freqs_interp_factor,
                               morph_sound_frames[MorphLocation::Left].harmonics_freqs,
                               morph_sound_frames[MorphLocation::Right].harmonics_freqs,
                               i_max_harmonics,
@@ -255,7 +281,7 @@ namespace Core
             // Interpolating the magnitudes of the given harmonics
             morphed_sound_frame.harmonics_mags =
             interpolateFrames(FrameType::Magnitudes,
-                              f_interpolation_factor,
+                              f_mags_interp_factor,
                               morph_sound_frames[MorphLocation::Left].harmonics_mags,
                               morph_sound_frames[MorphLocation::Right].harmonics_mags,
                               i_max_harmonics,
@@ -270,7 +296,7 @@ namespace Core
             // Interpolating the stochastic components of the given harmonics
             morphed_sound_frame.stochastic =
             interpolateFrames(FrameType::Stochastic,
-                              f_interpolation_factor,
+                              f_stocs_interp_factor,
                               morph_sound_frames[MorphLocation::Left].stochastic,
                               morph_sound_frames[MorphLocation::Right].stochastic,
                               i_max_harmonics);
@@ -282,7 +308,7 @@ namespace Core
             // Interpolating the stochastic components of the given harmonics
             morphed_sound_frame.residual =
             interpolateFrames(FrameType::Residual,
-                              f_interpolation_factor,
+                              f_residual_interp_factor,
                               morph_sound_frames[MorphLocation::Left].residual,
                               morph_sound_frames[MorphLocation::Right].residual,
                               i_frame_length);

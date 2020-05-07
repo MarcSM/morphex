@@ -40,7 +40,7 @@ struct Voice
     
 //    Voice(Instrument instrument, AudioProcessorValueTreeState* parameters)
     Voice(Instrument& instrument, AudioProcessorValueTreeState* parameters, int voice_ID)
-    : instrument(instrument), voice_ID(voice_ID)
+    : instrument(instrument), mParameters(parameters), voice_ID(voice_ID)
     {
         DBG(String(voice_ID) + " - VOICE INIT");
         
@@ -311,53 +311,49 @@ struct Voice
             }
 
             Sound::Frame sound_frame;
-
-            if (this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
+            
+            // Instrument::Mode::Morphing
+            if (this->instrument.mode == Instrument::Mode::Morphing)
             {
-                sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+//                float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
+//                float adsr_decay = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_decay]);
+//                float adsr_sustain = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_sustain]);
+//                float adsr_release = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_release]);
 
-                // Get target frequency
-                float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
-                float f_note_frequency = Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note);
-
-                // Recalculate the harmonics for the current midi note
-                for (int i=0; i<sound_frame.harmonics_freqs.size(); i++)
-                {
-                    sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / f_note_frequency) * f_target_frequency;
-                }
-//
-//                    // Transpose left note frequencies to the target frequency
-//                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
-//                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
-//                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
-            }
-            else
-            {
-//                sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
-//
-//                // Get target frequency
-//                float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
-//                float f_note_frequency = Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note);
-//
-//                // Recalculate the harmonics for the current midi note
-//                for (int i=0; i<sound_frame.harmonics_freqs.size(); i++)
-//                {
-//                    sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / f_note_frequency) * f_target_frequency;
-//                }
-                
-//                if (*i_current_frame >= 89)
-//                {
-//                    DBG(String(voice_ID) + " - VOICE ID");
-//                    DBG("*i_current_frame: " + String(*i_current_frame));
-//                    DBG("Bug is coming");
-//                }
+                float freqs_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_freqs_interp_factor]);
+                float mags_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_mags_interp_factor]);
                 
                 // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
-                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
-                
-//                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_frame_length);
-//                    sound_frame = this->instrument.morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_frame_length);
-                //                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
+                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
+                                                                freqs_interp_factor, mags_interp_factor);
+            }
+            // Instrument::Mode::FullRange
+            else
+            {
+                if (this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
+                {
+                    sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+                    
+                    // Get target frequency
+                    float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
+                    float f_note_frequency = Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note);
+                    
+                    // Recalculate the harmonics for the current midi note
+                    for (int i=0; i<sound_frame.harmonics_freqs.size(); i++)
+                    {
+                        sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / f_note_frequency) * f_target_frequency;
+                    }
+                    
+                    //                    // Transpose left note frequencies to the target frequency
+                    //                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
+                    //                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+                    //                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
+                }
+                else
+                {
+                    // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
+                    sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
+                }
             }
 
             // NOTE - "frame" will have "i_hop_size" more samples ready to be played after each call

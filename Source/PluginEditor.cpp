@@ -21,8 +21,8 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
     setSize(MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT);
     
     // TODO TEST - Disable UI
-//    mMainPanel = new SMTMainPanel(&processor);
-//    addAndMakeVisible(mMainPanel);
+    mMainPanel = new SMTMainPanel(&processor);
+    addAndMakeVisible(mMainPanel);
     // TODO TEST - Disable UI
     
 //    mLookAndFeel = new SMTLookAndFeel();
