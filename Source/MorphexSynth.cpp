@@ -22,8 +22,8 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     this->instrument.name = "Test";
 
     //    JUCE::DirectoryIterator()
-    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Morph";
-    //    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
+//    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Morph";
+        std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
 
     DirectoryIterator iter (File (instrument_folder), true, "*.had");
     
@@ -33,9 +33,8 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
         File sound_file (iter.getFile());
     //        String sound_file_name = sound_file.getFullPathName();
         std::string sound_file_name = sound_file.getFullPathName().toStdString();
-        DBG(sound_file_name);
+//        DBG(sound_file_name);
 
-        // TODO - Find a better approach to do this (try to avoid using copy constructor)
         Core::Sound sound = Core::Sound( sound_file_name );
 
     //        Core::Sound scopy = sound;

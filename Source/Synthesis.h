@@ -137,6 +137,16 @@ public:
     
 private:
     
+    std::vector<int> idx_harmonics;
+    std::vector<float> windowed_audio_frame;
+    
+    std::vector<float> yw;
+    std::vector<float> harmonics_phases;
+    std::vector<float> y_harmonics;
+    std::vector<float> yw_harmonics;
+//    std::complex<float> Y_harmonics;
+//    dsp::Complex<float>* Y_harmonics;
+
     void getWindow();
     
     int getPointerInLimits(int i_pointer_position);
@@ -148,7 +158,7 @@ private:
 //    void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
 //    void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
     
-    std::vector<float> synthesizeSoundFrame(Sound::Frame sound_frame);
+    std::vector<float> synthesizeSoundFrame(Sound::Frame sound_frame, std::vector<int> idx_harmonics);
     std::vector<float> generateSines(std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs);
     std::vector<float> generateStocs(std::vector<float> stocs_morph, int H, int NS);
     

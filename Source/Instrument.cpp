@@ -24,8 +24,9 @@ namespace Core
         }
         
         // Mode
-        if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::FrequencyBased;
-        
+        if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::None;
+//        if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::FrequencyBased;
+
 //        // Voices
 //        this->voice.reserve( i_max_voices );
 //        for (int i = 0; i < i_max_voices; i++)

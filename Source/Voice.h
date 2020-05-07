@@ -195,11 +195,12 @@ struct Voice
 //                DBG("CHECK THIS!");
 //            }
             
-            std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
-            
+//            this->frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
+            std::vector<float> frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
+
             for (int i_sample = 0; i_sample < numSamples; i_sample++)
             {
-                auto currentSample = (float) (sound_frame[i_sample] * this->level * this->tailOff);
+                auto currentSample = (float) (frame[i_sample] * this->level * this->tailOff);
                 //                    auto currentSample = (float) (std::sin (this->currentAngle) * this->level * this->tailOff);
                 
                 for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
@@ -225,6 +226,7 @@ struct Voice
         }
     }
     
+//    void getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
     std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
     {
         // Synthesis parameters shortcuts
@@ -309,8 +311,6 @@ struct Voice
 //                this->playing_note = false;
                 this->synthesis.live_values.last_frame = true;
             }
-
-            Sound::Frame sound_frame;
             
             // Instrument::Mode::Morphing
             if (this->instrument.mode == Instrument::Mode::Morphing)
@@ -324,24 +324,46 @@ struct Voice
                 float mags_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_mags_interp_factor]);
                 
                 // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
-                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
-                                                                freqs_interp_factor, mags_interp_factor);
+                this->sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
+                                                                      freqs_interp_factor, mags_interp_factor);
             }
             // Instrument::Mode::FullRange
             else
             {
-                if (this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
+                if (this->instrument.interpolation_mode == Interpolation::None or
+                    this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
                 {
-                    sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+                    Sound* selected_sound;
+                    
+                    if (this->instrument.interpolation_mode == Interpolation::None)
+                    {
+                        int left_note_distance = std::abs( this->f_current_midi_note - morph_sounds[MorphLocation::Left]->note );
+                        int right_note_distance = std::abs( this->f_current_midi_note - morph_sounds[MorphLocation::Right]->note );
+
+                        if (left_note_distance < right_note_distance)
+                        {
+                            selected_sound = morph_sounds[MorphLocation::Left];
+                        }
+                        else
+                        {
+                            selected_sound = morph_sounds[MorphLocation::Right];
+                        }
+                    }
+                    else
+                    {
+                        selected_sound = morph_sounds[MorphLocation::Left];
+                    }   
+                    
+                    this->sound_frame = selected_sound->getFrame(*i_current_frame, i_hop_size);
                     
                     // Get target frequency
                     float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
-                    float f_note_frequency = Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note);
+                    float f_note_frequency = Tools::Midi::toFreq(selected_sound->note);
                     
                     // Recalculate the harmonics for the current midi note
-                    for (int i=0; i<sound_frame.harmonics_freqs.size(); i++)
+                    for (int i=0; i<this->sound_frame.harmonics_freqs.size(); i++)
                     {
-                        sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / f_note_frequency) * f_target_frequency;
+                        this->sound_frame.harmonics_freqs[i] = (this->sound_frame.harmonics_freqs[i] / f_note_frequency) * f_target_frequency;
                     }
                     
                     //                    // Transpose left note frequencies to the target frequency
@@ -352,13 +374,13 @@ struct Voice
                 else
                 {
                     // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
-                    sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
+                    this->sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
                 }
             }
 
             // NOTE - "frame" will have "i_hop_size" more samples ready to be played after each call
             // TODO - This function needs to be optimized
-            this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
+            this->synthesis.generateSoundFrame(this->sound_frame, i_frame_length);
 
             *i_current_frame += 1;
             
@@ -404,6 +426,7 @@ private:
     
     // Sounds
     Core::MorphSounds morph_sounds;
+    Sound::Frame sound_frame;
     int max_loop_start;
     int min_loop_end;
     int min_note_end;

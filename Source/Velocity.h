@@ -47,14 +47,7 @@ public:
     
     void setSound(Sound sound)
     {
-        // TODO - Check why copy constructor is not working properly
-//        this->sound = new Sound( *sound );
-//        Sound scopy = sound;
-//        Sound scopy = new Sound( sound );
-
-//        this->sound = new Sound( sound );
-//        this->sound = &sound;
-        
+        // TODO - Find a better approach to do this (try to avoid using copy constructor)
         this->sound = sound;
         this->loaded = true;
         

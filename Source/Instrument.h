@@ -35,7 +35,8 @@ namespace Core
     
     enum class Interpolation
     {
-        Manual = 0,
+        None = 0,
+        Manual,
         FrequencyBased
     };
     
