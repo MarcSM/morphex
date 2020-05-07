@@ -23,6 +23,9 @@ namespace Core
             this->note[i] = new Note(i);
         }
         
+        // Mode
+        if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::FrequencyBased;
+        
 //        // Voices
 //        this->voice.reserve( i_max_voices );
 //        for (int i = 0; i < i_max_voices; i++)
@@ -211,7 +214,7 @@ namespace Core
         
         // Interpolation factor is calculated taking into account
         // how far is each note from the target frequency (normalized)
-        if (this->iterpolation_mode == Interpolation::FrequencyBased)
+        if (this->interpolation_mode == Interpolation::FrequencyBased)
         {
 //            if (f_freqs_interp_factor == -1)
             if (morph_sounds[MorphLocation::Left]->note == morph_sounds[MorphLocation::Right]->note)

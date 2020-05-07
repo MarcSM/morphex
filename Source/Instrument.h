@@ -78,11 +78,11 @@ public:
     std::string samples_dirpath;
     
     // Mode
-    Mode mode = Mode::Morphing;
-    
+//    Mode mode = Mode::Morphing;
+    Mode mode = Mode::FullRange;
+
     // Interpolation
-    Interpolation iterpolation_mode = Interpolation::Manual;
-//    Interpolation iterpolation_mode = Interpolation::FrequencyBased;
+    Interpolation interpolation_mode = Interpolation::Manual;
 
     // Initializers
     Instrument();
