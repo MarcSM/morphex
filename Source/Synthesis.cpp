@@ -56,7 +56,7 @@ namespace Core
     void Synthesis::reset()
     {
         // TODO TEST
-        Core::Tools::Audio::writeSoundFile(this->generated.y);
+//        Core::Tools::Audio::writeSoundFile(this->generated.y);
         
         this->live_values.i_current_frame = 0;
         this->live_values.i_samples_ready = 0;
@@ -66,13 +66,13 @@ namespace Core
         std::vector<float> last_freqs;
         std::vector<float> phases;
         
-        // TODO - Change "clear()", be aware of CPU
-        this->generated.y.resize(0);
-//        this->generated.harmonics_freqs.clear();
-//        this->generated.harmonics_mags.clear();
-//        this->generated.harmonics_phases.clear();
-//        this->generated.residual.clear();
-//        this->generated.stochastic.clear();
+        // TODO - Be aware of CPU
+//        this->generated.y.resize(0);
+//        this->generated.harmonics_freqs.resize(0);
+//        this->generated.harmonics_mags.resize(0);
+//        this->generated.harmonics_phases.resize(0);
+//        this->generated.residual.resize(0);
+//        this->generated.stochastic.resize(0);
         
         this->live_values.last_freqs.resize(MAX_HARMONICS);
         this->live_values.phases.resize(MAX_HARMONICS);
@@ -84,7 +84,8 @@ namespace Core
                   this->live_values.phases.end(), 0.0);
         
         this->buffer.pointers.write = 0;
-        
+        this->buffer.pointers.play = 0;
+
         // Clean the buffers
         //        zeromem(mCircularBufferLeft, sizeof(float) * this->buffer.length);
         //        zeromem(mCircularBufferRight, sizeof(float) * this->buffer.length);
@@ -186,7 +187,8 @@ namespace Core
         return yw;
     }
     
-    std::vector<float> Synthesis::generateSoundFrame(Sound::Frame sound_frame, int i_frame_length, bool append_to_generated)
+//    void Synthesis::generateSoundFrame(Sound::Frame sound_frame, int i_frame_length, bool append_to_generated)
+    void Synthesis::generateSoundFrame(Sound::Frame sound_frame, bool append_to_generated)
     {
         // Parameters shortcut
         //        const int NS = this->parameters.fft_size;
@@ -242,8 +244,8 @@ namespace Core
         // Add the audio frame to the circular buffer
         updateBuffer(BufferSection::Write, BufferUpdateMode::Add, windowed_audio_frame, Channel::Mono);
         
-        // Selecting the processed samples
-        std::vector<float> next_frame = getBuffer(BufferSection::Play, Channel::Mono, i_frame_length);
+//        // Selecting the processed samples
+//        std::vector<float> next_frame = getBuffer(BufferSection::Play, Channel::Mono, i_frame_length);
         
         // TODO - Test
 //        Tools::Audio::writeSoundFile(next_frame, "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/next_frame.wav");
@@ -274,7 +276,7 @@ namespace Core
 //
 //        }
 
-        return next_frame;
+//        return next_frame;
     }
     
     void Synthesis::getWindow()
@@ -391,8 +393,8 @@ namespace Core
                                                   this->buffer.pointers.clean(this, H));
                 break;
             case BufferSection::Play:
-                buffer_indexes = getBufferIndexes(this->buffer.pointers.play(this),
-                                                  this->buffer.pointers.play(this, i_frame_length));
+                buffer_indexes = getBufferIndexes(this->buffer.pointers.play,
+                                                  this->getPointerInLimits(this->buffer.pointers.play + i_frame_length));
                 break;
             default:
                 // Return an empty vector
@@ -427,6 +429,12 @@ namespace Core
     {
         int new_pointer_position = this->buffer.pointers.write + i_pointer_increment;
         this->buffer.pointers.write = this->getPointerInLimits(new_pointer_position);
+    }
+    
+    void Synthesis::updatePlayPointer(int i_pointer_increment)
+    {
+        int new_pointer_position = this->buffer.pointers.play + i_pointer_increment;
+        this->buffer.pointers.play = this->getPointerInLimits(new_pointer_position);
     }
     
     void Synthesis::updateBuffer(BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame, Channel selected_channel)

@@ -373,10 +373,20 @@ namespace Core
                 int i_end_sample = i_start_sample + i_frame_length;
                 int i_vec_size = (int)vector_component.size();
                 
-                if ( (i_start_sample < i_vec_size) && (i_vec_size < i_end_sample) )
+                if (i_vec_size < i_end_sample)
                 {
                     i_end_sample = i_vec_size;
                 }
+                
+                if (i_vec_size < i_start_sample)
+                {
+                    i_start_sample = i_vec_size;
+                }
+                
+//                if ( (i_start_sample < i_vec_size) && (i_vec_size < i_end_sample) )
+//                {
+//                    i_end_sample = i_vec_size;
+//                }
                 
 //                std::vector<float> residual_frame(i_frame_length, 0.0);
                 

@@ -66,7 +66,7 @@ struct Voice
         
         this->test_tone.active = false;
         
-        this->frame.resize(0);
+//        this->frame.resize(0);
         
         // Sounds
         morph_sounds = this->instrument.getCloserSounds( this->f_current_midi_note, this->f_current_velocity );
@@ -85,7 +85,7 @@ struct Voice
     
     bool canPlaySound (SynthesiserSound* synthSound) override
     {
-        DBG(String(voice_ID) + " - canPlaySound");
+//        DBG(String(voice_ID) + " - canPlaySound");
 //        return true;
         return dynamic_cast<MorphSound*> (synthSound) != nullptr;
     }
@@ -93,7 +93,7 @@ struct Voice
     void startNote( int midiNoteNumber, float velocity,
                    SynthesiserSound*, int /*currentPitchWheelPosition*/) override
     {
-        DBG(String(voice_ID) + " - startNote");
+//        DBG(String(voice_ID) + " - startNote");
 //        // Reset synthesis engine
 //        this->synthesis.reset();
         
@@ -140,9 +140,9 @@ struct Voice
     
     void stopNote(float velocity, bool allowTailOff) override
     {
-        DBG(String(voice_ID) + " - stopNote");
+//        DBG(String(voice_ID) + " - stopNote");
         
-        allowTailOff = false;
+//        allowTailOff = false;
         
         if (allowTailOff)
         {
@@ -230,7 +230,7 @@ struct Voice
     {
 //        SynthesiserVoice::clearCurrentNote();
         this->clearCurrentNote();
-        this->frame.resize(0);
+//        this->frame.resize(0);
         this->synthesis.reset();
     }
     
@@ -247,11 +247,11 @@ struct Voice
     {
         if (this->playing_note)
         {
-            if (numSamples != 512)
-            {
-                DBG("numSamples = " + String(numSamples));
-                DBG("CHECK THIS!");
-            }
+//            if (numSamples != 512)
+//            {
+//                DBG("numSamples = " + String(numSamples));
+//                DBG("CHECK THIS!");
+//            }
             
             std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
             //                std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, 512);
@@ -276,7 +276,7 @@ struct Voice
                 
                 if (this->tailOff < 1.0)
                 {
-                    this->tailOff *= 0.99999;
+                    this->tailOff *= 0.999;
                     
                     if (this->tailOff <= 0.005)
                     {
@@ -419,6 +419,11 @@ struct Voice
             }
         }
         
+        if(this->synthesis.live_values.i_samples_ready >= i_frame_length)
+        {
+            DBG("It happens");
+        }
+        
         while (this->synthesis.live_values.i_samples_ready < i_frame_length)
         {
 //                float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
@@ -476,10 +481,10 @@ struct Voice
 //            }
 //
             // If we are on the last frame of the shortest note
-            if ( *i_current_frame >= this->min_note_end-1)
+            if ( *i_current_frame == this->min_note_end-1)
             {
                 // End note playback
-                this->playing_note = false;
+//                this->playing_note = false;
                 this->synthesis.live_values.last_frame = true;
             }
 
@@ -487,7 +492,7 @@ struct Voice
 
             if (morph_sounds[MorphLocation::Left] == morph_sounds[MorphLocation::Right])
             {
-//                    sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
+//                sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
 
                 if ( *i_current_frame >= this->min_note_end-1)
                 {
@@ -535,15 +540,22 @@ struct Voice
 
             // NOTE - "frame" will have "i_hop_size" more samples ready to be played after each call
             // TODO - This function needs to be optimized
-            this->frame = this->synthesis.generateSoundFrame(sound_frame, i_fft_size);
+//            this->frame = this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
+            this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
 
             *i_current_frame += 1;
         }
+        
+        // Selecting the processed samples
+        std::vector<float> frame = this->synthesis.getBuffer(Synthesis::BufferSection::Play, Channel::Mono, i_frame_length);
+        
+        // Update play pointer position
+        this->synthesis.updatePlayPointer(i_frame_length);
 
         // Update samples ready to be played
-        this->synthesis.live_values.i_samples_ready -= this->frame.size();
+        this->synthesis.live_values.i_samples_ready -= i_frame_length;
 
-        return this->frame;
+        return frame;
 //        }
 //        // If note is NOT being played
 //        else
@@ -561,7 +573,7 @@ private:
     Instrument& instrument;
     Synthesis synthesis;
     
-    std::vector<float> frame;
+//    std::vector<float> frame;
     
     // Midi
     float f_current_midi_note;
