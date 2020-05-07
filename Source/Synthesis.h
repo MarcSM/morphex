@@ -137,15 +137,8 @@ public:
     
 private:
     
-    std::vector<int> idx_harmonics;
-    std::vector<float> windowed_audio_frame;
-    
-    std::vector<float> yw;
-    std::vector<float> harmonics_phases;
-    std::vector<float> y_harmonics;
-    std::vector<float> yw_harmonics;
-//    std::complex<float> Y_harmonics;
-//    dsp::Complex<float>* Y_harmonics;
+//    std::vector<int> idx_harmonics;
+//    std::vector<float> windowed_audio_frame;
 
     void getWindow();
     
