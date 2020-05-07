@@ -226,8 +226,9 @@ namespace Core
                     this->max_frames = (int)std::max({
                         this->model->values.harmonics_freqs.size(),
                         this->model->values.harmonics_mags.size(),
-                        this->model->values.harmonics_phases.size(),
+//                        this->model->values.harmonics_phases.size(),
                         this->model->values.sinusoidal.size()
+//                        this->model->values.stochastic.size()
                     });
                 };
                 this->sound_length = this->max_frames * this->analysis.parameters.hop_size;
@@ -299,11 +300,65 @@ namespace Core
         Sound::Frame sound_frame;
         
         // TODO - Improve the name tagging for the components of a frame
-        sound_frame.harmonics_freqs = getComponentFrame(Frame::Component::HarmonicsFreqs, i_num_frame);
-        sound_frame.harmonics_mags = getComponentFrame(Frame::Component::HarmonicsMags, i_num_frame);
-        sound_frame.harmonics_phases = getComponentFrame(Frame::Component::HarmonicsPhases, i_num_frame);
-        sound_frame.stochastic = getComponentFrame(Frame::Component::Stochastic, i_num_frame);
-        sound_frame.residual = getComponentFrame(Frame::Component::Residual, i_num_frame, i_frame_length);
+//        sound_frame.harmonics_freqs = getComponentFrame(Frame::Component::HarmonicsFreqs, i_num_frame);
+//        sound_frame.harmonics_mags = getComponentFrame(Frame::Component::HarmonicsMags, i_num_frame);
+//        sound_frame.harmonics_phases = getComponentFrame(Frame::Component::HarmonicsPhases, i_num_frame);
+//        sound_frame.stochastic = getComponentFrame(Frame::Component::Stochastic, i_num_frame);
+//        sound_frame.residual = getComponentFrame(Frame::Component::Residual, i_num_frame, i_frame_length);
+        
+//        if ( i_num_frame >= this->model->values.harmonics_freqs.size())
+//        {
+//            sound_frame.harmonics_freqs = std::vector<float>(0);
+//            sound_frame.harmonics_mags = std::vector<float>(0);
+//            sound_frame.harmonics_phases = std::vector<float>(0);
+//            sound_frame.stochastic = std::vector<float>(0);
+//            sound_frame.residual = std::vector<float>(0);
+//        }
+//        else{
+//            sound_frame.harmonics_freqs = getComponentFrame(Frame::Component::HarmonicsFreqs, i_num_frame);
+//            sound_frame.harmonics_mags = getComponentFrame(Frame::Component::HarmonicsMags, i_num_frame);
+//            sound_frame.harmonics_phases = getComponentFrame(Frame::Component::HarmonicsPhases, i_num_frame);
+//            sound_frame.stochastic = getComponentFrame(Frame::Component::Stochastic, i_num_frame);
+//            sound_frame.residual = getComponentFrame(Frame::Component::Residual, i_num_frame, i_frame_length);
+//        }
+        if ( i_num_frame < this->model->values.harmonics_freqs.size())
+        {
+            sound_frame.harmonics_freqs = getComponentFrame(Frame::Component::HarmonicsFreqs, i_num_frame);
+            sound_frame.harmonics_mags = getComponentFrame(Frame::Component::HarmonicsMags, i_num_frame);
+            sound_frame.harmonics_phases = std::vector<float>(0);
+            //            sound_frame.harmonics_phases = getComponentFrame(Frame::Component::HarmonicsPhases, i_num_frame);
+        }
+        else
+        {
+            sound_frame.harmonics_freqs = std::vector<float>(0);
+            sound_frame.harmonics_mags = std::vector<float>(0);
+            sound_frame.harmonics_phases = std::vector<float>(0);
+        }
+        
+        if ( i_num_frame < this->model->values.sinusoidal.size())
+        {
+            sound_frame.sinusoidal = getComponentFrame(Frame::Component::Sinusoidal, i_num_frame);
+        }
+        else
+        {
+            sound_frame.sinusoidal = std::vector<float>(0);
+        }
+        
+        if ( i_num_frame < this->model->values.stochastic.size())
+        {
+            sound_frame.stochastic = getComponentFrame(Frame::Component::Stochastic, i_num_frame);
+        }
+        
+        if ( (i_num_frame * i_frame_length) < this->model->values.stochastic.size())
+        {
+            sound_frame.residual = getComponentFrame(Frame::Component::Residual, i_num_frame, i_frame_length);
+        }
+        else
+        {
+            sound_frame.residual = std::vector<float>(0);
+        }
+        
+        
         
         return sound_frame;
     }
@@ -316,145 +371,92 @@ namespace Core
         switch (component_name)
         {
             case Frame::Component::HarmonicsFreqs:
-            case Frame::Component::HarmonicsMags:
-            case Frame::Component::HarmonicsPhases:
-            case Frame::Component::Sinusoidal:
-            case Frame::Component::Stochastic:
-            {
-                std::vector<std::vector<float>> matrix_component;
-                
-                switch (component_name)
-                {
-                    case Frame::Component::HarmonicsFreqs:
-                        matrix_component = this->model->values.harmonics_freqs;
-                        break;
-                    case Frame::Component::HarmonicsMags:
-                        matrix_component = this->model->values.harmonics_mags;
-                        break;
-                    case Frame::Component::HarmonicsPhases:
-                        matrix_component = this->model->values.harmonics_phases;
-                        break;
-                    case Frame::Component::Sinusoidal:
-                        matrix_component = this->model->values.sinusoidal;
-                        break;
-                    case Frame::Component::Stochastic:
-                        matrix_component = this->model->values.stochastic;
-                        break;
-                    case Frame::Component::Residual:
-                        break;
-                }
-                
-                if ( i_num_frame < matrix_component.size() )
-                {
-                    for(int i = 0; i < matrix_component[i_num_frame].size(); i++)
-                    {
-//                        component_frame[i] = matrix_component[i_num_frame][i];
-                        component_frame.push_back( matrix_component[i_num_frame][i] );
-                    }
-                }
-                else
-                {
-                    std::vector<float> empty_frame(DEFAULT_HZ, this->max_harmonics);
-                    
-                    if (component_name == Frame::Component::HarmonicsMags)
-                    {
-                        std::fill(empty_frame.begin(), empty_frame.end(), DEFAULT_DB);
-                    }
-                    
-                    component_frame = empty_frame;
-                }
+                component_frame = this->model->values.harmonics_freqs[i_num_frame];
                 break;
-            }
+            case Frame::Component::HarmonicsMags:
+                component_frame = this->model->values.harmonics_mags[i_num_frame];
+                break;
+            case Frame::Component::HarmonicsPhases:
+                component_frame = this->model->values.harmonics_phases[i_num_frame];
+                break;
+            case Frame::Component::Sinusoidal:
+                component_frame = this->model->values.sinusoidal[i_num_frame];
+                break;
+            case Frame::Component::Stochastic:
+                component_frame = this->model->values.stochastic[i_num_frame];
+                break;
             case Frame::Component::Residual:
             {
                 std::vector<float> vector_component = this->model->values.residual;
-                
+
                 int i_start_sample = i_num_frame * i_frame_length;
                 int i_end_sample = i_start_sample + i_frame_length;
                 int i_vec_size = (int)vector_component.size();
-                
+
                 if (i_vec_size < i_end_sample)
                 {
                     i_end_sample = i_vec_size;
                 }
-                
+
                 if (i_vec_size < i_start_sample)
                 {
                     i_start_sample = i_vec_size;
                 }
-                
-//                if ( (i_start_sample < i_vec_size) && (i_vec_size < i_end_sample) )
-//                {
-//                    i_end_sample = i_vec_size;
-//                }
-                
-//                std::vector<float> residual_frame(i_frame_length, 0.0);
-                
-//                // TODO - Check total length of component
-//                // Output
-//                std::vector<float> residual_frame(i_frame_length, 0.0);
-                
-//                if ( i_num_frame < vector_component.size() )
-//                {
-//                    for(int i = 0; i < vector_component.size(); i++)
-//                    {
-//                        component_frame[i] = vector_component[i];
-////                        component_frame.push_back( vector_component[i] );
-//                    }
-//                }
-//                else
-//                {
-//                    std::vector<float> empty_frame(DEFAULT_HZ, this->max_harmonics);
-//
-//                    if (component_name == Frame::Component::HarmonicsMags)
-//                    {
-//                        std::fill(empty_frame.begin(), empty_frame.end(), DEFAULT_DB);
-//                    }
-//                }
-                
+
                 std::vector<float> residual_frame = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
-                
+
                 for (int i = 0; i < residual_frame.size(); i++)
                 {
 //                    component_frame[i] = residual_frame[i];
                     component_frame.push_back( residual_frame[i] );
                 }
-                
-//                std::vector<float> residual_frame_aux;
-//
-//                // TODO - Check total length of component
-//                if (i_vec_size > 0) residual_frame_aux = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
-//
-//                for (int i = 0; i < residual_frame_aux.size(); i++)
-//                {
-//                    residual_frame[i] = residual_frame_aux[i];
-//                }
-                
-//                std::vector<float> residual_frame_aux = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
 
-//                if ( i_start_sample < i_end_sample < component.size() )
+                break;
+            }
+//            {
+//                std::vector<std::vector<float>> matrix_component = this->model->values.harmonics_freqs;
+                
+//                switch (component_name)
 //                {
-//                    //                    residual_frame_aux = Tools::Get::veluesInRange(component, i_start_sample, i_end_sample);
+//                    case Frame::Component::HarmonicsFreqs:
+//                        component_frame = this->model->values.harmonics_freqs[i_num_frame];
+//                        break;
+//                    case Frame::Component::HarmonicsMags:
+//                        component_frame = this->model->values.harmonics_mags[i_num_frame];
 //                }
-//                else if (i_start_sample < len(component) < i_end_sample)
-//                {
-//                    i_end_sample = component.size();
+                
+                
+//                std::vector<std::vector<float>> matrix_component;
 //
-//                    residual_frame_aux = component[ i_start_sample : len(component) ]
-//                    //                    residual_frame_aux = Tools::Get::veluesInRange(component, i_start_sample, component.size());
+//                switch (component_name)
+//                {
+//                    case Frame::Component::HarmonicsFreqs:
+//                        matrix_component = this->model->values.harmonics_freqs;
+//                        break;
+//                    case Frame::Component::HarmonicsMags:
+//                        matrix_component = this->model->values.harmonics_mags;
+//                        break;
+//                    case Frame::Component::HarmonicsPhases:
+//                        matrix_component = this->model->values.harmonics_phases;
+//                        break;
+//                    case Frame::Component::Sinusoidal:
+//                        matrix_component = this->model->values.sinusoidal;
+//                        break;
+//                    case Frame::Component::Stochastic:
+//                        matrix_component = this->model->values.stochastic;
+//                        break;
+//                    case Frame::Component::Residual:
+//                        break;
 //                }
                 
-//                for (int i = 0; i < residual_frame.size(); i++)
-//                {
-//                    component_frame.push_back( residual_frame[i] );;
-////                    residual_frame[i] = residual_frame_aux[i];
-//                }
+//                component_frame = std::vector<float>(0);
                 
-//                if ( i_num_frame < residual_frame.size() )
+//                if ( i_num_frame < matrix_component.size() )
 //                {
-//                    for(int i = 0; i < residual_frame.size(); i++)
+//                    for(int i = 0; i < matrix_component[i_num_frame].size(); i++)
 //                    {
-//                        component_frame.push_back( residual_frame[i] );
+////                        component_frame[i] = matrix_component[i_num_frame][i];
+//                        component_frame.push_back( matrix_component[i_num_frame][i] );
 //                    }
 //                }
 //                else
@@ -465,10 +467,39 @@ namespace Core
 //                    {
 //                        std::fill(empty_frame.begin(), empty_frame.end(), DEFAULT_DB);
 //                    }
+//
+//                    component_frame = empty_frame;
 //                }
-                
-                break;
-            }
+//                break;
+//            }
+//            case Frame::Component::Residual:
+//            {
+//                std::vector<float> vector_component = this->model->values.residual;
+//
+//                int i_start_sample = i_num_frame * i_frame_length;
+//                int i_end_sample = i_start_sample + i_frame_length;
+//                int i_vec_size = (int)vector_component.size();
+//
+//                if (i_vec_size < i_end_sample)
+//                {
+//                    i_end_sample = i_vec_size;
+//                }
+//
+//                if (i_vec_size < i_start_sample)
+//                {
+//                    i_start_sample = i_vec_size;
+//                }
+//
+//                std::vector<float> residual_frame = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
+//
+//                for (int i = 0; i < residual_frame.size(); i++)
+//                {
+////                    component_frame[i] = residual_frame[i];
+//                    component_frame.push_back( residual_frame[i] );
+//                }
+//
+//                break;
+//            }
         }
             
         return component_frame;

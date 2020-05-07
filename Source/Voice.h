@@ -314,20 +314,7 @@ struct Voice
 
             if (this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
             {
-//                sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
-
-                if ( *i_current_frame >= this->min_note_end-1)
-                {
-                    sound_frame.harmonics_freqs = std::vector<float>(0);
-                    sound_frame.harmonics_mags = std::vector<float>(0);
-                }
-                else{
-                    sound_frame.harmonics_freqs = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_freqs[*i_current_frame];
-                    sound_frame.harmonics_mags = morph_sounds[Core::MorphLocation::Left]->model->values.harmonics_mags[*i_current_frame];
-                }
-                sound_frame.harmonics_phases = std::vector<float>(0);
-                sound_frame.stochastic = std::vector<float>(0);
-                sound_frame.residual = std::vector<float>(0);
+                sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
 
                 // Get target frequency
 //                float f_target_frequency = 440.0;
