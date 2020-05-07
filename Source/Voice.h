@@ -63,24 +63,6 @@ struct Voice
         this->max_loop_start = 0;
         this->min_loop_end = 0;
         this->min_note_end = 0;
-        
-        this->test_tone.active = false;
-        
-//        this->frame.resize(0);
-        
-        // Sounds
-        morph_sounds = this->instrument.getCloserSounds( this->f_current_midi_note, this->f_current_velocity );
-        
-        // Compute common looping regions
-        this->max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
-                                        morph_sounds[MorphLocation::Right]->loop.start);
-        
-        this->min_loop_end = std::min(morph_sounds[MorphLocation::Left]->loop.end,
-                                      morph_sounds[MorphLocation::Right]->loop.end);
-        
-        // Get the minimum length of both notes
-        this->min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
-                                      morph_sounds[MorphLocation::Right]->max_frames);
     }
     
     bool canPlaySound (SynthesiserSound* synthSound) override
@@ -105,6 +87,8 @@ struct Voice
         this->f_current_velocity = velocity;
         this->f_last_midi_note = this->f_current_midi_note;
         
+        this->updateMorphSounds();
+        
 //        // Sounds
 //        morph_sounds = this->instrument.getCloserSounds( this->f_current_midi_note, this->f_current_velocity );
 //
@@ -124,83 +108,22 @@ struct Voice
         this->mAttackGainSmoothed = 0.0;
         this->mDecayGainSmoothed = 1.0;
         this->tailOff = 1.0;
-
-        if (this->test_tone.active)
-        {
-            this->test_tone.currentAngle = 0.0;
-            this->test_tone.level = velocity * 0.15;
-            this->test_tone.tailOff = 0.0;
-            
-            auto cyclesPerSecond = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
-            auto cyclesPerSample = cyclesPerSecond / getSampleRate();
-            
-            this->test_tone.angleDelta = cyclesPerSample * MathConstants<double>::twoPi;
-        }
     }
     
     void stopNote(float velocity, bool allowTailOff) override
     {
 //        DBG(String(voice_ID) + " - stopNote");
-        
 //        allowTailOff = false;
         
         if (allowTailOff)
         {
-            // start a tail-off by setting this flag. The render callback will pick up on
-            // this and do a fade out, calling clearCurrentNote() when it's finished.
-            
-            // Release ADSR envelope
-//            this->adsr = StateADSR::Release;
-            
-//            if (tailOff == 0.0) // we only need to begin a tail-off if it's not already doing so - the
-//                tailOff = 1.0;  // stopNote method could be called more than once.
-            
-            if (this->test_tone.active)
-            {
-                if (this->test_tone.tailOff == 0.0) // we only need to begin a tail-off if it's not already doing so - the
-                    this->test_tone.tailOff = 1.0;  // stopNote method could be called more than once.
-            }
-            else
-            {
-                if (this->tailOff == 1.0) // we only need to begin a tail-off if it's not already doing so - the
-                    this->tailOff *= 0.999;  // stopNote method could be called more than once.
-            }
+            if (this->tailOff == 1.0) this->tailOff *= 0.999;
         }
         else
         {
             clearAndResetCurrentNote();
-            
-            if (this->test_tone.active)
-            {
-                this->test_tone.angleDelta = 0.0;
-            }
-            else
-            {
-                
-//                this->synthesis.live_values.i_current_frame = 0;
-//                this->synthesis.live_values.i_samples_ready = 0;
-                this->playing_note = false;
-            }
-            
-            // we're being told to stop playing immediately, so reset everything..
-            
+            this->playing_note = false;
         }
-        
-//        if (velocity == 0)
-//        {
-//            this->synthesis.reset();
-//            clearCurrentNote();
-//        }
-        
-        // TODO TEST - Temporal override
-//        allowTailOff = false;
-        
-        
-//        if (!allowTailOff)
-//        {
-//            this->playing_note = false;
-//            clearCurrentNote();
-//        }
     }
     
     void setADSRSampleRate(double sampleRate)
@@ -230,8 +153,8 @@ struct Voice
     {
 //        SynthesiserVoice::clearCurrentNote();
         this->clearCurrentNote();
-//        this->frame.resize(0);
         this->synthesis.reset();
+//        this->playing_note = false;
     }
     
     void pitchWheelMoved (int /*newValue*/) override
@@ -242,6 +165,25 @@ struct Voice
     }
     
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override    {}
+    
+    void updateMorphSounds()
+    {
+        // Update morph samples
+        this->morph_sounds = this->instrument.getCloserSounds( f_current_midi_note, f_current_velocity );
+        
+        // Compute common looping regions
+        this->max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
+                                        morph_sounds[MorphLocation::Right]->loop.start);
+        
+        this->min_loop_end = std::min(morph_sounds[MorphLocation::Left]->loop.end,
+                                      morph_sounds[MorphLocation::Right]->loop.end);
+        
+        // Get the minimum length of both notes
+        this->min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
+                                      morph_sounds[MorphLocation::Right]->max_frames);
+        
+        this->f_last_midi_note = this->f_current_midi_note;
+    }
     
     void renderNextBlock (AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override
     {
@@ -254,25 +196,16 @@ struct Voice
 //            }
             
             std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
-            //                std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, 512);
             
-            //                while (--numSamples >= 0)
-            //            for (int i_sample = 0; i_sample < 512; i_sample++)
             for (int i_sample = 0; i_sample < numSamples; i_sample++)
             {
                 auto currentSample = (float) (sound_frame[i_sample] * this->level * this->tailOff);
                 //                    auto currentSample = (float) (std::sin (this->currentAngle) * this->level * this->tailOff);
                 
-                // TODO TEST
-                this->synthesis.generated.y.push_back( currentSample );
+                for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
+                    outputBuffer.addSample (i, startSample, currentSample);
                 
-                if (!this->test_tone.active)
-                {
-                    for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-                        outputBuffer.addSample (i, startSample, currentSample);
-                    
-                    ++startSample;
-                }
+                ++startSample;
                 
                 if (this->tailOff < 1.0)
                 {
@@ -281,7 +214,6 @@ struct Voice
                     if (this->tailOff <= 0.005)
                     {
                         this->playing_note = false;
-                        break;
                     }
                 }
             }
@@ -291,107 +223,11 @@ struct Voice
                 clearAndResetCurrentNote();
             }
         }
-        
-        if (this->test_tone.active)
-        {
-            if (this->test_tone.angleDelta != 0.0)
-            {
-                if (this->test_tone.tailOff > 0.0)
-                {
-                    while (--numSamples >= 0)
-                    {
-                        auto currentSample = (float) (std::sin (this->test_tone.currentAngle) * this->test_tone.level * this->test_tone.tailOff);
-
-                        for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-                            outputBuffer.addSample (i, startSample, currentSample);
-
-                        this->test_tone.currentAngle += this->test_tone.angleDelta;
-                        ++startSample;
-
-                        this->test_tone.tailOff *= 0.99;
-
-                        if (this->test_tone.tailOff <= 0.005)
-                        {
-                            clearCurrentNote();
-
-                            this->test_tone.angleDelta = 0.0;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    while (--numSamples >= 0)
-                    {
-                        auto currentSample = (float) (std::sin (this->test_tone.currentAngle) * this->test_tone.level);
-
-                        for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-                            outputBuffer.addSample (i, startSample, currentSample);
-
-                        this->test_tone.currentAngle += this->test_tone.angleDelta;
-                        ++startSample;
-                    }
-                }
-            }
-        }
-        
-        
-        
-//        // TODO - Lock 512 buffer size support
-////        if (this->playing_note && numSamples == 512)
-//        if (this->playing_note)
-//        {
-//            std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, 512);
-////            std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
-//
-//            if (!this->test_tone.active)
-//            {
-//                for (int i_sample = 0; i_sample < numSamples; i_sample++)
-//                {
-//                    float f_current_sample = sound_frame[i_sample];
-//
-//                    mAttackGainSmoothed = mAttackGainSmoothed - 0.004 * (mAttackGainSmoothed - 1.0);
-//
-//                    //                // Test
-//                    //                this->synthesis.generated.y.push_back( f_current_sample );
-//
-//                    for (auto i_channel = outputBuffer.getNumChannels(); --i_channel >= 0;)
-//                    {
-//                        //            // TODO - This operation can be done before
-//                        //            int min_frame = int( std::min( mSound[1]->harmonic_frequencies.size(), mSound[2]->harmonic_frequencies.size() ) );
-//                        //
-//                        //            if ( (min_frame - mHarmonicsHead) < 12)
-//                        //            {
-//                        //                if (mDecayGainSmoothed <= 0.1) mDecayGainSmoothed = 0.0;
-//                        //                else mDecayGainSmoothed = mDecayGainSmoothed - 0.1;
-//                        //            }
-//                        //
-//
-//                        auto current_sample = f_current_sample * mAttackGainSmoothed * mDecayGainSmoothed * level;
-//                        //                    auto current_sample = f_current_sample * adsr.getNextSample() * mAttackGainSmoothed * mDecayGainSmoothed * level;
-//
-//                        outputBuffer.addSample (i_channel, startSample, current_sample);
-//                    }
-//
-//                    ++startSample;
-//                }
-//            }
-//
-//            if (!this->playing_note)
-//            {
-//                clearCurrentNote();
-////                break;
-//            }
-//        }
     }
     
     std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
     {
-//        // If a note is being played
-//        if (this->playing_note)
-//        {
         // Synthesis parameters shortcuts
-        const int i_fft_size = this->synthesis.parameters.fft_size;
         const int i_hop_size = this->synthesis.parameters.hop_size;
         int* i_current_frame = &this->synthesis.live_values.i_current_frame;
         
@@ -401,28 +237,14 @@ struct Voice
             // If current note has changed
             if (this->f_current_midi_note != this->f_last_midi_note)
             {
-                // Update morph samples
-                morph_sounds = this->instrument.getCloserSounds( f_current_midi_note, f_current_velocity );
-                
-                // Compute common looping regions
-                this->max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
-                                                morph_sounds[MorphLocation::Right]->loop.start);
-                
-                this->min_loop_end = std::min(morph_sounds[MorphLocation::Left]->loop.end,
-                                              morph_sounds[MorphLocation::Right]->loop.end);
-                
-                // Get the minimum length of both notes
-                this->min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
-                                              morph_sounds[MorphLocation::Right]->max_frames);
-                
-                this->f_last_midi_note = this->f_current_midi_note;
+                this->updateMorphSounds();
             }
         }
         
-        if(this->synthesis.live_values.i_samples_ready >= i_frame_length)
-        {
-            DBG("It happens");
-        }
+//        if (this->synthesis.live_values.i_samples_ready >= i_frame_length)
+//        {
+//            DBG("It happens");
+//        }
         
         while (this->synthesis.live_values.i_samples_ready < i_frame_length)
         {
@@ -490,7 +312,7 @@ struct Voice
 
             Sound::Frame sound_frame;
 
-            if (morph_sounds[MorphLocation::Left] == morph_sounds[MorphLocation::Right])
+            if (this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
             {
 //                sound_frame = morph_sounds[MorphLocation::Left]->getFrame(*i_current_frame, i_hop_size);
 
@@ -531,16 +353,8 @@ struct Voice
                 //                    sound_frame = morphSoundFrames(f_note, morph_sounds, *i_current_frame, i_hop_size, f_interpolation_factor);
             }
 
-
-            // TODO - TEST
-//                frame = std::vector<float>(i_frame_length, 0.0);
-//                this->synthesis.live_values.i_samples_ready += 128;
-//                *i_current_frame += 1;
-//                continue;
-
             // NOTE - "frame" will have "i_hop_size" more samples ready to be played after each call
             // TODO - This function needs to be optimized
-//            this->frame = this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
             this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
 
             *i_current_frame += 1;
@@ -556,12 +370,6 @@ struct Voice
         this->synthesis.live_values.i_samples_ready -= i_frame_length;
 
         return frame;
-//        }
-//        // If note is NOT being played
-//        else
-//        {
-//            return std::vector<float>(i_frame_length, 0.0);
-//        }
     }
     
 private:
@@ -572,9 +380,7 @@ private:
     AudioProcessorValueTreeState* mParameters;
     Instrument& instrument;
     Synthesis synthesis;
-    
-//    std::vector<float> frame;
-    
+        
     // Midi
     float f_current_midi_note;
     int f_current_velocity;
@@ -596,14 +402,4 @@ private:
     double mAttackGainSmoothed = 0.0;
     double mDecayGainSmoothed = 0.0;
     double tailOff = 1.0;
-    
-    // TODO TEST
-    struct TestTone
-    {
-        bool active = false;
-        double currentAngle = 0.0;
-        double angleDelta = 0.0;
-        double level = 0.0;
-        double tailOff = 0.0;
-    } test_tone;
 };
