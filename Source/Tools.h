@@ -417,5 +417,11 @@ namespace Core::Tools
                 given_vector[i] *= scalar;
             }
         }
+        
+        template<typename T>
+        inline T dbToLinear(T db_value)
+        {
+            return (T)std::powf(10.0, db_value / 20.0);
+        }
     }
 }

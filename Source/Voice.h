@@ -195,11 +195,11 @@ struct Voice
 //                DBG("CHECK THIS!");
 //            }
             
-            std::vector<float> sound_frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
+            std::vector<float> frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
             
             for (int i_sample = 0; i_sample < numSamples; i_sample++)
             {
-                auto currentSample = (float) (sound_frame[i_sample] * this->level * this->tailOff);
+                auto currentSample = (float) (frame[i_sample] * this->level * this->tailOff);
                 //                    auto currentSample = (float) (std::sin (this->currentAngle) * this->level * this->tailOff);
                 
                 for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
@@ -241,10 +241,13 @@ struct Voice
             }
         }
         
+        
 //        if (this->synthesis.live_values.i_samples_ready >= i_frame_length)
 //        {
 //            DBG("It happens");
 //        }
+        
+        Sound::Frame sound_frame;
         
         while (this->synthesis.live_values.i_samples_ready < i_frame_length)
         {
@@ -382,7 +385,7 @@ struct Voice
 
             *i_current_frame += 1;
             
-            if ( *i_current_frame > this->min_note_end)
+            if ( *i_current_frame >= this->min_note_end)
             {
                 // End note playback
                 this->playing_note = false;
@@ -424,7 +427,6 @@ private:
     
     // Sounds
     Core::MorphSounds morph_sounds;
-    Sound::Frame sound_frame;
     int max_loop_start;
     int min_loop_end;
     int min_note_end;

@@ -179,11 +179,11 @@ namespace Core
                 this->model->sinusoidal = hasChild(xml_synthesis, "l");
                 this->model->stochastic = hasChild(xml_synthesis, "s");
                 this->model->residual   = hasChild(xml_synthesis, "r");
-                if (this->model->harmonic)      this->model->setHarmonics(  getMatrixOfFloats(xml_synthesis, "f"), getMatrixOfFloats(xml_synthesis, "m") );
-                if (this->model->phases)        this->model->setPhases(     getMatrixOfFloats(xml_synthesis, "p") );
-                if (this->model->sinusoidal)    this->model->setSinusoidal( getMatrixOfFloats(xml_synthesis, "l") );
-                if (this->model->stochastic)    this->model->setStochastic( getMatrixOfFloats(xml_synthesis, "s") );
-                if (this->model->residual)      this->model->setResidual(   getVectorOfFloats(xml_synthesis, "r") );
+                if (this->model->harmonic)      this->model->setHarmonics(  getMatrixOfFloats(xml_synthesis, "f"), getMatrixOfFloats(xml_synthesis, "m"), true );
+                if (this->model->phases)        this->model->setPhases(     getMatrixOfFloats(xml_synthesis, "p"), true );
+                if (this->model->sinusoidal)    this->model->setSinusoidal( getMatrixOfFloats(xml_synthesis, "l"), true );
+                if (this->model->stochastic)    this->model->setStochastic( getMatrixOfFloats(xml_synthesis, "s"), true );
+                if (this->model->residual)      this->model->setResidual(   getVectorOfFloats(xml_synthesis, "r"), true );
 
     //            // Decode the values from the ".had" files
     //            self.decodeHadValues(had, self.model)
@@ -251,14 +251,13 @@ namespace Core
                 this->extractFeatures();
 
                 /** Save Original Values */
-                this->saveOriginalValues();
+//                this->saveOriginalValues();
                 
                 /** Normalize magnitudes on load by default */
                 this->normalizeMagnitudes();
                 
                 /** Updating flags */
                 this->had_file_loaded = true;
-                
                 
                 // TODO - Test
                 this->loaded = true;
@@ -349,7 +348,7 @@ namespace Core
             sound_frame.stochastic = getComponentFrame(Frame::Component::Stochastic, i_num_frame);
         }
         
-        if ( (i_num_frame * i_frame_length) < this->model->values.stochastic.size())
+        if ( (i_num_frame * i_frame_length) < this->model->values.residual.size())
         {
             sound_frame.residual = getComponentFrame(Frame::Component::Residual, i_num_frame, i_frame_length);
         }
@@ -621,9 +620,9 @@ namespace Core
 
     void Sound::normalizeMagnitudes()
     {
-        // Initialize min and max db
+        // Define normalization range db
         float min_db = -100.0;
-        float max_db = 0.0;
+        float max_db = -1.0;
         
         // Initialize min and max values
         float min_val = 0.0;
@@ -642,7 +641,7 @@ namespace Core
             if (local_max_val > max_val) max_val = local_max_val;
         }
         
-        // Normalize the harmonic magnitudes
+        // Normalize the harmonics magnitudes
         for (int i=0; i<harmonics_mags.size(); i++)
         {
             for (int j=0; j<harmonics_mags[i].size(); j++)
@@ -653,5 +652,57 @@ namespace Core
         
         // Set the harmonic magnitudes matrix
         this->model->setMagnitudes( harmonics_mags );
+        
+        // Calcualte the normalization factor applied over the harmonics magnitudes
+        this->features.normalization_factor = Tools::Calculate::dbToLinear( -std::abs(max_val - max_db) );
+        
+        // Define normalization range linear
+        float max_val_from_db = Tools::Calculate::dbToLinear( max_val );
+        float max_linear = Tools::Calculate::dbToLinear(max_db);
+        float min_linear = -max_linear;
+        
+        // Initialize min and max values
+        float min_val_linear = 0.0;
+        float max_val_linear = 0.0;
+
+        // Get the residual component
+        std::vector<float> residual = this->model->values.residual;
+        
+        // Find the max of the residual component
+        for (int i = 0; i < residual.size(); i++)
+        {
+            float current_val = std::abs( residual[i] );
+            if (current_val > max_val_linear) max_val_linear = current_val;
+        }
+        
+        if (max_val_from_db > max_val_linear)
+        {
+            max_val_linear = max_val_from_db;
+        }
+        
+        min_val_linear = -max_val_linear;
+        
+        float residual_normalization_factor = std::abs(max_val_linear - max_linear);
+        
+        // Normalize the residual component with the same factor
+        for (int i = 0; i < residual.size(); i++)
+        {
+//            residual[i] /= residual_normalization_factor;
+//            residual[i] /= this->features.normalization_factor;
+//            residual[i] = (max_linear - min_linear) * ( (residual[i] - min_val_linear) / (max_val_linear - min_val_linear) ) + min_linear;
+            residual[i] = (max_linear - min_linear) * ( (residual[i] - min_val_linear) / (max_val_linear - min_val_linear) ) + min_linear;
+        }
+        
+        std::vector<float> results_great;
+        copy_if(residual.begin(), residual.end(), back_inserter(results_great),[](float n ){ return  n > 1.0;});
+        
+        std::vector<float> results_less;
+        copy_if(residual.begin(), residual.end(), back_inserter(results_less),[](float n ){ return  n < -1.0;});
+        
+        if (results_great.size() > 0) DBG("UPPER CLIPPING");
+        if (results_less.size() > 0) DBG("LOWER CLIPPING");
+
+        // Set the normalized residual component
+        this->model->setResidual( residual );
     }
 } // namespace Core

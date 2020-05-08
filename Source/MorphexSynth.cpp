@@ -23,11 +23,12 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 
     //    JUCE::DirectoryIterator()
 //    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Morph";
-        std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
+    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
+//    std::string instrument_folder = "/Users/Marc/Documents/Audio Plugins/Morphex/Instruments/Suitcase Dry Full";
 
     DirectoryIterator iter (File (instrument_folder), true, "*.had");
     
-//    int i = 1;
+    int i = 0;
     while (iter.next())
     {
         File sound_file (iter.getFile());
@@ -41,7 +42,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
         
 //        mSound[i] = std::make_unique<Core::Sound>(sound_file_name);
 //
-//        i++;
+        i++;
         
         this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound = sound;
         this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loaded = true;
@@ -49,6 +50,8 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->setSound( sound );
     //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loadSound( sound_file_name );
     }
+    
+    DBG("Sound files loaded: " + String(i));
     
     // Add some voices to our synth, to play the sounds..
     for (int i = 0; i < MAX_VOICES; i++)
@@ -72,7 +75,8 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     this->addSound( new MorphSound() );
     
     // TODO TEST
-    this->setNoteStealingEnabled (false);
+    this->setNoteStealingEnabled (true);
+//    this->setNoteStealingEnabled (false);
 }
 
 MorphexSynth::~MorphexSynth() {}

@@ -126,16 +126,17 @@ namespace Core
         // A list with the indexes of the harmonics we want to interpolate
 //        std::vector<int> idx_harmonics = Tools::Generate::range(0, MAX_HARMONICS);
         //
-        std::vector<float> harmonics_phases;
         
-        if ( sound_frame.hasPhases() )
-        {
-            harmonics_phases = sound_frame.harmonics_phases;
-        }
-        else
-        {
-            harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
-        }
+//        std::vector<float> harmonics_phases;
+//        
+//        if ( sound_frame.hasPhases() )
+//        {
+//            harmonics_phases = sound_frame.harmonics_phases;
+//        }
+//        else
+//        {
+//            harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
+//        }
         
         //        std::vector<float> harmonics_freqs_to_interpolate = Tools::Get::valuesByIndex(sound_frame.harmonics_freqs, idx_harmonics);
         //        std::vector<float> harmonics_mags_to_interpolate = Tools::Get::valuesByIndex(sound_frame.harmonics_mags, idx_harmonics);
@@ -152,7 +153,7 @@ namespace Core
         // TODO - TOFIX - This does not work
         std::vector<float> y_harmonics = generateSines(sound_frame.harmonics_freqs,
                                                        sound_frame.harmonics_mags,
-                                                       harmonics_phases,
+                                                       sound_frame.harmonics_phases,
                                                        NS, FS);
         
         // Applying the window and saving the result on the output vector "harmonic"
@@ -164,6 +165,7 @@ namespace Core
 //            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
             
             // TODO - Is this faster in two separated for loops?
+//            yw_harmonics[i] = 0.0;
             yw_harmonics[i] = y_harmonics[i] * this->window.harm[i];
             yw[i] = yw_harmonics[i];
         }
@@ -184,6 +186,15 @@ namespace Core
 //            }
 //        }
         
+        // Residual compontent
+        if (sound_frame.hasResidual())
+        {
+            for (int i = 0; i < sound_frame.residual.size(); i++)
+            {
+                yw[i] += sound_frame.residual[i];
+            }
+        }
+        
         return yw;
     }
     
@@ -203,6 +214,14 @@ namespace Core
         {
             updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
         }
+        
+        std::vector<float> harmonics_phases;
+        
+        if ( !sound_frame.hasPhases() )
+        {
+            sound_frame.harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
+        }
+
 //        if (this->live_values.first_frame)
 //        {
 ////            this->live_values.first_frame = false;

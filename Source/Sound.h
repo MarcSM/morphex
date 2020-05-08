@@ -149,6 +149,7 @@ public:
         };
         NotesMap notes;
         float predominant_note;
+        float normalization_factor = 1.0;
     };
     SoundFeatures features;
     
