@@ -64,7 +64,7 @@ struct Voice
         this->loop_mode = true;
         this->hold_note = false;
         this->track_velocity = false; // High CPU usage
-        this->allow_pitch_wheel = true;
+        this->allow_pitch_wheel = false;
 
         // Sounds
         this->max_loop_start = 0;
@@ -151,18 +151,19 @@ struct Voice
     {
         // Map range 0-16383 to -12:12 semitones
         //        this->f_current_midi_pitch_wheel = jmap((float)newValue, 0.0f, 16383.0f,
-        float f_new_midi_pitch_wheel = jmap((float)newValue, 0.0f, 16383.0f,
-                                            -this->f_pitch_wheel_range_semitones,
-                                            this->f_pitch_wheel_range_semitones);
         
-        if (set_current)
-        {
-            this->f_current_midi_pitch_wheel.setCurrentAndTargetValue( f_new_midi_pitch_wheel );
-        }
-        else
-        {
-            this->f_current_midi_pitch_wheel.setTargetValue( f_new_midi_pitch_wheel );
-        }
+//        float f_new_midi_pitch_wheel = jmap((float)newValue, 0.0f, 16383.0f,
+//                                            -this->f_pitch_wheel_range_semitones,
+//                                            this->f_pitch_wheel_range_semitones);
+//        
+//        if (set_current)
+//        {
+//            this->f_current_midi_pitch_wheel.setCurrentAndTargetValue( f_new_midi_pitch_wheel );
+//        }
+//        else
+//        {
+//            this->f_current_midi_pitch_wheel.setTargetValue( f_new_midi_pitch_wheel );
+//        }
         
         
         
@@ -238,10 +239,10 @@ struct Voice
     
     void renderNextBlock (AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override
     {
-        if (allow_pitch_wheel) this->f_current_midi_note = this->f_pressed_midi_note + this->f_current_midi_pitch_wheel.getNextValue();
-        
         if (this->playing_note)
         {
+            if (this->allow_pitch_wheel) this->f_current_midi_note = this->f_pressed_midi_note + this->f_current_midi_pitch_wheel.getNextValue();
+            
 //            if (numSamples != 512)
 //            {
 //                DBG("numSamples = " + String(numSamples));
