@@ -28,7 +28,8 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     //    std::string instrument_folder = "/Users/Marc/Documents/Audio Plugins/Morphex/Instruments/Suitcase Dry Full";
     
     
-    std::string instrument_folder = "Suitcase Dry Full";
+    std::string instrument_folder = "Suitcase Dry Full Velocity Test";
+//    std::string instrument_folder = "Suitcase Dry Full";
     std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
 
     DirectoryIterator iter (File (full_path), true, "*.had");
@@ -60,10 +61,11 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
     
-    AlertWindow aux ("Sound files loaded", "Sound files loaded: " + String(this->instrument.num_samples_loaded), AlertWindow::NoIcon);
-    aux.showMessageBox (AlertWindow::WarningIcon,
+    AlertWindow aux ("Sound files loaded", "Sound files loaded: " + String(this->instrument.num_samples_loaded), AlertWindow::InfoIcon);
+    aux.showMessageBox (AlertWindow::NoIcon,
                         "Sound files loaded",
-                        "Number of sound files loaded: " + String(this->instrument.num_samples_loaded),
+                        "Instrument path: " + String(full_path) +
+                        "\nNumber of sound files loaded: " + String(this->instrument.num_samples_loaded),
                         "Accept");
     
     if ( this->instrument.num_samples_loaded == 0)
