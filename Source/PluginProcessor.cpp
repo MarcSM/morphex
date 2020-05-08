@@ -250,11 +250,11 @@ void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, 
             if (!sound_1_check.existsAsFile())
             {
                 error_loading_sounds = true;
-                AlertWindow aux ("Sound not found", "The sound '" + sound_1_file_path + "' is not in your collection", AlertWindow::NoIcon);
-                aux.showMessageBox (AlertWindow::WarningIcon,
-                                    "Sound not found",
-                                    "The preset couldn't be loaded, the sound '" + sound_1_file_path + "' is not in your library",
-                                    "Accept");
+//                AlertWindow aux ("Sound not found", "The sound '" + sound_1_file_path + "' is not in your collection", AlertWindow::NoIcon);
+//                aux.showMessageBox (AlertWindow::WarningIcon,
+//                                    "Sound not found",
+//                                    "The preset couldn't be loaded, the sound '" + sound_1_file_path + "' is not in your library",
+//                                    "Accept");
             }
             
             // Check if sound 2 file path is valid
@@ -263,11 +263,11 @@ void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, 
             if (!sound_2_check.existsAsFile())
             {
                 error_loading_sounds = true;
-                AlertWindow aux ("Sound not found", "The sound '" + sound_2_file_path + "' is not in your collection", AlertWindow::NoIcon);
-                aux.showMessageBox (AlertWindow::WarningIcon,
-                                    "Sound not found",
-                                    "The preset couldn't be loaded, the sound '" + sound_2_file_path + "' is not in your library",
-                                    "Accept");
+//                AlertWindow aux ("Sound not found", "The sound '" + sound_2_file_path + "' is not in your collection", AlertWindow::NoIcon);
+//                aux.showMessageBox (AlertWindow::WarningIcon,
+//                                    "Sound not found",
+//                                    "The preset couldn't be loaded, the sound '" + sound_2_file_path + "' is not in your library",
+//                                    "Accept");
             }
             
             if (!error_loading_sounds)

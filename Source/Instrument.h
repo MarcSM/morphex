@@ -77,7 +77,8 @@ public:
     // Data
     std::string name;
     std::string samples_dirpath;
-    
+    int num_samples_loaded = 0;
+
     // Mode
 //    Mode mode = Mode::Morphing;
     Mode mode = Mode::FullRange;

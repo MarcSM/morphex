@@ -79,6 +79,11 @@ struct Voice
 //        // Reset synthesis engine
 //        this->synthesis.reset();
         
+//        if (velocity != 0.0 and velocity != 1.0)
+//        {
+//            DBG("NOW START");
+//        }
+        
         // Note playback
         this->adsr = StateADSR::Attack;
         this->playing_note = true;
@@ -416,7 +421,7 @@ private:
         
     // Midi
     float f_current_midi_note;
-    int f_current_velocity;
+    float f_current_velocity;
     float f_last_midi_note;
     
     // Note playback

@@ -23,12 +23,19 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 
     //    JUCE::DirectoryIterator()
 //    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Morph";
-    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
-//    std::string instrument_folder = "/Users/Marc/Documents/Audio Plugins/Morphex/Instruments/Suitcase Dry Full";
-
-    DirectoryIterator iter (File (instrument_folder), true, "*.had");
+//    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
+//    std::string instrument_folder = "/Users/Marc/Documents/Audio Plugins/Morphex/Instruments/Suitcase Dry Full Velocity Test";
+    //    std::string instrument_folder = "/Users/Marc/Documents/Audio Plugins/Morphex/Instruments/Suitcase Dry Full";
     
-    int i = 0;
+    
+    std::string instrument_folder = "Suitcase Dry Full";
+    std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
+
+    DirectoryIterator iter (File (full_path), true, "*.had");
+//    DirectoryIterator iter (File (full_path), true, "*.had");
+    
+//    static const String PLUGIN_DATA_DIRECTORY = (File::getSpecialLocation(File::userDesktopDirectory)).getFullPathName() + directorySeparator + PLUGIN_NAME;
+    
     while (iter.next())
     {
         File sound_file (iter.getFile());
@@ -42,7 +49,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
         
 //        mSound[i] = std::make_unique<Core::Sound>(sound_file_name);
 //
-        i++;
+        this->instrument.num_samples_loaded++;
         
         this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound = sound;
         this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loaded = true;
@@ -51,7 +58,24 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loadSound( sound_file_name );
     }
     
-    DBG("Sound files loaded: " + String(i));
+    DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
+    
+    AlertWindow aux ("Sound files loaded", "Sound files loaded: " + String(this->instrument.num_samples_loaded), AlertWindow::NoIcon);
+    aux.showMessageBox (AlertWindow::WarningIcon,
+                        "Sound files loaded",
+                        "Number of sound files loaded: " + String(this->instrument.num_samples_loaded),
+                        "Accept");
+    
+    if ( this->instrument.num_samples_loaded == 0)
+    {
+        JUCEApplication::getInstance()->systemRequestedQuit();
+    }
+    
+    //                AlertWindow aux ("Sound not found", "The sound '" + sound_2_file_path + "' is not in your collection", AlertWindow::NoIcon);
+    //                aux.showMessageBox (AlertWindow::WarningIcon,
+    //                                    "Sound not found",
+    //                                    "The preset couldn't be loaded, the sound '" + sound_2_file_path + "' is not in your library",
+    //                                    "Accept");
     
     // Add some voices to our synth, to play the sounds..
     for (int i = 0; i < MAX_VOICES; i++)

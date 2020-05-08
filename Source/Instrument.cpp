@@ -155,10 +155,41 @@ namespace Core
 //
 //        return closer_sounds;
         
+//        if (f_velocity != 0.0 and f_velocity != 1.0)
+//        {
+//            DBG("NOW GET");
+//        }
+        
+        // Transform velocity range from 0-1 to 0-127
+        float f_velocity_midi_range = jmap(f_velocity, 0.0f, 1.0f, 1.0f, 127.0f);
+        
+        // Getting closer velocities
+        for (int i = 0; i < closer_notes.size(); i++)
+        {
+            std::vector<Velocity*> loaded_velocities = closer_notes[i]->getLoadedVelocities();
+            
+            int i_closer_velocity = 0;
+            float f_shortest_velocity_distance = Note::NUM_MIDI_VELOCITIES;
+
+            for (int j = 0; j < loaded_velocities.size(); j++)
+            {
+                float f_velocity_distance = std::abs( loaded_velocities[j]->value - f_velocity_midi_range );
+                
+                // Priority to lower velocities ("<=" for upper velocities)
+                if (f_velocity_distance < f_shortest_velocity_distance)
+                {
+                    i_closer_velocity = j;
+                    f_shortest_velocity_distance = f_velocity_distance;
+                }
+            }
+            
+            closer_sounds[i] = &loaded_velocities[i_closer_velocity]->sound;
+        }
+        
 //        // TODO - Remove this velocity bypass
-        int i_velocity = 0;
-        closer_sounds[MorphLocation::Left] = &closer_notes[MorphLocation::Left]->getLoadedVelocities()[i_velocity]->sound;
-        closer_sounds[MorphLocation::Right] = &closer_notes[MorphLocation::Right]->getLoadedVelocities()[i_velocity]->sound;
+//        int i_velocity = 0;
+//        closer_sounds[MorphLocation::Left] = &closer_notes[MorphLocation::Left]->getLoadedVelocities()[i_velocity]->sound;
+//        closer_sounds[MorphLocation::Right] = &closer_notes[MorphLocation::Right]->getLoadedVelocities()[i_velocity]->sound;
 //
         return closer_sounds;
     }
