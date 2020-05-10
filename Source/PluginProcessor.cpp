@@ -227,7 +227,18 @@ void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, 
     
     std::unique_ptr<XmlElement> xmlState;
     
-    xmlState.reset(getXmlFromBinary(data, sizeInBytes));
+//    pluginStateInfoXML = parameters.state.createXml();
+//    and
+//    pluginStateInfoXML = getXmlFromBinary(data, sizeInBytes);
+    
+    xmlState = getXmlFromBinary(data, sizeInBytes);
+//    xmlState.reset();
+//    xmlState.reset(getXmlFromBinary(data, sizeInBytes));
+    
+//    std::unique_ptr<XmlElement> model;
+//    model = AudioProcessor::getXmlFromBinary(data, sizeInBytes);
+//    model = XmlDocument::parse(f);
+//    model = std::make_unique<XmlElement>("Test");
     
     if (xmlState != nullptr) {
         forEachXmlChildElement(*xmlState, subChild) {

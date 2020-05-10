@@ -18,6 +18,8 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     
+    setResizable (true, false);
+    
     setSize(MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT);
     
     // TODO TEST - Disable UI
