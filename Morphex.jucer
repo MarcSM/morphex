@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="AFG8tp" name="Morphex" projectType="audioplug" jucerVersion="5.4.3"
+<JUCERPROJECT id="AFG8tp" name="Morphex" projectType="audioplug" jucerVersion="5.4.7"
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               cppLanguageStandard="17" version="0.3.0" companyName="Morphex"
               pluginManufacturer="Morphex" pluginAUMainType="'aumu'">
@@ -67,6 +67,10 @@
       <FILE id="WdhB7i" name="SMTXYPad.h" compile="0" resource="0" file="Source/SMTXYPad.h"/>
     </GROUP>
     <GROUP id="{97E6AD4A-6F3E-8144-D45D-39DA01D25B9D}" name="Panels">
+      <FILE id="jVI4MT" name="MainPanel.cpp" compile="1" resource="0" file="Source/MainPanel.cpp"/>
+      <FILE id="xULjyw" name="MainPanel.h" compile="0" resource="0" file="Source/MainPanel.h"/>
+      <FILE id="xkpzSD" name="MainPanel2.cpp" compile="1" resource="0" file="Source/MainPanel2.cpp"/>
+      <FILE id="uqVlhe" name="MainPanel2.h" compile="0" resource="0" file="Source/MainPanel2.h"/>
       <FILE id="yvqKAf" name="SMTBottomPanel.cpp" compile="1" resource="0"
             file="Source/SMTBottomPanel.cpp"/>
       <FILE id="mOQZYg" name="SMTBottomPanel.h" compile="0" resource="0"
@@ -201,7 +205,7 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <LIVE_SETTINGS>
-    <OSX buildEnabled="1"/>
+    <OSX buildEnabled="0" warningsEnabled="0" continuousRebuildEnabled="0"/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
 </JUCERPROJECT>

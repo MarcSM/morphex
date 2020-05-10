@@ -14,7 +14,7 @@
 #include "SMTHelperFunctions.h"
 
 SMTCenterPanel::SMTCenterPanel(SpectralMorphingToolAudioProcessor* inProcessor)
-:   SMTPanelBase(inProcessor)
+:   SMTPanelBase()
 {
     setSize(CENTER_PANEL_WIDTH, CENTER_PANEL_HEIGHT);
     
@@ -78,6 +78,12 @@ SMTCenterPanel::SMTCenterPanel(SpectralMorphingToolAudioProcessor* inProcessor)
     addAndMakeVisible(mXYPad);
     
     repaint();
+}
+
+SMTCenterPanel::SMTCenterPanel()
+:   SMTPanelBase()
+{
+    
 }
 
 SMTCenterPanel::~SMTCenterPanel()

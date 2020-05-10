@@ -20,6 +20,7 @@ class SMTTopPanel
 {
 public:
     
+    SMTTopPanel();
     SMTTopPanel(SpectralMorphingToolAudioProcessor* inProcessor);
     ~SMTTopPanel();
     

@@ -17,13 +17,24 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    
+
+    #if JUCE_ANDROID || JUCE_IOS
+    setFullScreen (true);
+    #else
     setResizable (true, false);
+    setResizeLimits (MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT, MAIN_PANEL_WIDTH * 4, MAIN_PANEL_HEIGHT * 4);
+    centreWithSize (getWidth(), getHeight());
+    #endif
     
-    setSize(MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT);
+    setVisible (true);
+    
+    // setResizable (true, false);
+    
+    // setSize(MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT);
     
     // TODO TEST - Disable UI
-    mMainPanel = new SMTMainPanel(&processor);
+    mMainPanel = new MainPanel();
+//    mMainPanel = new MainPanel(&processor);
     addAndMakeVisible(mMainPanel);
     // TODO TEST - Disable UI
     

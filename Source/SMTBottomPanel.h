@@ -20,6 +20,7 @@ class SMTBottomPanel
 {
 public:
     
+    SMTBottomPanel();
     SMTBottomPanel(SpectralMorphingToolAudioProcessor* inProcessor);
     ~SMTBottomPanel();
     

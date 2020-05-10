@@ -19,13 +19,14 @@ class SMTPanelBase
 {
 public:
     
-    SMTPanelBase(SpectralMorphingToolAudioProcessor* inProcessor);
+    SMTPanelBase();
+//    SMTPanelBase(SpectralMorphingToolAudioProcessor* inProcessor);
     ~SMTPanelBase();
     
     void paint(Graphics& g) override;
     
 protected:
     
-    SpectralMorphingToolAudioProcessor* mProcessor;
+//    SpectralMorphingToolAudioProcessor* mProcessor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SMTPanelBase);
 };

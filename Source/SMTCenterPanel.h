@@ -27,6 +27,7 @@ class SMTCenterPanel
 {
 public:
     
+    SMTCenterPanel();
     SMTCenterPanel(SpectralMorphingToolAudioProcessor* inProcessor);
     ~SMTCenterPanel();
     

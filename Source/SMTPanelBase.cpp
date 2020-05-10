@@ -12,9 +12,9 @@
 #include "SMTInterfaceDefines.h"
 
 SMTPanelBase::SMTPanelBase(SpectralMorphingToolAudioProcessor* inProcessor)
-:   mProcessor(inProcessor)
+//:   mProcessor(inProcessor)
 {
-    mProcessor = inProcessor;
+//    mProcessor = inProcessor;
 }
 
 SMTPanelBase::~SMTPanelBase()
