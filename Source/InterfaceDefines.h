@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    SMTInterfaceDefines.h
-    Created: 14 Jun 2019 7:42:29pm
+    InterfaceDefines.h
+    Created: 12 May 2020 11:40:08am
     Author:  Marc Sanchez Martinez
 
   ==============================================================================
@@ -12,22 +12,32 @@
 
 #include "JuceHeader.h"
 
-#define MAIN_PANEL_WIDTH    900
-#define MAIN_PANEL_HEIGHT   700
+#define MORPHEX_PANEL_WIDTH   1000
+#define MORPHEX_PANEL_HEIGHT  600
 
-#define TOP_PANEL_WIDTH     MAIN_PANEL_WIDTH
-#define TOP_PANEL_HEIGHT    45
+#define TOP_PANEL_WIDTH     MORPHEX_PANEL_WIDTH
+#define TOP_PANEL_HEIGHT    50
 
-#define BOTTOM_PANEL_WIDTH  MAIN_PANEL_WIDTH
-#define BOTTOM_PANEL_HEIGHT 65
+#define BOTTOM_PANEL_WIDTH  MORPHEX_PANEL_WIDTH
+#define BOTTOM_PANEL_HEIGHT 50
 
 #define SOUND_PANEL_WIDTH   250
-#define SOUND_PANEL_HEIGHT  MAIN_PANEL_HEIGHT - TOP_PANEL_HEIGHT - BOTTOM_PANEL_HEIGHT
+#define SOUND_PANEL_HEIGHT  MORPHEX_PANEL_HEIGHT - TOP_PANEL_HEIGHT - BOTTOM_PANEL_HEIGHT
 
-#define CENTER_PANEL_WIDTH  MAIN_PANEL_WIDTH - (2 * SOUND_PANEL_WIDTH)
+#define CENTER_PANEL_WIDTH  MORPHEX_PANEL_WIDTH - (2 * SOUND_PANEL_WIDTH)
 #define CENTER_PANEL_HEIGHT SOUND_PANEL_HEIGHT
 
 // General
+namespace GUI
+{
+    const Colour BackgroundColor = Colour(34, 34, 34);
+    const Colour BackgroundColorGradientStart = Colour(70, 70, 70).withAlpha(0.75f);
+    const Colour BackgroundColorGradientEnd = BackgroundColorGradientStart.withAlpha(0.0f);
+}
+
+
+
+
 const Colour SMTColour_bg = Colour(34, 34, 34);
 
 const Colour SMTBlackColour = Colour(0, 0, 0);

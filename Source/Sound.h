@@ -13,7 +13,7 @@
 #include "JuceHeader.h"
 
 #include "Model.h"
-#include "SynthesisEngine.h"
+//#include "SynthesisEngine.h"
 //#include "SMTWaveformPreview.h"
 
 #include <vector>

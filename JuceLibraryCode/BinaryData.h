@@ -14,6 +14,9 @@ namespace BinaryData
     extern const char*   violinB3_had;
     const int            violinB3_hadSize = 597328;
 
+    extern const char*   morphex_long_logo_png;
+    const int            morphex_long_logo_pngSize = 86600;
+
     extern const char*   morphex_logo_small_png;
     const int            morphex_logo_small_pngSize = 1540;
 
@@ -27,7 +30,7 @@ namespace BinaryData
     const int            github_logo_pngSize = 36571;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 6;
+    const int namedResourceListSize = 7;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

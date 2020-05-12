@@ -21,11 +21,6 @@
     </GROUP>
     <GROUP id="{4E5E0A46-E03E-E82E-84AF-6D34C82A5934}" name="Entities">
       <FILE id="i5U6Ym" name="MorphSound.h" compile="0" resource="0" file="Source/MorphSound.h"/>
-      <FILE id="EgfQde" name="MorphVoice.h" compile="0" resource="0" file="Source/MorphVoice.h"/>
-      <FILE id="EKJdye" name="SynthesisEngine.cpp" compile="1" resource="0"
-            file="Source/SynthesisEngine.cpp"/>
-      <FILE id="sLBu9V" name="SynthesisEngine.h" compile="0" resource="0"
-            file="Source/SynthesisEngine.h"/>
       <FILE id="tvr3eQ" name="MorphexSynth.cpp" compile="1" resource="0"
             file="Source/MorphexSynth.cpp"/>
       <FILE id="T1P9yV" name="MorphexSynth.h" compile="0" resource="0" file="Source/MorphexSynth.h"/>
@@ -36,77 +31,26 @@
       <FILE id="dJE4Xa" name="SMTPresetManager.h" compile="0" resource="0"
             file="Source/SMTPresetManager.h"/>
     </GROUP>
-    <GROUP id="{A8DC72F7-DA5B-6243-1C16-AFA2E4D75948}" name="Components">
-      <FILE id="PUrNgy" name="SMTAdditionalParameters.cpp" compile="1" resource="0"
-            file="Source/SMTAdditionalParameters.cpp"/>
-      <FILE id="NS7tq8" name="SMTAdditionalParameters.h" compile="0" resource="0"
-            file="Source/SMTAdditionalParameters.h"/>
-      <FILE id="L3wMyS" name="SMTADSRParameters.cpp" compile="1" resource="0"
-            file="Source/SMTADSRParameters.cpp"/>
-      <FILE id="dW8s6u" name="SMTADSRParameters.h" compile="0" resource="0"
-            file="Source/SMTADSRParameters.h"/>
-      <FILE id="iTbU5H" name="SMTBrowser.cpp" compile="1" resource="0" file="Source/SMTBrowser.cpp"/>
-      <FILE id="q7ISk5" name="SMTBrowser.h" compile="0" resource="0" file="Source/SMTBrowser.h"/>
-      <FILE id="HDRtXj" name="SMTFileBrowser.cpp" compile="1" resource="0"
-            file="Source/SMTFileBrowser.cpp"/>
-      <FILE id="Pa7GfI" name="SMTFileBrowser.h" compile="0" resource="0"
-            file="Source/SMTFileBrowser.h"/>
-      <FILE id="ANYHq8" name="SMTMidiKeyboard.cpp" compile="1" resource="0"
-            file="Source/SMTMidiKeyboard.cpp"/>
-      <FILE id="vDOoSG" name="SMTMidiKeyboard.h" compile="0" resource="0"
-            file="Source/SMTMidiKeyboard.h"/>
-      <FILE id="j9tiMw" name="SMTTabbedComponent.cpp" compile="1" resource="0"
-            file="Source/SMTTabbedComponent.cpp"/>
-      <FILE id="nBYJ4V" name="SMTTabbedComponent.h" compile="0" resource="0"
-            file="Source/SMTTabbedComponent.h"/>
-      <FILE id="taJMOq" name="SMTWaveformPreview.cpp" compile="1" resource="0"
-            file="Source/SMTWaveformPreview.cpp"/>
-      <FILE id="vcIMoE" name="SMTWaveformPreview.h" compile="0" resource="0"
-            file="Source/SMTWaveformPreview.h"/>
-      <FILE id="sZKaGM" name="SMTXYPad.cpp" compile="1" resource="0" file="Source/SMTXYPad.cpp"/>
-      <FILE id="WdhB7i" name="SMTXYPad.h" compile="0" resource="0" file="Source/SMTXYPad.h"/>
-    </GROUP>
+    <GROUP id="{A8DC72F7-DA5B-6243-1C16-AFA2E4D75948}" name="Components"/>
     <GROUP id="{97E6AD4A-6F3E-8144-D45D-39DA01D25B9D}" name="Panels">
-      <FILE id="jVI4MT" name="MainPanel.cpp" compile="1" resource="0" file="Source/MainPanel.cpp"/>
-      <FILE id="xULjyw" name="MainPanel.h" compile="0" resource="0" file="Source/MainPanel.h"/>
-      <FILE id="xkpzSD" name="MainPanel2.cpp" compile="1" resource="0" file="Source/MainPanel2.cpp"/>
-      <FILE id="uqVlhe" name="MainPanel2.h" compile="0" resource="0" file="Source/MainPanel2.h"/>
-      <FILE id="yvqKAf" name="SMTBottomPanel.cpp" compile="1" resource="0"
-            file="Source/SMTBottomPanel.cpp"/>
-      <FILE id="mOQZYg" name="SMTBottomPanel.h" compile="0" resource="0"
-            file="Source/SMTBottomPanel.h"/>
-      <FILE id="XUsN5g" name="SMTCenterPanel.cpp" compile="1" resource="0"
-            file="Source/SMTCenterPanel.cpp"/>
-      <FILE id="ahCG4G" name="SMTCenterPanel.h" compile="0" resource="0"
-            file="Source/SMTCenterPanel.h"/>
-      <FILE id="N5JDgy" name="SMTMainPanel.cpp" compile="1" resource="0"
-            file="Source/SMTMainPanel.cpp"/>
-      <FILE id="CoS4e2" name="SMTMainPanel.h" compile="0" resource="0" file="Source/SMTMainPanel.h"/>
-      <FILE id="FK36Tj" name="SMTPanelBase.cpp" compile="1" resource="0"
-            file="Source/SMTPanelBase.cpp"/>
-      <FILE id="SIUuQ2" name="SMTPanelBase.h" compile="0" resource="0" file="Source/SMTPanelBase.h"/>
-      <FILE id="E34P3i" name="SMTSoundPanel.cpp" compile="1" resource="0"
-            file="Source/SMTSoundPanel.cpp"/>
-      <FILE id="BOOY1l" name="SMTSoundPanel.h" compile="0" resource="0" file="Source/SMTSoundPanel.h"/>
-      <FILE id="bU8zVO" name="SMTTopPanel.cpp" compile="1" resource="0" file="Source/SMTTopPanel.cpp"/>
-      <FILE id="U3A7Vi" name="SMTTopPanel.h" compile="0" resource="0" file="Source/SMTTopPanel.h"/>
+      <FILE id="G4WCVM" name="BottomPanel.h" compile="0" resource="0" file="Source/Panels/BottomPanel.h"/>
+      <FILE id="LAtgo9" name="MainPanel.h" compile="0" resource="0" file="Source/Panels/MainPanel.h"/>
+      <FILE id="yG702c" name="MorphexLookAndFeel.h" compile="0" resource="0"
+            file="Source/Panels/MorphexLookAndFeel.h"/>
+      <FILE id="mGmPPY" name="MorphexPanel.h" compile="0" resource="0" file="Source/Panels/MorphexPanel.h"/>
+      <FILE id="ebnPhb" name="MorphingPanel.h" compile="0" resource="0" file="Source/Panels/MorphingPanel.h"/>
+      <FILE id="bZGVbu" name="SoundPanel.h" compile="0" resource="0" file="Source/Panels/SoundPanel.h"/>
+      <FILE id="OrvrnQ" name="TopPanel.h" compile="0" resource="0" file="Source/Panels/TopPanel.h"/>
     </GROUP>
-    <GROUP id="{840CB2F3-43B0-8278-25EF-7C5DA7E183FC}" name="Parameters">
-      <FILE id="BuUx3V" name="SMTParameterSlider.cpp" compile="1" resource="0"
-            file="Source/SMTParameterSlider.cpp"/>
-      <FILE id="JDqkoL" name="SMTParameterSlider.h" compile="0" resource="0"
-            file="Source/SMTParameterSlider.h"/>
-    </GROUP>
+    <GROUP id="{840CB2F3-43B0-8278-25EF-7C5DA7E183FC}" name="Parameters"/>
     <GROUP id="{2FE0720A-2404-2915-1953-7D2767C6275A}" name="Helpers">
+      <FILE id="KLndN4" name="InterfaceDefines.h" compile="0" resource="0"
+            file="Source/InterfaceDefines.h"/>
       <FILE id="qwMgI1" name="SMTAudioHelpers.h" compile="0" resource="0"
             file="Source/SMTAudioHelpers.h"/>
       <FILE id="KgAGd0" name="SMTConstants.h" compile="0" resource="0" file="Source/SMTConstants.h"/>
       <FILE id="f7ahY1" name="SMTHelperFunctions.h" compile="0" resource="0"
             file="Source/SMTHelperFunctions.h"/>
-      <FILE id="nWkdZR" name="SMTInterfaceDefines.h" compile="0" resource="0"
-            file="Source/SMTInterfaceDefines.h"/>
-      <FILE id="iBrKX3" name="SMTLookAndFeel.h" compile="0" resource="0"
-            file="Source/SMTLookAndFeel.h"/>
       <FILE id="GhMR7a" name="SMTParameters.h" compile="0" resource="0" file="Source/SMTParameters.h"/>
       <FILE id="PBKW3B" name="SMTUtils.h" compile="0" resource="0" file="Source/SMTUtils.h"/>
     </GROUP>
@@ -127,6 +71,8 @@
       </GROUP>
       <GROUP id="{9FFC6437-B955-888F-5958-311B4D3E97CA}" name="Images">
         <GROUP id="{AD3D7109-2980-41D2-CF8D-6D8897780DF4}" name="Logos">
+          <FILE id="KGvzYK" name="morphex_long_logo.png" compile="0" resource="1"
+                file="Assets/Images/Logos/morphex_long_logo.png"/>
           <FILE id="etXlaC" name="morphex_logo_small.png" compile="0" resource="1"
                 file="Assets/Images/Logos/morphex_logo_small.png"/>
           <FILE id="s5bjdA" name="morphex_logo.png" compile="0" resource="1"
@@ -205,7 +151,7 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <LIVE_SETTINGS>
-    <OSX buildEnabled="0" warningsEnabled="0" continuousRebuildEnabled="0"/>
+    <OSX buildEnabled="1" warningsEnabled="1" continuousRebuildEnabled="0"/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
 </JUCERPROJECT>

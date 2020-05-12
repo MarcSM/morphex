@@ -117,7 +117,7 @@ namespace Core
         // Parameters shortcut
         const int FS = this->parameters.fs;
         const int NS = this->parameters.fft_size;
-        const int H = this->parameters.hop_size;
+//        const int H = this->parameters.hop_size;
 //        const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
         
         // Output

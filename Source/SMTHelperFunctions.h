@@ -12,11 +12,11 @@
 
 #include "JuceHeader.h"
 
-#include "SMTInterfaceDefines.h"
+#include "InterfaceDefines.h"
 
 #include "SMTConstants.h"
 
-#include "SMTParameterSlider.h"
+//#include "SMTParameterSlider.h"
 
 inline void paintComponentLabel(Graphics& g, Component* inComponent)
 {
@@ -26,33 +26,33 @@ inline void paintComponentLabel(Graphics& g, Component* inComponent)
     int w = 0;
     int h = 0;
     
-    // Check if component is SMTParameterSlider
-    if (SMTParameterSlider* slider = dynamic_cast<SMTParameterSlider*> (inComponent))
-    {
-        Slider::SliderStyle slider_style = slider->getSliderStyle();
-        
-        if (    slider_style == Slider::Rotary ||
-                slider_style == Slider::RotaryVerticalDrag ||
-                slider_style == Slider::RotaryHorizontalDrag ||
-                slider_style == Slider::RotaryHorizontalVerticalDrag    )
-        {
-            x = inComponent->getX() - (inComponent->getWidth() * 0.25f);
-            y = inComponent->getY() + inComponent->getHeight();
-            w = inComponent->getWidth() * 1.5f;
-            h = 20;
-        }
-        else
-        {
-            x = inComponent->getX() - (inComponent->getWidth() * 0.25f);
-            y = inComponent->getY() - inComponent->getHeight();
-            w = inComponent->getWidth() * 1.5f;
-            h = 20;
-        }
-    }
-    else
-    {
-        // TODO - Not reached yet
-    }
+//    // Check if component is SMTParameterSlider
+//    if (SMTParameterSlider* slider = dynamic_cast<SMTParameterSlider*> (inComponent))
+//    {
+//        Slider::SliderStyle slider_style = slider->getSliderStyle();
+//        
+//        if (    slider_style == Slider::Rotary ||
+//                slider_style == Slider::RotaryVerticalDrag ||
+//                slider_style == Slider::RotaryHorizontalDrag ||
+//                slider_style == Slider::RotaryHorizontalVerticalDrag    )
+//        {
+//            x = inComponent->getX() - (inComponent->getWidth() * 0.25f);
+//            y = inComponent->getY() + inComponent->getHeight();
+//            w = inComponent->getWidth() * 1.5f;
+//            h = 20;
+//        }
+//        else
+//        {
+//            x = inComponent->getX() - (inComponent->getWidth() * 0.25f);
+//            y = inComponent->getY() - inComponent->getHeight();
+//            w = inComponent->getWidth() * 1.5f;
+//            h = 20;
+//        }
+//    }
+//    else
+//    {
+//        // TODO - Not reached yet
+//    }
     
     const String label = inComponent->getName();
     

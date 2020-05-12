@@ -17,7 +17,7 @@
 #include "SMTAudioHelpers.h"
 #include "SMTHelperFunctions.h"
 
-#include "SynthesisEngine.h"
+//#include "SynthesisEngine.h"
 
 #include "SMTParameters.h"
 
@@ -39,10 +39,10 @@ struct Voice
 //    bool loop_mode;
     
 //    Voice(Instrument instrument, AudioProcessorValueTreeState* parameters)
-    Voice(Instrument& instrument, AudioProcessorValueTreeState* parameters, int voice_ID)
-    : instrument(instrument), mParameters(parameters), voice_ID(voice_ID)
+    Voice(Instrument& instrument, AudioProcessorValueTreeState* parameters)
+    : mParameters(parameters), instrument(instrument)
     {
-        DBG(String(voice_ID) + " - VOICE INIT");
+//        DBG(String(voice_ID) + " - VOICE INIT");
         
         // Initialize the synthesis engine
         this->synthesis = Synthesis();
@@ -465,7 +465,7 @@ struct Voice
 private:
     
     // TODO TEST
-    const int voice_ID;
+//    const int voice_ID;
     
     AudioProcessorValueTreeState* mParameters;
     Instrument& instrument;

@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    SMTLookAndFeel.h
-    Created: 14 Jun 2019 7:40:38pm
+    MorphexLookAndFeel.h
+    Created: 12 May 2020 3:02:19pm
     Author:  Marc Sanchez Martinez
 
   ==============================================================================
@@ -11,15 +11,20 @@
 #pragma once
 
 #include "JuceHeader.h"
-#include "SMTInterfaceDefines.h"
 
-class SMTLookAndFeel
+#include "../InterfaceDefines.h"
+
+class MorphexLookAndFeel
 :   public LookAndFeel_V4
 {
 public:
     
-    SMTLookAndFeel()
+    MorphexLookAndFeel()
     {
+        setColour(ResizableWindow::backgroundColourId, GUI::BackgroundColor);
+
+        //// OLD STYLE
+        
         // ComboBox Colours
         setColour(ComboBox::backgroundColourId, SMTComboBoxBackgroundColour);
         setColour(ComboBox::outlineColourId, SMTComboBoxOutlineColour);
@@ -175,7 +180,7 @@ public:
         
     }
     
-    ~SMTLookAndFeel(){};
+    //~MorphexLookAndFeel(){};
     
     // Buttons
     Font getTextButtonFont (TextButton&, int buttonHeight) override

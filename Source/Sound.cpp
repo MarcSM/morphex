@@ -27,8 +27,8 @@ namespace Core
         // Initializing default values
         //    this->x = []
         this->fs = 44100;
-        this->note = NULL;
-        this->velocity = NULL;
+        this->note = 0;
+        this->velocity = 0;
         this->max_harmonics = 0;
         this->max_frames = 0;
         this->sound_length = 0;
@@ -682,7 +682,7 @@ namespace Core
         
         min_val_linear = -max_val_linear;
         
-        float residual_normalization_factor = std::abs(max_val_linear - max_linear);
+//        float residual_normalization_factor = std::abs(max_val_linear - max_linear);
         
         // Normalize the residual component with the same factor
         for (int i = 0; i < residual.size(); i++)
