@@ -1,19 +1,19 @@
 /*
-  ==============================================================================
-
-    InterfaceDefines.h
-    Created: 12 May 2020 11:40:08am
-    Author:  Marc Sanchez Martinez
-
-  ==============================================================================
-*/
+ ==============================================================================
+ 
+ InterfaceDefines.h
+ Created: 12 May 2020 11:40:08am
+ Author:  Marc Sanchez Martinez
+ 
+ ==============================================================================
+ */
 
 #pragma once
 
 #include "JuceHeader.h"
 
 #define MORPHEX_PANEL_WIDTH   1000
-#define MORPHEX_PANEL_HEIGHT  600
+#define MORPHEX_PANEL_HEIGHT    600
 
 #define TOP_PANEL_WIDTH     MORPHEX_PANEL_WIDTH
 #define TOP_PANEL_HEIGHT    50
@@ -30,9 +30,16 @@
 // General
 namespace GUI
 {
-    const Colour BackgroundColor = Colour(34, 34, 34);
-    const Colour BackgroundColorGradientStart = Colour(70, 70, 70).withAlpha(0.75f);
-    const Colour BackgroundColorGradientEnd = BackgroundColorGradientStart.withAlpha(0.0f);
+    namespace Color
+    {
+        const Colour Transparent = Colour(0, 0, 0).withAlpha(0.0f);
+        const Colour Accent = Colour(0, 168, 204);
+        const Colour Background = Colour(34, 34, 34);
+        const Colour BackgroundGradientStart = Colour(70, 70, 70).withAlpha(0.75f);
+        const Colour BackgroundGradientEnd = BackgroundGradientStart.withAlpha(0.0f);
+        const Colour Logo = Colour(250, 250, 250);
+        const Colour BrowserBackground = Colour(0, 0, 0);
+    }
 }
 
 

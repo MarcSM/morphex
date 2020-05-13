@@ -62,6 +62,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
     
+    /*
     AlertWindow aux ("Sound files loaded", "Sound files loaded: " + String(this->instrument.num_samples_loaded), AlertWindow::InfoIcon);
     aux.showMessageBox (AlertWindow::NoIcon,
                         "Sound files loaded",
@@ -73,6 +74,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     {
         JUCEApplication::getInstance()->systemRequestedQuit();
     }
+    */
     
     //                AlertWindow aux ("Sound not found", "The sound '" + sound_2_file_path + "' is not in your collection", AlertWindow::NoIcon);
     //                aux.showMessageBox (AlertWindow::WarningIcon,

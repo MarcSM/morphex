@@ -78,12 +78,15 @@ public:
     {
         g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
         
-        //g.fillAll (Colour(34, 34, 34));
         
-        ColourGradient cg (GUI::BackgroundColorGradientStart,
+        
+        ColourGradient cg (GUI::Color::BackgroundGradientStart,
                            getWidth() / 2.0f, getHeight() / 4.0f,
-                           GUI::BackgroundColorGradientEnd,
+                           GUI::Color::BackgroundGradientEnd,
                            getWidth() * 1.0f, getHeight() * 1.0f, true);
+        
+        g.setFillType (cg);
+        g.fillRect (0, 0, getWidth(), getHeight());
     }
 
     void resized() override

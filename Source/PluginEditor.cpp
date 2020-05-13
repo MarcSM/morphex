@@ -23,6 +23,7 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
 #if JUCE_ANDROID || JUCE_IOS
     setFullScreen (true);
 #else
+//    setUsingNativeTitleBar (true);
     this->resizeCorner = new ResizableCornerComponent(this, getConstrainer());
     addAndMakeVisible(this->resizeCorner);
     this->resizeCorner->setBounds (getWidth()-20, getHeight()-20, 20, 20);
