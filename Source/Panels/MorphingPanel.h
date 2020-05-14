@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 
 #include "SoundPanel.h"
+#include "CorePanel.h"
 
 #include "../Components/CollectionBrowser.h"
 
@@ -22,7 +23,8 @@
 class MorphingPanel    : public Component
 {
 public:
-    MorphingPanel()
+    MorphingPanel(SpectralMorphingToolAudioProcessor* inProcessor)
+    :   centerPanel (inProcessor)
     {
         // In your constructor, you should add any child components, and
         // initialise any special settings that your component needs.
@@ -58,6 +60,7 @@ public:
         
         //g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
         
+        /*
         g.setColour (Colours::grey);
         g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
         
@@ -65,6 +68,7 @@ public:
         g.setFont (14.0f);
         g.drawText ("MorphingPanel", getLocalBounds(),
                     Justification::centred, true);   // draw some placeholder text
+        */
     }
     
     void resized() override
@@ -216,8 +220,11 @@ private:
     
     struct CenterPanel    : public Component
     {
-        CenterPanel()
+        CenterPanel(SpectralMorphingToolAudioProcessor* inProcessor)
         {
+            // Core Panel
+            mCorePanel = new CorePanel (inProcessor);
+            
             // Browser
             const int browser_margin = 10;
             
@@ -229,7 +236,7 @@ private:
             
             
             mBrowser = new CollectionBrowser();
-            
+
             mBrowser->setBounds(browser_x, browser_y,
                                 browser_width, browser_height);
             
@@ -237,7 +244,8 @@ private:
             mTabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop);
             
             mTabbedComponent->setTabBarDepth(50);
-            mTabbedComponent->addTab(TRANS("CORE"), GUI::Color::Transparent, new Component(), true);
+            mTabbedComponent->setOutline(0);
+            mTabbedComponent->addTab(TRANS("CORE"), GUI::Color::Transparent, mCorePanel, true);
             mTabbedComponent->addTab(TRANS("FX"), GUI::Color::Transparent, new Component(), true);
             mTabbedComponent->addTab(TRANS("SOUNDS"), GUI::Color::Transparent, mBrowser, true);
             //mTabbedComponent->addTab(TRANS("OPTIONS"), GUI::Color::Transparent, mBrowser, true);
@@ -281,8 +289,9 @@ private:
         }
         
         OwnedArray<Slider> sliders;
-        ScopedPointer<CollectionBrowser> mBrowser;
         ScopedPointer<TabbedComponent> mTabbedComponent;
+        ScopedPointer<CorePanel> mCorePanel;
+        ScopedPointer<CollectionBrowser> mBrowser;
     };
     
     //    SoundPanel* soundPanel[4];

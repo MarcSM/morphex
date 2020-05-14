@@ -1,47 +1,12 @@
 /*
-  ==============================================================================
-
-   This file is part of the JUCE tutorials.
-   Copyright (c) 2017 - ROLI Ltd.
-
-   The code included in this file is provided under the terms of the ISC license
-   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
-   To use, copy, modify, and/or distribute this software for any purpose with or
-   without fee is hereby granted provided that the above copyright notice and
-   this permission notice appear in all copies.
-
-   THE SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES,
-   WHETHER EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR
-   PURPOSE, ARE DISCLAIMED.
-
-  ==============================================================================
-*/
-
-/*******************************************************************************
- The block below describes the properties of this PIP. A PIP is a short snippet
- of code that can be read by the Projucer and used to generate a JUCE project.
-
- BEGIN_JUCE_PIP_METADATA
-
- name:             FlexBoxGridTutorial
- version:          1.0.0
- vendor:           JUCE
- website:          http://juce.com
- description:      Responsive layouts using FlexBox and Grid.
-
- dependencies:     juce_core, juce_data_structures, juce_events, juce_graphics,
-                   juce_gui_basics
- exporters:        xcode_mac, vs2017, linux_make, xcode_iphone, androidstudio
-
- type:             Component
- mainClass:        MorphexPanel
-
- useLocalCopy:     1
-
- END_JUCE_PIP_METADATA
-
-*******************************************************************************/
-
+ ==============================================================================
+ 
+ MorphingPanel.h
+ Created: 12 May 2020 14:37:23pm
+ Author:  Marc Sanchez Martinez
+ 
+ ==============================================================================
+ */
 
 #pragma once
 
@@ -53,17 +18,15 @@
 
 //==============================================================================
 /*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
 */
 class MorphexPanel   : public Component
 {
 public:
     //==============================================================================
-    MorphexPanel()
+    MorphexPanel(SpectralMorphingToolAudioProcessor* inProcessor)
         : topPanel (),
-          mainPanel (),
-          bottomPanel  ()
+          mainPanel (inProcessor),
+          bottomPanel (inProcessor)
     {
         setLookAndFeel (new MorphexLookAndFeel());
         
@@ -77,8 +40,6 @@ public:
     void paint (Graphics& g) override
     {
         g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
-        
-        
         
         ColourGradient cg (GUI::Color::BackgroundGradientStart,
                            getWidth() / 2.0f, getHeight() / 4.0f,
@@ -95,7 +56,7 @@ public:
         fb.flexDirection = FlexBox::Direction::column;
         
         float topPanelHeight = getHeight() / 10.0f;
-        float bottomPanelHeight = getHeight() / 6.0f;
+        float bottomPanelHeight = getHeight() / 8.0f;
         
         FlexItem top  (getWidth(), topPanelHeight, topPanel);
         FlexItem main  (getWidth(), getHeight() - topPanelHeight - bottomPanelHeight, mainPanel);
@@ -128,7 +89,7 @@ public:
     }
 
 private:
-    //==============================================================================
+    
     struct RightSidePanel    : public Component
     {
         RightSidePanel (Colour c) : backgroundColour (c)
@@ -230,13 +191,10 @@ private:
         OwnedArray<Slider> sliders;
     };
     */
-
-    //==============================================================================
-    //RightSidePanel rightPanel;
-    //LeftSidePanel leftPanel;
+    
     TopPanel topPanel;
     MainPanel mainPanel;
     BottomPanel bottomPanel;
-    //==============================================================================
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphexPanel)
 };

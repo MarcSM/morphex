@@ -100,6 +100,13 @@ private:
             morphex_long_logo->draw(g, 1.f, xform);
             
             // drawToFit(g, morphex_long_logo, morphex_long_logo_bounds);
+            
+            // Plugin Version
+            g.setColour (Colours::white);
+            g.setFont (14.0f);
+            g.drawText("v" + PLUGIN_VERSION, -15, 10, getWidth(), getHeight(), Justification::right);
+//            g.drawText("v" + PLUGIN_VERSION, -15, getHeight() -30, getWidth(), getHeight(), Justification::right);
+//            g.drawText("v" + PLUGIN_VERSION, -12, getHeight() * 0.2, getWidth(), getHeight(), Justification::right);
         }
         
 //        static void drawToFit (juce::Graphics& g, juce::Drawable& svg, juce::Rectangle<float> targetArea)
@@ -155,6 +162,7 @@ private:
              g.drawText ("Options", getLocalBounds(),
              Justification::centred, true);   // draw some placeholder
              */
+            
         }
         
         void resized() override

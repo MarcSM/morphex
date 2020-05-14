@@ -34,9 +34,11 @@
     <GROUP id="{A8DC72F7-DA5B-6243-1C16-AFA2E4D75948}" name="Components">
       <FILE id="NcLsvP" name="CollectionBrowser.h" compile="0" resource="0"
             file="Source/Components/CollectionBrowser.h"/>
+      <FILE id="VCzmwz" name="PadXY.h" compile="0" resource="0" file="Source/Components/PadXY.h"/>
     </GROUP>
     <GROUP id="{97E6AD4A-6F3E-8144-D45D-39DA01D25B9D}" name="Panels">
       <FILE id="G4WCVM" name="BottomPanel.h" compile="0" resource="0" file="Source/Panels/BottomPanel.h"/>
+      <FILE id="XFDGyU" name="CorePanel.h" compile="0" resource="0" file="Source/Panels/CorePanel.h"/>
       <FILE id="LAtgo9" name="MainPanel.h" compile="0" resource="0" file="Source/Panels/MainPanel.h"/>
       <FILE id="yG702c" name="MorphexLookAndFeel.h" compile="0" resource="0"
             file="Source/Panels/MorphexLookAndFeel.h"/>

@@ -24,9 +24,14 @@ public:
         // General
         setColour(ResizableWindow::backgroundColourId, GUI::Color::Background);
         
-        // Tabbed Component Colors
+        // Tabbed Component
         setColour(TabbedButtonBar::tabOutlineColourId, GUI::Color::Transparent);
         
+        // Midi Keyboard Component
+        setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, GUI::Color::KeyDown.withAlpha(0.75f));
+        setColour(MidiKeyboardComponent::keyDownOverlayColourId, GUI::Color::KeyDown);
+        setColour(MidiKeyboardComponent::textLabelColourId, GUI::Color::Transparent);
+
         //// OLD STYLE
         
         // ComboBox Colours

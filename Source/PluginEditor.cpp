@@ -13,7 +13,7 @@
 
 //==============================================================================
 SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEditor (SpectralMorphingToolAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), morphexPanel()
+    : AudioProcessorEditor (&p), processor (p), morphexPanel(&p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.

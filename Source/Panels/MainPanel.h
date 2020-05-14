@@ -20,7 +20,7 @@
 class MainPanel    : public Component
 {
 public:
-    MainPanel() : morphingPanel ()
+    MainPanel(SpectralMorphingToolAudioProcessor* inProcessor) : morphingPanel (inProcessor)
     {
         // In your constructor, you should add any child components, and
         // initialise any special settings that your component needs.
