@@ -12,14 +12,24 @@
 
 // TODO - Put everything in a namespace called "Morphex::Parameters"
 
+template<typename T>
 struct ParameterStruct
 {
     String parameter_ID;
     String parameter_label;
-    float min_value;
-    float max_value;
-    float default_value;
+    T min_value;
+    T max_value;
+    T default_value;
 };
+
+//struct ParameterStruct
+//{
+//    String parameter_ID;
+//    String parameter_label;
+//    float min_value;
+//    float max_value;
+//    float default_value;
+//};
 
 // Rename them and call them like: SMTParameter::FreqsInterpFactor
 enum SMTParameter
@@ -35,10 +45,14 @@ enum SMTParameter
     kParameter_TotalNumParameters
 };
 
-typedef std::map<int, ParameterStruct> IndexedParameters;
+//typedef std::map<int, ParameterStruct> IndexedParameters;
+
+template <typename T>
+using IndexedParameters = std::map<int, ParameterStruct<T>>;
 
 //static std::map<int, ParameterStruct> smt_parameters =
-static IndexedParameters SMT_PARAMETERS =
+template <typename T>
+static IndexedParameters<T> SMT_PARAMETERS =
 {
 //  index                               parameter_ID            parameter_label             min_value   max_value   default_value
     {kParameter_freqs_interp_factor,    {"FreqsInterpFactor",   "Harmonic Frequencies",     0.0f,       1.0f,       0.5f}    },
@@ -51,17 +65,18 @@ static IndexedParameters SMT_PARAMETERS =
     {kParameter_asdr_release,           {"ADSRRelease",         "Release",                  0.1f,       5.0f,       0.1f}    }
 };
 
-inline ParameterStruct getParameterByID(String parameter_ID)
+template<typename T>
+inline ParameterStruct<T> getParameterByID(String parameter_ID)
 {
-    ParameterStruct found_parameter;
+    ParameterStruct<T> found_parameter;
     
-    auto result = std::find_if( SMT_PARAMETERS.begin(), SMT_PARAMETERS.end(), [parameter_ID](const auto& mo)
+    auto result = std::find_if( SMT_PARAMETERS<T>.begin(), SMT_PARAMETERS<T>.end(), [parameter_ID](const auto& mo)
     {
         return mo.second.parameter_ID == parameter_ID;
     });
     
     // Return variable if found
-    if(result != SMT_PARAMETERS.end())
+    if(result != SMT_PARAMETERS<T>.end())
         found_parameter = result->second;
     
     return found_parameter;

@@ -112,6 +112,19 @@ public:
     }
     */
     
+//    void TabbedComponent::paint (Graphics& g) override
+//    {
+//        TabbedComponent::paint (Graphics& g);
+//        
+//        // Draw borders
+//        GUI::Paint::drawBorders(g, getLocalBounds());
+//    }
+    
+    void drawTabButtonText (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
+    {
+        LookAndFeel_V2::drawTabButtonText (button, g, isMouseOver, isMouseDown);
+    }
+    
     void drawTabButton (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
     {
         const Rectangle<int> activeArea (button.getActiveArea());

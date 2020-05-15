@@ -370,6 +370,9 @@ struct Voice
             // Instrument::Mode::Morphing
             if (this->instrument.mode == Instrument::Mode::Morphing)
             {
+                // TODO - Get morph_sounds from instrument, the 4 sounds
+                // marked to be used on morhping mode
+                
 //                float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
 //                float adsr_decay = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_decay]);
 //                float adsr_sustain = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_sustain]);

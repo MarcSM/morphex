@@ -93,7 +93,8 @@ public:
     std::vector<Note*> getLoadedNotes();
     MorphNotes getCloserNotes(float f_target_note);
     MorphSounds getCloserSounds(float f_target_note, float f_velocity);
-    
+    MorphSounds getMorphSounds();
+
     Sound* getSound(float f_note, float f_velocity);
     Sound::Frame getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
     Sound::Frame morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_freqs_interp_factor = -1, float f_mags_interp_factor = -1);

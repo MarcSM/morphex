@@ -194,6 +194,24 @@ namespace Core
         return closer_sounds;
     }
     
+    MorphSounds Instrument::getMorphSounds()
+    {
+        // Output
+        MorphSounds morph_sounds;
+        
+        std::vector<Note*> loaded_notes = getLoadedNotes();
+        
+        int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
+        
+        for (int i = 0; i < i_notes_to_load; i++)
+        {
+            std::vector<Velocity*> loaded_velocities = loaded_notes[i]->getLoadedVelocities();
+            
+            morph_sounds[i] = &loaded_velocities[0]->sound;
+        }
+        
+        return morph_sounds;
+    }
 //    Sound* Instrument::getSound(float f_note, int i_velocity)
 //    {
 //        MorphSounds morph_sounds = getCloserSounds( f_note, i_velocity );

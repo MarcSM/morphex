@@ -35,13 +35,13 @@ public:
     
     void setup();
     
+    Instrument instrument;
+    
 protected:
     
     OwnedArray<Voice> voices;
     
 private:
-    
-    Instrument instrument;
     
     SoundArray mSound;
 

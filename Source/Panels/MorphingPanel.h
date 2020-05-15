@@ -24,7 +24,9 @@ class MorphingPanel    : public Component
 {
 public:
     MorphingPanel(SpectralMorphingToolAudioProcessor* inProcessor)
-    :   centerPanel (inProcessor)
+    :   leftPanel (inProcessor),
+        rightPanel (inProcessor),
+        centerPanel (inProcessor)
     {
         // In your constructor, you should add any child components, and
         // initialise any special settings that your component needs.
@@ -40,8 +42,8 @@ public:
         //        leftPanel = new LeftSidePanel (*soundPanel);
         //        rightPanel = new RightSidePanel (*soundPanel);
         
-        addAndMakeVisible (rightPanel);
         addAndMakeVisible (leftPanel);
+        addAndMakeVisible (rightPanel);
         addAndMakeVisible (centerPanel);
     }
     
@@ -80,7 +82,7 @@ public:
         
         // TODO - It's possible to keep all the widths and heights
         // in a class and access them via pointers?
-        float centerPanelWidth = getWidth() / 3.0f;
+        float centerPanelWidth = getWidth() * 0.75f * 0.45f;
         float soundPanelWidth = ( getWidth() - centerPanelWidth ) / 2.0f;
         //float soundPanelHeight = getHeight() / 6.0f;
         
@@ -98,13 +100,18 @@ private:
     struct LeftSidePanel    : public Component
     {
         //        LeftSidePanel (SoundPanel* soundPanel) : soundPanel (soundPanel)
-        LeftSidePanel ()
+        LeftSidePanel (SpectralMorphingToolAudioProcessor* inProcessor)
+        :   sound1Panel(inProcessor, 1),
+//            sound1Panel(inProcessor, MorphLocation::Left)
+            sound3Panel(inProcessor, 3)
         {
-            sound1Panel = std::make_unique<SoundPanel>(1);
-            addAndMakeVisible (sound1Panel.get());
-            
-            sound3Panel = std::make_unique<SoundPanel>(3);
-            addAndMakeVisible (sound3Panel.get());
+            addAndMakeVisible (sound1Panel);
+            addAndMakeVisible (sound3Panel);
+//            sound1Panel = std::make_unique<SoundPanel>(1);
+//            addAndMakeVisible (sound1Panel.get());
+//
+//            sound3Panel = std::make_unique<SoundPanel>(3);
+//            addAndMakeVisible (sound3Panel.get());
             
             /*
              for (int i = 0; i < 6; ++i)
@@ -130,8 +137,8 @@ private:
             
             float soundPanelHeight = getHeight() / 2.0f;
             
-            FlexItem sound1 (getWidth(), soundPanelHeight, *sound1Panel);
-            FlexItem sound3 (getWidth(), soundPanelHeight, *sound3Panel);
+            FlexItem sound1 (getWidth(), soundPanelHeight, sound1Panel);
+            FlexItem sound3 (getWidth(), soundPanelHeight, sound3Panel);
             
             fb.items.addArray ( { sound1, sound3 } );
             fb.performLayout (getLocalBounds().toFloat());
@@ -154,9 +161,11 @@ private:
              fb.performLayout (getLocalBounds().toFloat());
              */
         }
-        
-        std::unique_ptr<SoundPanel> sound1Panel;
-        std::unique_ptr<SoundPanel> sound3Panel;
+
+        SoundPanel sound1Panel;
+        SoundPanel sound3Panel;
+//        std::unique_ptr<SoundPanel> sound1Panel;
+//        std::unique_ptr<SoundPanel> sound3Panel;
         Colour backgroundColour;
         OwnedArray<Slider> knobs;
     };
@@ -164,13 +173,18 @@ private:
     struct RightSidePanel    : public Component
     {
         //        RightSidePanel (SoundPanel* soundPanel) : soundPanel (soundPanel)
-        RightSidePanel ()
+        RightSidePanel (SpectralMorphingToolAudioProcessor* inProcessor)
+        :   sound2Panel(inProcessor, 2),
+            sound4Panel(inProcessor, 4)
         {
-            sound2Panel = std::make_unique<SoundPanel>(2);
-            addAndMakeVisible (sound2Panel.get());
+            addAndMakeVisible (sound2Panel);
+            addAndMakeVisible (sound4Panel);
             
-            sound4Panel = std::make_unique<SoundPanel>(4);
-            addAndMakeVisible (sound4Panel.get());
+//            sound2Panel = std::make_unique<SoundPanel>(2);
+//            addAndMakeVisible (sound2Panel.get());
+//
+//            sound4Panel = std::make_unique<SoundPanel>(4);
+//            addAndMakeVisible (sound4Panel.get());
             
             /*
              for (int i = 0; i < 10; ++i)
@@ -190,8 +204,8 @@ private:
             
             float soundPanelHeight = getHeight() / 2.0f;
             
-            FlexItem sound2 (getWidth(), soundPanelHeight, *sound2Panel);
-            FlexItem sound4 (getWidth(), soundPanelHeight, *sound4Panel);
+            FlexItem sound2 (getWidth(), soundPanelHeight, sound2Panel);
+            FlexItem sound4 (getWidth(), soundPanelHeight, sound4Panel);
             
             fb.items.addArray ( { sound2, sound4 } );
             fb.performLayout (getLocalBounds().toFloat());
@@ -210,8 +224,10 @@ private:
         }
         
         //        SoundPanel* soundPanel;
-        std::unique_ptr<SoundPanel> sound2Panel;
-        std::unique_ptr<SoundPanel> sound4Panel;
+        SoundPanel sound2Panel;
+        SoundPanel sound4Panel;
+//        std::unique_ptr<SoundPanel> sound2Panel;
+//        std::unique_ptr<SoundPanel> sound4Panel;
         Colour backgroundColour;
         OwnedArray<TextButton> buttons;
     };
@@ -243,12 +259,12 @@ private:
             // Tabbed Component
             mTabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop);
             
-            mTabbedComponent->setTabBarDepth(50);
+//            mTabbedComponent->setTabBarDepth(50);
             mTabbedComponent->setOutline(0);
             mTabbedComponent->addTab(TRANS("CORE"), GUI::Color::Transparent, mCorePanel, true);
             mTabbedComponent->addTab(TRANS("FX"), GUI::Color::Transparent, new Component(), true);
             mTabbedComponent->addTab(TRANS("SOUNDS"), GUI::Color::Transparent, mBrowser, true);
-            //mTabbedComponent->addTab(TRANS("OPTIONS"), GUI::Color::Transparent, mBrowser, true);
+//            mTabbedComponent->addTab(TRANS("OPTIONS"), GUI::Color::Transparent, new Component(), true);
             mTabbedComponent->setCurrentTabIndex(0);
             
             mTabbedComponent->setBounds (0, 0, getWidth(), getHeight());
@@ -261,12 +277,15 @@ private:
             auto area = getLocalBounds();
             mTabbedComponent->setBounds(area);
             
+            // Draw borders
+            GUI::Paint::drawBorders(g, mTabbedComponent->getLocalBounds());
+            
             //g.fillAll (Colours::hotpink);
         }
         
         void resized() override
         {
-            
+            mTabbedComponent->setTabBarDepth( getHeight() / 8.0f );
             
             /*
              auto isPortrait = getLocalBounds().getHeight() > getLocalBounds().getWidth();

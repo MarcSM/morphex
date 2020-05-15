@@ -71,15 +71,17 @@ public:
         g.drawText ("CollectionBrowser", getLocalBounds(),
                     Justification::centred, true);   // draw some placeholder text
         */
-        auto area = getLocalBounds();
-        m_fileBrowser->setBounds(area);
+        
+        g.fillAll (GUI::Color::BrowserBackground);
+        
+        // Draw borders
+        GUI::Paint::drawBorders(g, getLocalBounds());
     }
 
     void resized() override
     {
-        // This method is where you should set the bounds of any child
-        // components that your component contains..
-
+        auto area = getLocalBounds();
+        m_fileBrowser->setBounds(area);
     }
 
 private:

@@ -19,7 +19,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     // Initialize the instrument
     this->instrument = Instrument();
-    this->instrument.name = "Test";
+    this->instrument.name = "Test Instrument";
 
     //    JUCE::DirectoryIterator()
 //    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Morph";
@@ -136,4 +136,3 @@ void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
     // Call base class method
     Synthesiser::renderNextBlock(outputAudio, inputMidi, startSample, numSamples);
 }
-

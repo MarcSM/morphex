@@ -38,6 +38,8 @@ public:
         invert_y = true;
         
         // Add the circle
+        circle.setColour (GUI::Color::Accent.overlaidWith (Colour(255, 255, 255).withAlpha(0.15f)) );
+        circle.setInterceptsMouseClicks (false, false);
         addAndMakeVisible(circle);
         
         // Initialize the sliders
@@ -77,6 +79,9 @@ public:
         g.setColour (Colours::transparentBlack);
         g.fillRoundedRectangle (rectangle, cornerSize);
         
+        // Draw borders
+        GUI::Paint::drawBorders(g, getLocalBounds());
+        
 //        // Background gradient
 //        ColourGradient cg (GUI::Color::Accent.withAlpha(0.5f),
 //                           getWidth() / 2.0f, getHeight() / 2.0f,
@@ -101,6 +106,9 @@ public:
 //
 //        g.setFillType (cg);
 //        g.fillRect (glow_x - glow_radius, glow_y - glow_radius, glow_w, glow_h);
+        
+//        g.setFillType (cg);
+        
     }
 
     void resized() override
@@ -112,12 +120,11 @@ public:
         rectangle.setLeft (getWidth() * .02);
         
         // Update the circle
-        circle.setSize (20, 20);
+        float circle_diameter = getWidth() * 0.065;
+        circle.setSize ( circle_diameter, circle_diameter);
         const Point<int> pos (getValueAsPosition (x_val, y_val));
         circle.setTopLeftPosition (pos.getX(), pos.getY());
-        circle.setInterceptsMouseClicks (false, false);
-        circle.setColour (GUI::Color::Accent);
-        
+
         // Update the circle glow
         //circle_glow_bounds.setTopLeftPosition( circle );
     }
@@ -153,7 +160,7 @@ public:
             
             Rectangle<int> cirlce_bounds = getLocalBounds();
             
-            float line_thickness = 4.0f;
+            float line_thickness = cirlce_bounds.getWidth() * 0.2f;
             float circle_x = cirlce_bounds.getX() + (line_thickness / 2.0f);
             float circle_y = cirlce_bounds.getY() + (line_thickness / 2.0f);
             float circle_w = cirlce_bounds.getWidth() - line_thickness;
@@ -161,9 +168,46 @@ public:
             
             g.drawEllipse (circle_x, circle_y, circle_w, circle_h, line_thickness);
             
-            //            g.drawEllipse (0,0,20,20, 5);
-            //            g.drawEllipse (getLocalBounds().toFloat(), 5);
-            //            g.drawEllipse (getWidth() - 70, 10, 60, 60, 3);
+//            g.fillRect (0, 0, getWidth(), getHeight());
+//            g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+            
+//            auto inner = cirlce_bounds.withSizeKeepingCentre(3 * getWidth() / 4, 3 * getHeight() / 4);
+////            auto inner = getLocalBounds().withSizeKeepingCentre(3 * getWidth() / 4, 3 * getHeight() / 4);
+//
+//            auto innerTopleftPoint = inner.getTopLeft();
+//            auto obCenter = getLocalBounds().toFloat().getCentre();
+//
+//            Colour outerColor{0xffffffff};
+//            Colour centerColor{ static_cast<uint8>(JUCE_LIVE_CONSTANT(0x46)),
+//                static_cast<uint8>(JUCE_LIVE_CONSTANT(0xa8)),
+//                static_cast<uint8>(JUCE_LIVE_CONSTANT(0xcd))
+//            };
+//
+//            ColourGradient cg{outerColor, 0, 0, centerColor, static_cast<float>(innerTopleftPoint.getX()), 0, false};
+//            HeapBlock<juce::PixelARGB> colors;
+//            auto numColors = cg.createLookupTable(AffineTransform(), colors);
+//            DBG( "numColors: " + String(numColors)   );
+//            Path path;
+//            int i = 0;
+//            Path lastPath;
+////            for( ; i < 80 && i < numColors; )
+////            {
+////                Colour c( colors[i].getUnpremultiplied() ); //there's got to be a better way to turn PixelARGB's into Colour objects from ColourGradient lookup tables
+////                DBG( "Colour: " + c.toDisplayString(true));
+////
+////                float radius = (getWidth()* 0.5f) - i;
+////                path.addStar(obCenter, 6, 100-i, radius);
+////                PathStrokeType pst(1);
+////                g.setColour(c);
+////                g.strokePath(path, pst);
+////                lastPath = path;
+////                path.clear();
+////                i++;
+////            }
+//
+//            g.setColour( Colour(colors[i].getUnpremultiplied() ) );
+//            g.drawEllipse (circle_x, circle_y, circle_w, circle_h, line_thickness);
+//            g.fillPath(lastPath);
         }
     };
     

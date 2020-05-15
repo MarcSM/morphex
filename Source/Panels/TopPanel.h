@@ -41,7 +41,7 @@ public:
         
         FlexBox fb;
         
-        float centerPanelWidth = getWidth() / 3.0f;
+        float centerPanelWidth = getWidth() * 0.75f * 0.45f;
         float soundPanelWidth = ( getWidth() - centerPanelWidth ) / 2.0f;
         
         FlexItem left  (soundPanelWidth, getHeight(), leftPanel);
@@ -107,6 +107,9 @@ private:
             g.drawText("v" + PLUGIN_VERSION, -15, 10, getWidth(), getHeight(), Justification::right);
 //            g.drawText("v" + PLUGIN_VERSION, -15, getHeight() -30, getWidth(), getHeight(), Justification::right);
 //            g.drawText("v" + PLUGIN_VERSION, -12, getHeight() * 0.2, getWidth(), getHeight(), Justification::right);
+            
+            // Draw borders
+            GUI::Paint::drawBorders(g, getLocalBounds());
         }
         
 //        static void drawToFit (juce::Graphics& g, juce::Drawable& svg, juce::Rectangle<float> targetArea)
@@ -163,6 +166,8 @@ private:
              Justification::centred, true);   // draw some placeholder
              */
             
+            // Draw borders
+            GUI::Paint::drawBorders(g, getLocalBounds());
         }
         
         void resized() override
@@ -190,6 +195,9 @@ private:
             g.setFont (14.0f);
             g.drawText ("Preset Manager", getLocalBounds(),
                         Justification::centred, true);   // draw some placeholder text
+            
+            // Draw borders
+            GUI::Paint::drawBorders(g, getLocalBounds());
         }
         
         void resized() override

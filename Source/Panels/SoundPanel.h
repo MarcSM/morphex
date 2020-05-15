@@ -19,15 +19,25 @@ class SoundPanel    : public Component
 {
 public:
     
-    SoundPanel (int i_sound_num) : i_sound_num (i_sound_num)
+    SoundPanel (SpectralMorphingToolAudioProcessor* inProcessor, int i_sound_num)
+    :   i_sound_num (i_sound_num),
+        instrument (&inProcessor->mMorphexSynth.instrument)
     {
         // In your constructor, you should add any child components, and
         // initialise any special settings that your component needs.
         
-//        for (int i = 0; i < 10; ++i)
-//        {
-//            addAndMakeVisible (buttons.add (new TextButton (String (i))));
-//        }
+        if (i_sound_num == 1)
+        {
+            sound = instrument->getMorphSounds()[MorphLocation::Left];
+        }
+        else if (i_sound_num == 4)
+        {
+            sound = instrument->getMorphSounds()[MorphLocation::Right];
+        }
+        else
+        {
+            sound = new Sound();
+        }
     }
 
     ~SoundPanel()
@@ -45,12 +55,18 @@ public:
 
 //        g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
 
-        g.setColour (Colours::grey);
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+        // Draw borders
+        GUI::Paint::drawBorders(g, getLocalBounds());
 
         g.setColour (Colours::white);
         g.setFont (14.0f);
-        g.drawText ("SoundPanel", getLocalBounds(),
+//        g.drawText ("SoundPanel", getLocalBounds(),
+//                    Justification::centred, true);   // draw some placeholder text
+        
+//        g.drawText (instrument->name, getLocalBounds(),
+//                    Justification::centred, true);   // draw some placeholder text
+        
+        g.drawText (sound->name, getLocalBounds(),
                     Justification::centred, true);   // draw some placeholder text
     }
 
@@ -75,6 +91,10 @@ public:
 private:
 
     int i_sound_num;
+    
+    Instrument* instrument;
+    Sound* sound;
+//    Instrument& instrument;
     
     OwnedArray<TextButton> buttons;
 

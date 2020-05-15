@@ -76,6 +76,8 @@ public:
     
 //    SoundArray sound;
     
+    MorphexSynth mMorphexSynth { &parameters };
+    
 private:
     
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
@@ -84,7 +86,7 @@ private:
         
         for(int i = 0; i < kParameter_TotalNumParameters; i++) {
             
-            ParameterStruct smt_parameter = SMT_PARAMETERS[i];
+            ParameterStruct<float> smt_parameter = SMT_PARAMETERS<float>[i];
             
             params.push_back(std::make_unique<AudioParameterFloat>( smt_parameter.parameter_ID,
                                                                    smt_parameter.parameter_ID,
@@ -99,13 +101,11 @@ private:
         return { params.begin(), params.end() };
     }
     
-    MorphexSynth mMorphexSynth { &parameters };
-    
     MidiKeyboardState midiState;
     MidiMessageCollector midiCollector;
     
     std::unique_ptr<SMTPresetManager> mPresetManager;
-    
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpectralMorphingToolAudioProcessor)
 };
