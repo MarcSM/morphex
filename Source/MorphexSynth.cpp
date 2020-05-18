@@ -30,7 +30,8 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
 //    std::string instrument_folder = "Suitcase Dry Full Velocity Test";
 //    std::string instrument_folder = "Suitcase Dry Full";
-    std::string instrument_folder = "Morphing Test";
+//    std::string instrument_folder = "Morphing Test";
+    std::string instrument_folder = "Suitcase Dry Test 20200518";
     std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
 
     DirectoryIterator iter (File (full_path), true, "*.had");
@@ -51,17 +52,31 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
         
 //        mSound[i] = std::make_unique<Core::Sound>(sound_file_name);
 //
-        this->instrument.num_samples_loaded++;
         
         this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound = sound;
         this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loaded = true;
         
+        if (this->instrument.num_samples_loaded == 0)
+        {
+            this->instrument.setMorphSound(&this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound, MorphLocation::Left);
+        }
+        else if (this->instrument.num_samples_loaded == 1)
+        {
+            this->instrument.setMorphSound(&this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound, MorphLocation::Right);
+        }
+        
+        this->instrument.num_samples_loaded++;
     //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->setSound( sound );
     //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loadSound( sound_file_name );
     }
     
     DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
     
+//    this->instrument.mode = Mode::Morphing;
+//    this->instrument.interpolation_mode = Interpolation::Manual;
+    this->instrument.mode = Instrument::Mode::FullRange;
+    this->instrument.interpolation_mode = Instrument::Interpolation::None;
+
     /*
     AlertWindow aux ("Sound files loaded", "Sound files loaded: " + String(this->instrument.num_samples_loaded), AlertWindow::InfoIcon);
     aux.showMessageBox (AlertWindow::NoIcon,

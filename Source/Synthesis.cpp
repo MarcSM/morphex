@@ -187,7 +187,7 @@ namespace Core
 //        }
         
         // Residual compontent
-        if (sound_frame.hasResidual())
+        if (this->parameters.generate_residual and sound_frame.hasResidual())
         {
             for (int i = 0; i < sound_frame.residual.size(); i++)
             {

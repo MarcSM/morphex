@@ -18,7 +18,7 @@ namespace BinaryData
     const int            morphex_long_logo_pngSize = 86623;
 
     extern const char*   morphex_long_logo_svg;
-    const int            morphex_long_logo_svgSize = 36858;
+    const int            morphex_long_logo_svgSize = 12506;
 
     extern const char*   morphex_logo_small_png;
     const int            morphex_logo_small_pngSize = 1540;

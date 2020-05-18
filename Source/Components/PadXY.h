@@ -35,7 +35,7 @@ public:
         y_min = 0; y_max = 1;
         x_val = (x_min + x_max) / 2;
         y_val = (x_min + x_max) / 2;
-        invert_y = true;
+        invert_y = false;
         
         // Add the circle
         circle.setColour (GUI::Color::Accent.overlaidWith (Colour(255, 255, 255).withAlpha(0.15f)) );

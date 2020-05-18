@@ -65,6 +65,7 @@ public:
         int fs;
         int fft_size;
         int hop_size;
+        bool generate_residual = true;
     };
     SynthesisParameters parameters;
     

@@ -196,22 +196,30 @@ namespace Core
     
     MorphSounds Instrument::getMorphSounds()
     {
-        // Output
-        MorphSounds morph_sounds;
-        
-        std::vector<Note*> loaded_notes = getLoadedNotes();
-        
-        int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
-        
-        for (int i = 0; i < i_notes_to_load; i++)
-        {
-            std::vector<Velocity*> loaded_velocities = loaded_notes[i]->getLoadedVelocities();
-            
-            morph_sounds[i] = &loaded_velocities[0]->sound;
-        }
-        
         return morph_sounds;
     }
+    
+    void Instrument::setMorphSound(Sound* sound, MorphLocation morph_location)
+    {
+        morph_sounds[morph_location] = sound;
+        
+//        // Output
+//        MorphSounds morph_sounds;
+//
+//        std::vector<Note*> loaded_notes = getLoadedNotes();
+//
+//        int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
+//
+//        for (int i = 0; i < i_notes_to_load; i++)
+//        {
+//            std::vector<Velocity*> loaded_velocities = loaded_notes[i]->getLoadedVelocities();
+//
+//            morph_sounds[i] = &loaded_velocities[0]->sound;
+//        }
+//
+//        return morph_sounds;
+    }
+    
 //    Sound* Instrument::getSound(float f_note, int i_velocity)
 //    {
 //        MorphSounds morph_sounds = getCloserSounds( f_note, i_velocity );
@@ -434,7 +442,8 @@ namespace Core
         {
             if (i < second_frame.size())
             {
-                interpolated_frame[i] = (1-interp_factor) * master_frame[i] + interp_factor * second_frame[i];
+                interpolated_frame[i] = interp_factor * master_frame[i] + (1-interp_factor) * second_frame[i];
+//                interpolated_frame[i] = (1-interp_factor) * master_frame[i] + interp_factor * second_frame[i];
             }
             else
             {

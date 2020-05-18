@@ -33,13 +33,6 @@ namespace Core
     typedef std::array<Sound::Frame, MorphLocation::NUM_MORPH_LOCATIONS> MorphSoundFrames;
     //    typedef std::array<std::unique_ptr<Sound>, MorphLocation::NUM_MORPH_LOCATIONS> MorphSounds;
     
-    enum class Interpolation
-    {
-        None = 0,
-        Manual,
-        FrequencyBased
-    };
-    
     const static int NUM_MIDI_NOTES = 128;
 }
 
@@ -58,6 +51,13 @@ public:
     {
         Morphing = 0,
         FullRange
+    };
+    
+    enum class Interpolation
+    {
+        None = 0,
+        Manual,
+        FrequencyBased
     };
     
     enum FrameType
@@ -80,8 +80,8 @@ public:
     int num_samples_loaded = 0;
 
     // Mode
-//    Mode mode = Mode::Morphing;
-    Mode mode = Mode::FullRange;
+    Mode mode = Mode::Morphing;
+//    Mode mode = Mode::FullRange;
 
     // Interpolation
     Interpolation interpolation_mode = Interpolation::Manual;
@@ -94,6 +94,7 @@ public:
     MorphNotes getCloserNotes(float f_target_note);
     MorphSounds getCloserSounds(float f_target_note, float f_velocity);
     MorphSounds getMorphSounds();
+    void setMorphSound(Sound*, MorphLocation);
 
     Sound* getSound(float f_note, float f_velocity);
     Sound::Frame getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
@@ -108,6 +109,8 @@ public:
                                          int i_frame_length,
                                          std::vector<int> idx_harmonics = std::vector<int>());
 private:
+    
+    MorphSounds morph_sounds;
     
 //    std::vector<float> interpolateFrames(FrameType frame_type,
 //                                         float interp_factor,

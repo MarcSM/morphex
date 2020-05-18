@@ -28,7 +28,7 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
     addAndMakeVisible(this->resizeCorner);
     this->resizeCorner->setBounds (getWidth()-20, getHeight()-20, 20, 20);
     
-    double ratio = double(MORPHEX_PANEL_WIDTH) / double(MORPHEX_PANEL_HEIGHT);
+//    double ratio = double(MORPHEX_PANEL_WIDTH) / double(MORPHEX_PANEL_HEIGHT);
 
     // setResizeLimits(400, 400/ratio, 1200, 1200/ratio);
     // getConstrainer()->setFixedAspectRatio(ratio);
@@ -43,7 +43,7 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
     //                            MORPHEX_PANEL_HEIGHT,
     //                            MORPHEX_PANEL_WIDTH / ratio,
     //                            MORPHEX_PANEL_HEIGHT / ratio);
-    getConstrainer()->setFixedAspectRatio(ratio);
+    getConstrainer()->setFixedAspectRatio(MORPHEX_RATIO);
     centreWithSize (getWidth(), getHeight());
 
 #endif

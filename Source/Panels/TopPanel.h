@@ -64,10 +64,12 @@ private:
             //addAndMakeVisible (morphex_long_logo.get());
             //morphex_long_logo->setBounds (0,0,100,100);
             
+            morphex_long_logo->replaceColour (Colours::white, GUI::Color::Logo);
+            
             //morphex_long_logo_bounds = new Rectangle<float>(10, 10, getWidth(), getHeight());
             //morphex_long_logo_bounds->setBounds(10, 10, 100, 100);
 
-            morphex_long_logo_margin = 15.0f;
+            
         }
         
         void paint (Graphics& g) override
@@ -89,22 +91,30 @@ private:
 //            morphex_long_logo->drawWithin(g, morphex_long_logo_bounds, RectanglePlacement::stretchToFit, 1.f);
             
 //            juce::Rectangle<float> picBounds(10, 10, getWidth(), getHeight());
-            juce::Rectangle<float> picBounds(morphex_long_logo_margin, morphex_long_logo_margin,
-                                             getWidth() - 2 * morphex_long_logo_margin,
-                                             getHeight() - 2 * morphex_long_logo_margin);
-            juce::Rectangle<float> svgBounds =
-            ((DrawableComposite*) morphex_long_logo.get())->getContentArea();
-            juce::RectanglePlacement ourPlacement(RectanglePlacement::xLeft);
-//            juce::RectanglePlacement ourPlacement(RectanglePlacement::stretchToFit);
-            juce::AffineTransform xform = ourPlacement.getTransformToFit (svgBounds, picBounds);
-            morphex_long_logo->draw(g, 1.f, xform);
             
+//            juce::Rectangle<float> picBounds(morphex_long_logo_margin, morphex_long_logo_margin,
+//                                             getWidth() - 2 * morphex_long_logo_margin,
+//                                             getHeight() - 2 * morphex_long_logo_margin);
+            
+            
+            
+            
+//            juce::Rectangle<float> svgBounds =
+//            ((DrawableComposite*) morphex_long_logo.get())->getContentArea();
+//            juce::RectanglePlacement ourPlacement(RectanglePlacement::xLeft);
+//            juce::AffineTransform xform = ourPlacement.getTransformToFit (svgBounds, *picBounds);
+//            morphex_long_logo->draw(g, 1.f, xform);
+            
+            
+            morphex_long_logo->drawWithin(g, picBounds, RectanglePlacement::xLeft, 1.0f);
+//            morphex_long_logo->drawWithin(g, *picBounds, RectanglePlacement::centred + RectanglePlacement::doNotResize, 1.0f);
+
             // drawToFit(g, morphex_long_logo, morphex_long_logo_bounds);
             
             // Plugin Version
             g.setColour (Colours::white);
             g.setFont (14.0f);
-            g.drawText("v" + PLUGIN_VERSION, -15, 10, getWidth(), getHeight(), Justification::right);
+            g.drawText("v" + PLUGIN_VERSION + "-beta", -morphex_long_logo_margin, morphex_long_logo_margin, getWidth(), getHeight(), Justification::right);
 //            g.drawText("v" + PLUGIN_VERSION, -15, getHeight() -30, getWidth(), getHeight(), Justification::right);
 //            g.drawText("v" + PLUGIN_VERSION, -12, getHeight() * 0.2, getWidth(), getHeight(), Justification::right);
             
@@ -128,6 +138,12 @@ private:
         
         void resized() override
         {
+            morphex_long_logo_margin = getWidth() * 0.04f;
+//            morphex_long_logo_margin = 15.0f;
+            picBounds.setBounds(morphex_long_logo_margin, morphex_long_logo_margin,
+                                getWidth() - 2 * morphex_long_logo_margin,
+                                getHeight() - 2 * morphex_long_logo_margin);
+            
             //morphex_long_logo_bounds->setBounds(10, 10, 100, 100);
             
             //auto area = getLocalBounds();
@@ -141,6 +157,7 @@ private:
         }
         
         std::unique_ptr<Drawable> morphex_long_logo;
+        Rectangle<float> picBounds;
         //Rectangle<float>* morphex_long_logo_bounds;
 //        std::unique_ptr<Rectangle<float>> morphex_long_logo_bounds;
 //        Image morphex_long_logo;

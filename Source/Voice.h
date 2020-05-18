@@ -370,8 +370,11 @@ struct Voice
             // Instrument::Mode::Morphing
             if (this->instrument.mode == Instrument::Mode::Morphing)
             {
+                this->synthesis.parameters.generate_residual = false;
+                
                 // TODO - Get morph_sounds from instrument, the 4 sounds
                 // marked to be used on morhping mode
+                morph_sounds = this->instrument.getMorphSounds();
                 
 //                float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
 //                float adsr_decay = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_decay]);
@@ -389,6 +392,8 @@ struct Voice
             // Instrument::Mode::FullRange
             else
             {
+                this->synthesis.parameters.generate_residual = true;
+                
                 if (this->instrument.interpolation_mode == Interpolation::None or
                     this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
                 {
