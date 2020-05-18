@@ -12,7 +12,6 @@
 #include "Sound.h"
 
 #include "SMTHelperFunctions.h"
-
 #include "SMTAudioHelpers.h"
 
 namespace Core
@@ -47,7 +46,7 @@ namespace Core
         this->commonInit();
     };
     
-    Sound::Sound(const Sound& obj)
+    Sound::Sound (const Sound& obj)
     {
         // Initialize default values
         this->loaded = obj.loaded;
@@ -86,7 +85,7 @@ namespace Core
     };
 
     // Read the file from a file_path
-    Sound::Sound(std::string file_path)
+    Sound::Sound (std::string file_path)
     {
         this->commonInit();
         
@@ -97,7 +96,7 @@ namespace Core
         this->load(file_data, HadFileSource::Binary);
     };
 
-    Sound::Sound(std::string file_path, int note, int velocity)
+    Sound::Sound (std::string file_path, int note, int velocity)
     {
         this->commonInit();
         
@@ -112,7 +111,7 @@ namespace Core
     };
 
     // Read the file from a binary file with an hypothetical file_path
-    Sound::Sound(String file_data, std::string file_path)
+    Sound::Sound (String file_data, std::string file_path)
     {
         this->commonInit();
         
@@ -123,10 +122,10 @@ namespace Core
         this->load(file_data, HadFileSource::Binary);
     };
 
-    Sound::~Sound(){};
+    Sound::~Sound() {};
 
     // Load data of ".had" file
-    String Sound::loadDataFromFile(std::string file_path)
+    String Sound::loadDataFromFile (std::string file_path)
     {
         File file = File(file_path);
         this->name = file.getFileNameWithoutExtension().toStdString();
@@ -143,7 +142,7 @@ namespace Core
         return had_file.loadFileAsString();
     }
 
-    void Sound::load(String file_data, HadFileSource file_source)
+    void Sound::load (String file_data, HadFileSource file_source)
     {
         // Initialize default values
         this->loaded = false;
@@ -162,7 +161,7 @@ namespace Core
             try
             {
                 // Sound
-                XmlElement *xml_sound = xml->getChildByName("sound"); // had["sound"]
+                XmlElement* xml_sound = xml->getChildByName("sound"); // had["sound"]
                 this->fs = xml_sound->getChildByName("fs")->getAllSubText().getIntValue();
                 // TODO - Embeded binary don't have note and velocity
                 this->note = xml_sound->getChildByName("note")->getAllSubText().getIntValue();
@@ -173,38 +172,37 @@ namespace Core
                 this->loop.end = xml_sound->getChildByName("loop")->getChildByName("end")->getAllSubText().getIntValue();
                 
                 // Model
-                XmlElement *xml_synthesis = xml->getChildByName("synthesis"); // had["synthesis"]
-                this->model->harmonic   = hasChild(xml_synthesis, "f") && hasChild(xml_synthesis, "m");
-                this->model->phases     = hasChild(xml_synthesis, "p");
-                this->model->sinusoidal = hasChild(xml_synthesis, "l");
-                this->model->stochastic = hasChild(xml_synthesis, "s");
+                XmlElement* xml_synthesis = xml->getChildByName("synthesis"); // had["synthesis"]
+                this->model->harmonic   = hasChild(xml_synthesis, "h");
+                this->model->sinusoidal = hasChild(xml_synthesis, "s");
+                this->model->stochastic = hasChild(xml_synthesis, "c");
+                this->model->attack     = hasChild(xml_synthesis, "a");
                 this->model->residual   = hasChild(xml_synthesis, "r");
-                if (this->model->harmonic)      this->model->setHarmonics(  getMatrixOfFloats(xml_synthesis, "f"), getMatrixOfFloats(xml_synthesis, "m"), true );
-                if (this->model->phases)        this->model->setPhases(     getMatrixOfFloats(xml_synthesis, "p"), true );
-                if (this->model->sinusoidal)    this->model->setSinusoidal( getMatrixOfFloats(xml_synthesis, "l"), true );
-                if (this->model->stochastic)    this->model->setStochastic( getMatrixOfFloats(xml_synthesis, "s"), true );
-                if (this->model->residual)      this->model->setResidual(   getVectorOfFloats(xml_synthesis, "r"), true );
-
-    //            // Decode the values from the ".had" files
-    //            self.decodeHadValues(had, self.model)
+                if (this->model->harmonic)
+                {
+                    XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName("h"); // had["synthesis"]["h"]
+                    this->model->setHarmonic (getMatrixOfFloats(xml_synthesis_harmonic, "f"),
+                                              getMatrixOfFloats(xml_synthesis_harmonic, "m"), true);
+                }
+                if (this->model->sinusoidal)
+                {
+                    XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName("s"); // had["synthesis"]["s"]
+                    this->model->setSinusoidal (getMatrixOfFloats(xml_synthesis_sinusoidal, "f"),
+                                                getMatrixOfFloats(xml_synthesis_sinusoidal, "m"), true);
+                }
+                if (this->model->stochastic)    this->model->setStochastic  (getMatrixOfFloats(xml_synthesis, "c"), true);
+                if (this->model->attack)        this->model->setAttack      (getVectorOfFloats(xml_synthesis, "a"), true);
+                if (this->model->residual)      this->model->setResidual    (getVectorOfFloats(xml_synthesis, "r"), true);
                 
-    //            // File
-    //            XmlElement *xml_sound_file = xml_sound->getChildByName("file"); // had["sound"]["file"]
-    //            this->file.name = xml_sound_file->getChildByName("name")->getAllSubText().toStdString();
-    //            this->file.extension = xml_sound_file->getChildByName("extension")->getAllSubText().toStdString();
-    //            this->file.path = xml_sound_file->getChildByName("path")->getAllSubText().toStdString();
-    //            this->file.dirpath = xml_sound_file->getChildByName("dirpath")->getAllSubText().toStdString();
-                
-                /** Binary Data Cases */
-    //            if (this->path.empty()) this->path = "";
+                // If source file is binary data, fill the missing attributes
                 if (this->name.empty()) this->name = this->file.name;
                 if (this->extension.empty()) this->extension = ".had";
-    //            if (this->dirpath.empty()) this->dirpath = "";
+//                if (this->path.empty()) this->path = "";
+//                if (this->dirpath.empty()) this->dirpath = "";
 
-                /** Parameters */
-                XmlElement *xml_parameters = xml->getChildByName("parameters"); // had["parameters"]
-    //            this->analysis.parameters.window = getVectorOfDoubles(xml_parameters, "window");
-                this->analysis.parameters.window_type = (WindowType)xml_parameters->getChildByName("window_type")->getAllSubText().getIntValue(); // TODO - Cast properly
+                // Analysis parameters
+                XmlElement* xml_parameters = xml->getChildByName("parameters"); // had["parameters"]
+                this->analysis.parameters.window_type = (WindowType)xml_parameters->getChildByName("window_type")->getAllSubText().getIntValue();
                 this->analysis.parameters.window_size = xml_parameters->getChildByName("window_size")->getAllSubText().getIntValue();
                 this->analysis.parameters.fft_size = xml_parameters->getChildByName("fft_size")->getAllSubText().getIntValue();
                 this->analysis.parameters.magnitude_threshold = xml_parameters->getChildByName("magnitude_threshold")->getAllSubText().getIntValue();
@@ -220,37 +218,34 @@ namespace Core
                 this->analysis.parameters.hop_size = xml_parameters->getChildByName("hop_size")->getAllSubText().getIntValue();
                 
                 // Fix missing data
-                
                 if (this->max_frames == 0)
                 {
                     this->max_frames = (int)std::max({
-                        this->model->values.harmonics_freqs.size(),
-                        this->model->values.harmonics_mags.size(),
-//                        this->model->values.harmonics_phases.size(),
-                        this->model->values.sinusoidal.size()
-//                        this->model->values.stochastic.size()
+                        this->model->values.harmonic.freqs.size(),
+                        this->model->values.harmonic.mags.size(),
+                        this->model->values.harmonic.phases.size(),
+                        this->model->values.sinusoidal.freqs.size(),
+                        this->model->values.sinusoidal.mags.size(),
+                        this->model->values.sinusoidal.phases.size(),
+                        this->model->values.stochastic.size(),
+                        this->model->values.attack.size(),
+                        this->model->values.residual.size()
                     });
                 };
+                
                 this->sound_length = this->max_frames * this->analysis.parameters.hop_size;
                 if (this->loop.end == 0) this->loop.end = this->sound_length;
                 
                 // TODO TEST - Temporal override
                 this->loop.end = (this->max_frames - 24) * this->analysis.parameters.hop_size;
                 
-    //            /** Analysis Output Values */
-    //            XmlElement *xml_analysis = xml->getChildByName("output")->getChildByName("values"); // had["output"]
-    //            this->harmonic_frequencies = getMatrixOfFloats(xml_analysis, "harmonic_frequencies");
-    //            this->harmonic_magnitudes = getMatrixOfFloats(xml_analysis, "harmonic_magnitudes");
-    //            this->harmonic_phases = getMatrixOfFloats(xml_analysis, "harmonic_phases");
-    //            this->stochastic_residual = getMatrixOfFloats(xml_analysis, "stochastic_residual");
-                
-//                /** Original Sound Synthesized */
+//                // Original sound synthesis
 //                this->synthesize();
 //                
-                /** Extract Additional Features */
+                // Extract Additional Features
                 this->extractFeatures();
 
-                /** Save Original Values */
+                // Save Original Values
 //                this->saveOriginalValues();
                 
                 /** Normalize magnitudes on load by default */
@@ -293,59 +288,52 @@ namespace Core
 //        std::string file_path
 //    }
 
-    Sound::Frame Sound::getFrame(int i_num_frame, int i_frame_length)
+    Sound::Frame Sound::getFrame (int i_num_frame, int i_frame_length)
     {
         // Output
         Sound::Frame sound_frame;
         
         // TODO - Improve the name tagging for the components of a frame
-//        sound_frame.harmonics_freqs = getComponentFrame(Frame::Component::HarmonicsFreqs, i_num_frame);
-//        sound_frame.harmonics_mags = getComponentFrame(Frame::Component::HarmonicsMags, i_num_frame);
-//        sound_frame.harmonics_phases = getComponentFrame(Frame::Component::HarmonicsPhases, i_num_frame);
-//        sound_frame.stochastic = getComponentFrame(Frame::Component::Stochastic, i_num_frame);
-//        sound_frame.residual = getComponentFrame(Frame::Component::Residual, i_num_frame, i_frame_length);
-        
-//        if ( i_num_frame >= this->model->values.harmonics_freqs.size())
-//        {
-//            sound_frame.harmonics_freqs = std::vector<float>(0);
-//            sound_frame.harmonics_mags = std::vector<float>(0);
-//            sound_frame.harmonics_phases = std::vector<float>(0);
-//            sound_frame.stochastic = std::vector<float>(0);
-//            sound_frame.residual = std::vector<float>(0);
-//        }
-//        else{
-//            sound_frame.harmonics_freqs = getComponentFrame(Frame::Component::HarmonicsFreqs, i_num_frame);
-//            sound_frame.harmonics_mags = getComponentFrame(Frame::Component::HarmonicsMags, i_num_frame);
-//            sound_frame.harmonics_phases = getComponentFrame(Frame::Component::HarmonicsPhases, i_num_frame);
-//            sound_frame.stochastic = getComponentFrame(Frame::Component::Stochastic, i_num_frame);
-//            sound_frame.residual = getComponentFrame(Frame::Component::Residual, i_num_frame, i_frame_length);
-//        }
-        if ( i_num_frame < this->model->values.harmonics_freqs.size())
+        if ( i_num_frame < this->model->values.harmonic.freqs.size())
         {
-            sound_frame.harmonics_freqs = getComponentFrame(Frame::Component::HarmonicsFreqs, i_num_frame);
-            sound_frame.harmonics_mags = getComponentFrame(Frame::Component::HarmonicsMags, i_num_frame);
-            sound_frame.harmonics_phases = std::vector<float>(0);
-            //            sound_frame.harmonics_phases = getComponentFrame(Frame::Component::HarmonicsPhases, i_num_frame);
+            sound_frame.harmonic.freqs = getComponentFrame(Frame::Component::HarmonicFreqs, i_num_frame);
+            sound_frame.harmonic.mags = getComponentFrame(Frame::Component::HarmonicMags, i_num_frame);
+//            sound_frame.harmonic.phases = getComponentFrame(Frame::Component::HarmonicPhases, i_num_frame);
+            sound_frame.harmonic.phases = std::vector<float>(0);
         }
         else
         {
-            sound_frame.harmonics_freqs = std::vector<float>(0);
-            sound_frame.harmonics_mags = std::vector<float>(0);
-            sound_frame.harmonics_phases = std::vector<float>(0);
+            sound_frame.harmonic.freqs = std::vector<float>(0);
+            sound_frame.harmonic.mags = std::vector<float>(0);
+            sound_frame.harmonic.phases = std::vector<float>(0);
         }
         
-        if ( i_num_frame < this->model->values.sinusoidal.size())
+        if ( i_num_frame < this->model->values.sinusoidal.freqs.size())
         {
-            sound_frame.sinusoidal = getComponentFrame(Frame::Component::Sinusoidal, i_num_frame);
+            sound_frame.sinusoidal.freqs = getComponentFrame(Frame::Component::SinusoidalFreqs, i_num_frame);
+            sound_frame.sinusoidal.mags = getComponentFrame(Frame::Component::SinusoidalMags, i_num_frame);
+            //            sound_frame.sinusoidal.phases = getComponentFrame(Frame::Component::sinusoidalPhases, i_num_frame);
+            sound_frame.sinusoidal.phases = std::vector<float>(0);
         }
         else
         {
-            sound_frame.sinusoidal = std::vector<float>(0);
+            sound_frame.sinusoidal.freqs = std::vector<float>(0);
+            sound_frame.sinusoidal.mags = std::vector<float>(0);
+            sound_frame.sinusoidal.phases = std::vector<float>(0);
         }
         
         if ( i_num_frame < this->model->values.stochastic.size())
         {
             sound_frame.stochastic = getComponentFrame(Frame::Component::Stochastic, i_num_frame);
+        }
+        
+        if ( (i_num_frame * i_frame_length) < this->model->values.attack.size())
+        {
+            sound_frame.attack = getComponentFrame(Frame::Component::Attack, i_num_frame, i_frame_length);
+        }
+        else
+        {
+            sound_frame.attack = std::vector<float>(0);
         }
         
         if ( (i_num_frame * i_frame_length) < this->model->values.residual.size())
@@ -357,8 +345,6 @@ namespace Core
             sound_frame.residual = std::vector<float>(0);
         }
         
-        
-        
         return sound_frame;
     }
 
@@ -369,24 +355,36 @@ namespace Core
 
         switch (component_name)
         {
-            case Frame::Component::HarmonicsFreqs:
-                component_frame = this->model->values.harmonics_freqs[i_num_frame];
+            case Frame::Component::HarmonicFreqs:
+                component_frame = this->model->values.harmonic.freqs[i_num_frame];
                 break;
-            case Frame::Component::HarmonicsMags:
-                component_frame = this->model->values.harmonics_mags[i_num_frame];
+            case Frame::Component::HarmonicMags:
+                component_frame = this->model->values.harmonic.mags[i_num_frame];
                 break;
-            case Frame::Component::HarmonicsPhases:
-                component_frame = this->model->values.harmonics_phases[i_num_frame];
+            case Frame::Component::HarmonicPhases:
+                component_frame = this->model->values.harmonic.phases[i_num_frame];
                 break;
-            case Frame::Component::Sinusoidal:
-                component_frame = this->model->values.sinusoidal[i_num_frame];
+            case Frame::Component::SinusoidalFreqs:
+                component_frame = this->model->values.sinusoidal.freqs[i_num_frame];
+                break;
+            case Frame::Component::SinusoidalMags:
+                component_frame = this->model->values.sinusoidal.mags[i_num_frame];
+                break;
+            case Frame::Component::SinusoidalPhases:
+                component_frame = this->model->values.sinusoidal.phases[i_num_frame];
                 break;
             case Frame::Component::Stochastic:
                 component_frame = this->model->values.stochastic[i_num_frame];
                 break;
+            case Frame::Component::Attack:
             case Frame::Component::Residual:
             {
-                std::vector<float> vector_component = this->model->values.residual;
+                std::vector<float> vector_component = this->model->values.attack;
+                
+                if (component_name == Frame::Component::Residual)
+                {
+                    vector_component = this->model->values.residual;
+                }
 
                 int i_start_sample = i_num_frame * i_frame_length;
                 int i_end_sample = i_start_sample + i_frame_length;
@@ -576,16 +574,19 @@ namespace Core
         }
 
         // Count the number of occurrences for each fundamental present on "harmonic_frequencies"
-        for (int i_frame = 0; i_frame < this->model->values.harmonics_freqs.size(); i_frame++)
+        for (int i_frame = 0; i_frame < this->model->values.harmonic.freqs.size(); i_frame++)
         {
-            // Current fundamental
-            float current_fundamental = this->model->values.harmonics_freqs[i_frame][0];
-            
-            // Find the closest note for this fundamental in Hz
-            float i_closest_note = findClosest(notes_array, (int) notes.size(), current_fundamental);
-            
-            // Incrementing the number of occurrences
-            notes.find(i_closest_note)->second++;
+            if (this->model->values.harmonic.freqs[i_frame].size() > 0)
+            {
+                // Current fundamental
+                float current_fundamental = this->model->values.harmonic.freqs[i_frame][0];
+                
+                // Find the closest note for this fundamental in Hz
+                float i_closest_note = findClosest(notes_array, (int) notes.size(), current_fundamental);
+                
+                // Incrementing the number of occurrences
+                notes.find(i_closest_note)->second++;
+            }
         }
         
         // Save the result on features.fundamentals
@@ -611,11 +612,15 @@ namespace Core
 
     void Sound::saveOriginalValues()
     {
-        this->original.harmonics_freqs  = this->model->values.harmonics_freqs;
-        this->original.harmonics_mags   = this->model->values.harmonics_mags;
-        this->original.harmonics_phases = this->model->values.harmonics_phases;
-        this->original.stochastic       = this->model->values.stochastic;
-        this->original.residual       = this->model->values.residual;
+        this->original.harmonic.freqs       = this->model->values.harmonic.freqs;
+        this->original.harmonic.mags        = this->model->values.harmonic.mags;
+        this->original.harmonic.phases      = this->model->values.harmonic.phases;
+        this->original.sinusoidal.freqs     = this->model->values.sinusoidal.freqs;
+        this->original.sinusoidal.mags      = this->model->values.sinusoidal.mags;
+        this->original.sinusoidal.phases    = this->model->values.sinusoidal.phases;
+        this->original.attack               = this->model->values.attack;
+        this->original.stochastic           = this->model->values.stochastic;
+        this->original.residual             = this->model->values.residual;
     }
 
     void Sound::normalizeMagnitudes()
@@ -629,33 +634,65 @@ namespace Core
         float max_val = -100.0;
         
         // Get the harmonic magnitudes matrix
-        std::vector<std::vector<float>> harmonics_mags = this->model->values.harmonics_mags;
+        std::vector<std::vector<float>> harmonic_mags = this->model->values.harmonic.mags;
         
         // Find the min and max of the harmonic magnitudes matrix
-        for (int i=0; i<harmonics_mags.size(); i++)
+        for (int i=0; i<harmonic_mags.size(); i++)
         {
-            float local_min_val = *min_element(harmonics_mags[i].begin(), harmonics_mags[i].end());
-            float local_max_val = *max_element(harmonics_mags[i].begin(), harmonics_mags[i].end());
-            
-            if (local_min_val < min_val) min_val = local_min_val;
-            if (local_max_val > max_val) max_val = local_max_val;
+            if (harmonic_mags[i].size() > 0)
+            {
+                float local_min_val = *min_element(harmonic_mags[i].begin(), harmonic_mags[i].end());
+                float local_max_val = *max_element(harmonic_mags[i].begin(), harmonic_mags[i].end());
+                
+                if (local_min_val < min_val) min_val = local_min_val;
+                if (local_max_val > max_val) max_val = local_max_val;
+            }
         }
         
-        // Normalize the harmonics magnitudes
-        for (int i=0; i<harmonics_mags.size(); i++)
+        // Normalize the harmonic magnitudes
+        for (int i=0; i<harmonic_mags.size(); i++)
         {
-            for (int j=0; j<harmonics_mags[i].size(); j++)
+            for (int j=0; j<harmonic_mags[i].size(); j++)
             {
-                harmonics_mags[i][j] = (max_db - min_db) * ( (harmonics_mags[i][j] - min_val) / (max_val - min_val) ) + min_db;
+                harmonic_mags[i][j] = (max_db - min_db) * ( (harmonic_mags[i][j] - min_val) / (max_val - min_val) ) + min_db;
             }
         }
         
         // Set the harmonic magnitudes matrix
-        this->model->setMagnitudes( harmonics_mags );
+        this->model->setHarmonicMagnitudes( harmonic_mags );
         
         // Calcualte the normalization factor applied over the harmonics magnitudes
         this->features.normalization_factor = Tools::Calculate::dbToLinear( -std::abs(max_val - max_db) );
         
+        // Attack component normalization
+        if (this->model->hasAttack())
+        {
+            // Get the residual component
+            std::vector<float> attack = this->model->values.attack;
+            
+            // Normalize attack component
+            this->normalizeWaveform (attack, max_val, max_db);
+            
+            // Set the normalized attack component
+            this->model->setAttack (attack);
+        }
+        
+        // Residual component normalization
+        if (this->model->hasResidual())
+        {
+            // Get the residual component
+            std::vector<float> residual = this->model->values.residual;
+            
+            // Normalize residual component
+            this->normalizeWaveform (residual, max_val, max_db);
+            
+            // Set the normalized residual component
+            this->model->setResidual (residual);
+        }
+    }
+    
+    void Sound::normalizeWaveform(std::vector<float>& waveform, float max_val, float max_db)
+    {
         // Define normalization range linear
         float max_val_from_db = Tools::Calculate::dbToLinear( max_val );
         float max_linear = Tools::Calculate::dbToLinear(max_db);
@@ -664,14 +701,11 @@ namespace Core
         // Initialize min and max values
         float min_val_linear = 0.0;
         float max_val_linear = 0.0;
-
-        // Get the residual component
-        std::vector<float> residual = this->model->values.residual;
         
-        // Find the max of the residual component
-        for (int i = 0; i < residual.size(); i++)
+        // Find the max value of the waveform
+        for (int i = 0; i < waveform.size(); i++)
         {
-            float current_val = std::abs( residual[i] );
+            float current_val = std::abs( waveform[i] );
             if (current_val > max_val_linear) max_val_linear = current_val;
         }
         
@@ -682,27 +716,24 @@ namespace Core
         
         min_val_linear = -max_val_linear;
         
-//        float residual_normalization_factor = std::abs(max_val_linear - max_linear);
+        //        float waveform_normalization_factor = std::abs(max_val_linear - max_linear);
         
-        // Normalize the residual component with the same factor
-        for (int i = 0; i < residual.size(); i++)
+        // Normalize the waveform component with the same factor
+        for (int i = 0; i < waveform.size(); i++)
         {
-//            residual[i] /= residual_normalization_factor;
-//            residual[i] /= this->features.normalization_factor;
-//            residual[i] = (max_linear - min_linear) * ( (residual[i] - min_val_linear) / (max_val_linear - min_val_linear) ) + min_linear;
-            residual[i] = (max_linear - min_linear) * ( (residual[i] - min_val_linear) / (max_val_linear - min_val_linear) ) + min_linear;
+            //            waveform[i] /= waveform_normalization_factor;
+            //            waveform[i] /= this->features.normalization_factor;
+            //            waveform[i] = (max_linear - min_linear) * ( (waveform[i] - min_val_linear) / (max_val_linear - min_val_linear) ) + min_linear;
+            waveform[i] = (max_linear - min_linear) * ( (waveform[i] - min_val_linear) / (max_val_linear - min_val_linear) ) + min_linear;
         }
         
         std::vector<float> results_great;
-        copy_if(residual.begin(), residual.end(), back_inserter(results_great),[](float n ){ return  n > 1.0;});
+        copy_if(waveform.begin(), waveform.end(), back_inserter(results_great),[](float n ){ return  n > 1.0;});
         
         std::vector<float> results_less;
-        copy_if(residual.begin(), residual.end(), back_inserter(results_less),[](float n ){ return  n < -1.0;});
+        copy_if(waveform.begin(), waveform.end(), back_inserter(results_less),[](float n ){ return  n < -1.0;});
         
-        if (results_great.size() > 0) DBG("UPPER CLIPPING");
-        if (results_less.size() > 0) DBG("LOWER CLIPPING");
-
-        // Set the normalized residual component
-        this->model->setResidual( residual );
+        jassert (results_great.size() == 0); // Upper clipping
+        jassert (results_less.size() == 0); // Lower clipping
     }
 } // namespace Core

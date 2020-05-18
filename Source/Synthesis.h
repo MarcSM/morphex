@@ -72,7 +72,8 @@ public:
     struct SynthesisLiveValues
     {
         std::vector<float> last_freqs;
-        std::vector<float> phases;
+        std::vector<float> harmonic_phases;
+        std::vector<float> sinusoidal_phases;
         int i_samples_ready;
         int i_current_frame;
         bool first_frame;

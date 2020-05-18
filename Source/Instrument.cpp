@@ -318,33 +318,33 @@ namespace Core
         //             return (note_hfreq / f_note_freq) * f_target_frequency
         
         // Transpose left note frequencies to the target frequency
-        Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].harmonics_freqs,
+        Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].harmonic.freqs,
                                          Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
-        Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Left].harmonics_freqs, f_target_frequency);
+        Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Left].harmonic.freqs, f_target_frequency);
         
         // Transpose right note frequencies to the target frequency
-        Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Right].harmonics_freqs,
+        Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Right].harmonic.freqs,
                                          Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note));
-        Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Right].harmonics_freqs, f_target_frequency);
+        Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Right].harmonic.freqs, f_target_frequency);
         
-        if (morph_sound_frames[MorphLocation::Left].hasHarmonics() or
-            morph_sound_frames[MorphLocation::Right].hasHarmonics())
+        if (morph_sound_frames[MorphLocation::Left].hasHarmonic() or
+            morph_sound_frames[MorphLocation::Right].hasHarmonic())
         {
             // Interpolating the frequencies of the given harmonics
-            morphed_sound_frame.harmonics_freqs =
+            morphed_sound_frame.harmonic.freqs =
             interpolateFrames(FrameType::Frequencies,
                               f_freqs_interp_factor,
-                              morph_sound_frames[MorphLocation::Left].harmonics_freqs,
-                              morph_sound_frames[MorphLocation::Right].harmonics_freqs,
+                              morph_sound_frames[MorphLocation::Left].harmonic.freqs,
+                              morph_sound_frames[MorphLocation::Right].harmonic.freqs,
                               i_max_harmonics,
                               idx_harmonics);
             
             // Interpolating the magnitudes of the given harmonics
-            morphed_sound_frame.harmonics_mags =
+            morphed_sound_frame.harmonic.mags =
             interpolateFrames(FrameType::Magnitudes,
                               f_mags_interp_factor,
-                              morph_sound_frames[MorphLocation::Left].harmonics_mags,
-                              morph_sound_frames[MorphLocation::Right].harmonics_mags,
+                              morph_sound_frames[MorphLocation::Left].harmonic.mags,
+                              morph_sound_frames[MorphLocation::Right].harmonic.mags,
                               i_max_harmonics,
                               idx_harmonics);
         }

@@ -394,12 +394,12 @@ struct Voice
             {
                 this->synthesis.parameters.generate_residual = true;
                 
-                if (this->instrument.interpolation_mode == Interpolation::None or
+                if (this->instrument.interpolation_mode == Instrument::Interpolation::None or
                     this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
                 {
                     Sound* selected_sound;
                     
-                    if (this->instrument.interpolation_mode == Interpolation::None)
+                    if (this->instrument.interpolation_mode == Instrument::Interpolation::None)
                     {
                         int left_note_distance = std::abs( this->f_pressed_midi_note - morph_sounds[MorphLocation::Left]->note );
                         int right_note_distance = std::abs( this->f_pressed_midi_note - morph_sounds[MorphLocation::Right]->note );
@@ -427,9 +427,9 @@ struct Voice
                     float f_note_frequency = Tools::Midi::toFreq(selected_sound->note);
                     
                     // Recalculate the harmonics for the current midi note
-                    for (int i=0; i<sound_frame.harmonics_freqs.size(); i++)
+                    for (int i=0; i<sound_frame.harmonic.freqs.size(); i++)
                     {
-                        sound_frame.harmonics_freqs[i] = (sound_frame.harmonics_freqs[i] / f_note_frequency) * f_target_frequency;
+                        sound_frame.harmonic.freqs[i] = (sound_frame.harmonic.freqs[i] / f_note_frequency) * f_target_frequency;
                     }
                     
                     //                    // Transpose left note frequencies to the target frequency

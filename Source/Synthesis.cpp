@@ -149,11 +149,23 @@ namespace Core
         
         
         
+        std::vector<float> harmonics_phases;
+        
+        if ( !sound_frame.hasPhases (sound_frame.harmonic) )
+        {
+            sound_frame.harmonic.phases = Tools::Get::valuesByIndex (this->live_values.harmonic_phases, idx_harmonics);
+        }
+        
+        if ( !sound_frame.hasPhases (sound_frame.sinusoidal) )
+        {
+            sound_frame.sinusoidal.phases = this->live_values.sinusoidal_phases;
+        }
+        
         // Generate sines
         // TODO - TOFIX - This does not work
-        std::vector<float> y_harmonics = generateSines(sound_frame.harmonics_freqs,
-                                                       sound_frame.harmonics_mags,
-                                                       sound_frame.harmonics_phases,
+        std::vector<float> y_harmonics = generateSines(sound_frame.harmonic.freqs,
+                                                       sound_frame.harmonic.mags,
+                                                       sound_frame.harmonic.phases,
                                                        NS, FS);
         
         // Applying the window and saving the result on the output vector "harmonic"
@@ -207,20 +219,26 @@ namespace Core
         const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
 
         // A list with the indexes of the harmonics we want to interpolate
-        std::vector<int> idx_harmonics = Tools::Generate::range(0, MAX_HARMONICS);
+        std::vector<int> idx_harmonics = Tools::Generate::range (0, MAX_HARMONICS);
         
-        // Update phases
-        if (!this->live_values.first_frame)
-        {
-            updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
-        }
-        
-        std::vector<float> harmonics_phases;
-        
-        if ( !sound_frame.hasPhases() )
-        {
-            sound_frame.harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
-        }
+//        // Update phases
+//        if (!this->live_values.first_frame)
+//        {
+//            updatePhases (sound_frame.harmonic.freqs, idx_harmonics, H);
+////            TODO updatePhases (sound_frame.sinusoidal.freqs, idx_harmonics, H);
+//        }
+//
+//        std::vector<float> harmonics_phases;
+//
+//        if ( !sound_frame.hasPhases (sound_frame.harmonic) )
+//        {
+//            sound_frame.harmonic.phases = Tools::Get::valuesByIndex (this->live_values.harmonic_phases, idx_harmonics);
+//        }
+//
+//        if ( !sound_frame.hasPhases (sound_frame.sinusoidal) )
+//        {
+//            sound_frame.sinusoidal.phases = this->live_values.sinusoidal_phases;
+//        }
 
 //        if (this->live_values.first_frame)
 //        {
@@ -233,10 +251,12 @@ namespace Core
 //        }
         
         // Generate windowed audio frame
-        std::vector<float> windowed_audio_frame = synthesizeSoundFrame(sound_frame, idx_harmonics);
+        std::vector<float> windowed_audio_frame = synthesizeSoundFrame (sound_frame, idx_harmonics);
         
         // TODO - Test
 //        Tools::Audio::writeSoundFile(windowed_audio_frame, "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/windowed_audio_frame.wav");
+        
+        
         
         if (this->live_values.first_frame)
         {
@@ -258,10 +278,10 @@ namespace Core
 //        return windowed_audio_frame;
         
         // Save the current frequencies to be available fot the next iteration
-        updateLastFreqs(sound_frame.harmonics_freqs, idx_harmonics);
+        updateLastFreqs (sound_frame.harmonic.freqs, idx_harmonics);
         
         // Add the audio frame to the circular buffer
-        updateBuffer(BufferSection::Write, BufferUpdateMode::Add, windowed_audio_frame, Channel::Mono);
+        updateBuffer (BufferSection::Write, BufferUpdateMode::Add, windowed_audio_frame, Channel::Mono);
         
 //        // Selecting the processed samples
 //        std::vector<float> next_frame = getBuffer(BufferSection::Play, Channel::Mono, i_frame_length);
@@ -273,7 +293,7 @@ namespace Core
         this->live_values.i_samples_ready += H;
         
         // Clean the part of the buffer that we must override
-        updateBuffer(BufferSection::Clean, BufferUpdateMode::Delete);
+        updateBuffer (BufferSection::Clean, BufferUpdateMode::Delete);
         
         // Update write pointer position
         this->updateWritePointer(H);

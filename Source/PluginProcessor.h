@@ -74,8 +74,6 @@ public:
         return midiState;
     }
     
-//    SoundArray sound;
-    
     MorphexSynth mMorphexSynth { &parameters };
     
 private:

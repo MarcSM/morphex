@@ -42,8 +42,6 @@ protected:
     OwnedArray<Voice> voices;
     
 private:
-    
-    SoundArray mSound;
 
     double currentSampleRate;
 };
