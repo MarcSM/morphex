@@ -432,23 +432,23 @@ struct Voice
                     float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
                     float f_note_frequency = Tools::Midi::toFreq(selected_sound->note);
                     
-                    if (sound_frame.hasHarmonic())
-                    {
-                        // Recalculate the harmonics for the current midi note
-                        for (int i=0; i<sound_frame.harmonic.freqs.size(); i++)
-                        {
-                            sound_frame.harmonic.freqs[i] = (sound_frame.harmonic.freqs[i] / f_note_frequency) * f_target_frequency;
-                        }
-                    }
-                    
-                    if (sound_frame.hasSinusoidal())
-                    {
-                        // Recalculate the harmonics for the current midi note
-                        for (int i=0; i<sound_frame.sinusoidal.freqs.size(); i++)
-                        {
-                            sound_frame.sinusoidal.freqs[i] = (sound_frame.sinusoidal.freqs[i] / f_note_frequency) * f_target_frequency;
-                        }
-                    }
+//                    if (sound_frame.hasHarmonic())
+//                    {
+//                        // Recalculate the harmonics for the current midi note
+//                        for (int i=0; i<sound_frame.harmonic.freqs.size(); i++)
+//                        {
+//                            sound_frame.harmonic.freqs[i] = (sound_frame.harmonic.freqs[i] / f_note_frequency) * f_target_frequency;
+//                        }
+//                    }
+//                    
+//                    if (sound_frame.hasSinusoidal())
+//                    {
+//                        // Recalculate the harmonics for the current midi note
+//                        for (int i=0; i<sound_frame.sinusoidal.freqs.size(); i++)
+//                        {
+//                            sound_frame.sinusoidal.freqs[i] = (sound_frame.sinusoidal.freqs[i] / f_note_frequency) * f_target_frequency;
+//                        }
+//                    }
                     
                     //                    // Transpose left note frequencies to the target frequency
                     //                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
