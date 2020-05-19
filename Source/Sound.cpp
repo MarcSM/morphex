@@ -664,6 +664,24 @@ namespace Core
         // Calcualte the normalization factor applied over the harmonics magnitudes
         this->features.normalization_factor = Tools::Calculate::dbToLinear( -std::abs(max_val - max_db) );
         
+        if (this->model->hasSinusoidal())
+        {
+            // Get the sinusoidal magnitudes matrix
+            std::vector<std::vector<float>> sinusoidal_mags = this->model->values.sinusoidal.mags;
+            
+            // Normalize the sinusoidal magnitudes
+            for (int i=0; i<sinusoidal_mags.size(); i++)
+            {
+                for (int j=0; j<sinusoidal_mags[i].size(); j++)
+                {
+                    sinusoidal_mags[i][j] = (max_db - min_db) * ( (sinusoidal_mags[i][j] - min_val) / (max_val - min_val) ) + min_db;
+                }
+            }
+            
+            // Set the sinusoidal magnitudes matrix
+            this->model->setSinusoidalMagnitudes( sinusoidal_mags );
+        }
+        
         // Attack component normalization
         if (this->model->hasAttack())
         {

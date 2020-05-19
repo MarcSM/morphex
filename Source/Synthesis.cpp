@@ -74,14 +74,25 @@ namespace Core
 //        this->generated.residual.resize(0);
 //        this->generated.stochastic.resize(0);
         
-        this->live_values.last_freqs.resize(MAX_HARMONICS);
-        this->live_values.phases.resize(MAX_HARMONICS);
+        // Harmonic live values
+        this->live_values.harmonic.last_freqs.resize(MAX_HARMONICS);
+        this->live_values.harmonic.phases.resize(MAX_HARMONICS);
         
-        std::fill(this->live_values.last_freqs.begin(),
-                  this->live_values.last_freqs.end(), 0.0);
+        std::fill(this->live_values.harmonic.last_freqs.begin(),
+                  this->live_values.harmonic.last_freqs.end(), 0.0);
         
-        std::fill(this->live_values.phases.begin(),
-                  this->live_values.phases.end(), 0.0);
+        std::fill(this->live_values.harmonic.phases.begin(),
+                  this->live_values.harmonic.phases.end(), 0.0);
+        
+        // Sinusoidal live values
+        this->live_values.sinusoidal.last_freqs.resize(MAX_SINUSOIDS);
+        this->live_values.sinusoidal.phases.resize(MAX_SINUSOIDS);
+        
+        std::fill(this->live_values.sinusoidal.last_freqs.begin(),
+                  this->live_values.sinusoidal.last_freqs.end(), 0.0);
+        
+        std::fill(this->live_values.sinusoidal.phases.begin(),
+                  this->live_values.sinusoidal.phases.end(), 0.0);
         
         this->buffer.pointers.write = 0;
         this->buffer.pointers.play = 0;
@@ -112,7 +123,8 @@ namespace Core
         //        this->live_values.phases = 2 * np.pi * np.zeros(MAX_HARMONICS)
     }
     
-    std::vector<float> Synthesis::synthesizeSoundFrame(Sound::Frame sound_frame, std::vector<int> idx_harmonics)
+//    std::vector<float> Synthesis::synthesizeSoundFrame(Sound::Frame sound_frame, std::vector<int> idx_harmonics)
+    std::vector<float> Synthesis::synthesizeSoundFrame(Sound::Frame sound_frame)
     {
         // Parameters shortcut
         const int FS = this->parameters.fs;
@@ -123,65 +135,53 @@ namespace Core
         // Output
         std::vector<float> yw(NS, 0.0);
         
-        // A list with the indexes of the harmonics we want to interpolate
-//        std::vector<int> idx_harmonics = Tools::Generate::range(0, MAX_HARMONICS);
-        //
-        
-//        std::vector<float> harmonics_phases;
-//        
-//        if ( sound_frame.hasPhases() )
-//        {
-//            harmonics_phases = sound_frame.harmonics_phases;
-//        }
-//        else
-//        {
-//            harmonics_phases = Tools::Get::valuesByIndex(this->live_values.phases, idx_harmonics);
-//        }
-        
-        //        std::vector<float> harmonics_freqs_to_interpolate = Tools::Get::valuesByIndex(sound_frame.harmonics_freqs, idx_harmonics);
-        //        std::vector<float> harmonics_mags_to_interpolate = Tools::Get::valuesByIndex(sound_frame.harmonics_mags, idx_harmonics);
-        
-        //        // Generate sines
-        //        std::vector<float> y_harmonics = generateSines(harmonics_freqs_to_interpolate,
-        //                                                       harmonics_mags_to_interpolate,
-        //                                                       harmonics_phases,
-        //                                                       NS, this->parameters.fs);
-        
-        
-        
-        std::vector<float> harmonics_phases;
-        
-        if ( !sound_frame.hasPhases (sound_frame.harmonic) )
+        // Harmonic component
+        if (this->parameters.generate_harmonic and sound_frame.hasHarmonic())
         {
-            sound_frame.harmonic.phases = Tools::Get::valuesByIndex (this->live_values.harmonic_phases, idx_harmonics);
-        }
-        
-        if ( !sound_frame.hasPhases (sound_frame.sinusoidal) )
-        {
-            sound_frame.sinusoidal.phases = this->live_values.sinusoidal_phases;
-        }
-        
-        // Generate sines
-        // TODO - TOFIX - This does not work
-        std::vector<float> y_harmonics = generateSines(sound_frame.harmonic.freqs,
-                                                       sound_frame.harmonic.mags,
-                                                       sound_frame.harmonic.phases,
-                                                       NS, FS);
-        
-        // Applying the window and saving the result on the output vector "harmonic"
-        std::vector<float> yw_harmonics(NS);
-        for (int i = 0; i < NS; i++)
-        {
-//            // Test
-//            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
-//            this->generated.harmonics_freqs.push_back( y_harmonics[i] );
+            // TODO - TOFIX - This does not work
+            std::vector<float> y_harmonic = generateSines(sound_frame.harmonic.freqs,
+                                                          sound_frame.harmonic.mags,
+                                                          sound_frame.harmonic.phases,
+                                                          NS, FS);
             
-            // TODO - Is this faster in two separated for loops?
-//            yw_harmonics[i] = 0.0;
-            yw_harmonics[i] = y_harmonics[i] * this->window.harm[i];
-            yw[i] = yw_harmonics[i];
+            // Applying the window and saving the result on the output vector "harmonic"
+            std::vector<float> yw_harmonic(NS);
+            for (int i = 0; i < NS; i++)
+            {
+                //            // Test
+                //            this->generated.harmonic_freqs.push_back( y_harmonic[i] );
+                //            this->generated.harmonic_freqs.push_back( y_harmonic[i] );
+                
+                // TODO - Is this faster in two separated for loops?
+                //            yw_harmonic[i] = 0.0;
+                yw_harmonic[i] = y_harmonic[i] * this->window.harm[i];
+                yw[i] += yw_harmonic[i];
+            }
         }
-        
+
+        // Sinusoidal component
+        if (this->parameters.generate_sinusoidal and sound_frame.hasSinusoidal())
+        {
+            // TODO - TOFIX - This does not work
+            std::vector<float> y_sinusoidal = generateSines(sound_frame.sinusoidal.freqs,
+                                                            sound_frame.sinusoidal.mags,
+                                                            sound_frame.sinusoidal.phases,
+                                                            NS, FS);
+            
+            // Applying the window and saving the result on the output vector "harmonic"
+            std::vector<float> yw_sinusoidal(NS);
+            for (int i = 0; i < NS; i++)
+            {
+                //            // Test
+                //            this->generated.sinusoidal_freqs.push_back( y_sinusoidal[i] );
+                //            this->generated.sinusoidal_freqs.push_back( y_sinusoidal[i] );
+                
+                // TODO - Is this faster in two separated for loops?
+                //            yw_sinusoidal[i] = 0.0;
+                yw_sinusoidal[i] = y_sinusoidal[i] * this->window.harm[i];
+                yw[i] += yw_sinusoidal[i];
+            }
+        }
 //        // Stochastic component
 //        if ( sound_frame.hasStochastic() )
 //        {
@@ -197,6 +197,15 @@ namespace Core
 //                //                yw_stocs[i] += y_stocs[i] * this->window.stoc[i];
 //            }
 //        }
+        
+        // Attack compontent
+        if (this->parameters.generate_attack and sound_frame.hasAttack())
+        {
+            for (int i = 0; i < sound_frame.attack.size(); i++)
+            {
+                yw[i] += sound_frame.attack[i];
+            }
+        }
         
         // Residual compontent
         if (this->parameters.generate_residual and sound_frame.hasResidual())
@@ -217,41 +226,52 @@ namespace Core
         //        const int NS = this->parameters.fft_size;
         const int H = this->parameters.hop_size;
         const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
+        const int MAX_SINUSOIDS = sound_frame.getMaxSinusoids();
 
         // A list with the indexes of the harmonics we want to interpolate
         std::vector<int> idx_harmonics = Tools::Generate::range (0, MAX_HARMONICS);
-        
+        std::vector<int> idx_sinusoids = Tools::Generate::range (0, MAX_SINUSOIDS);
+
 //        // Update phases
 //        if (!this->live_values.first_frame)
 //        {
-//            updatePhases (sound_frame.harmonic.freqs, idx_harmonics, H);
-////            TODO updatePhases (sound_frame.sinusoidal.freqs, idx_harmonics, H);
+//            updatePhases(this->live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics, H);
+////            updatePhases(sound_frame.harmonic.freqs, idx_harmonics, H);
 //        }
 //
-//        std::vector<float> harmonics_phases;
-//
-//        if ( !sound_frame.hasPhases (sound_frame.harmonic) )
+//        if ( !sound_frame.hasPhases(sound_frame.harmonic) )
 //        {
-//            sound_frame.harmonic.phases = Tools::Get::valuesByIndex (this->live_values.harmonic_phases, idx_harmonics);
-//        }
-//
-//        if ( !sound_frame.hasPhases (sound_frame.sinusoidal) )
-//        {
-//            sound_frame.sinusoidal.phases = this->live_values.sinusoidal_phases;
-//        }
-
-//        if (this->live_values.first_frame)
-//        {
-////            this->live_values.first_frame = false;
-////            updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
-//        }
-//        else
-//        {
-//            updatePhases(sound_frame.harmonics_freqs, idx_harmonics, H);
+//            sound_frame.harmonic.phases = Tools::Get::valuesByIndex(this->live_values.harmonic.phases, idx_harmonics);
 //        }
         
+        // If the sound frame has harmonics but not its phases
+        if ( sound_frame.hasHarmonic() && !sound_frame.hasPhases (sound_frame.harmonic) )
+        {
+            // Get phase values
+            sound_frame.harmonic.phases = Tools::Get::valuesByIndex (this->live_values.harmonic.phases, idx_harmonics);
+
+            // Save the current frequencies to be available fot the next iteration
+            updateLastFreqs (this->live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics);
+
+            // Update phases for the next iteration
+            updatePhases (this->live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics, H);
+        }
+
+        // If the sound frame has sinusoids but not its phases
+        if ( sound_frame.hasSinusoidal() && !sound_frame.hasPhases (sound_frame.sinusoidal) )
+        {
+            // Get phase values
+            sound_frame.sinusoidal.phases = Tools::Get::valuesByIndex (this->live_values.sinusoidal.phases, idx_sinusoids);
+
+            // Save the current frequencies to be available fot the next iteration
+            updateLastFreqs (this->live_values.sinusoidal, sound_frame.sinusoidal.freqs, idx_sinusoids);
+
+            // Update phases for the next iteration
+            updatePhases (this->live_values.sinusoidal, sound_frame.sinusoidal.freqs, idx_sinusoids, H);
+        }
+        
         // Generate windowed audio frame
-        std::vector<float> windowed_audio_frame = synthesizeSoundFrame (sound_frame, idx_harmonics);
+        std::vector<float> windowed_audio_frame = synthesizeSoundFrame (sound_frame);
         
         // TODO - Test
 //        Tools::Audio::writeSoundFile(windowed_audio_frame, "/Users/Marc/Documents/Audio Plugins/Morphex/Tests/windowed_audio_frame.wav");
@@ -271,14 +291,9 @@ namespace Core
             Tools::Audio::applyFadeOut(windowed_audio_frame);
             this->live_values.last_frame = false;
         }
-                
-        // Test
-//        this->live_values.i_samples_ready += H;
-//        this->updateWritePointer(H);
-//        return windowed_audio_frame;
         
-        // Save the current frequencies to be available fot the next iteration
-        updateLastFreqs (sound_frame.harmonic.freqs, idx_harmonics);
+//        // Save the current frequencies to be available fot the next iteration
+//        updateLastFreqs(this->live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics);
         
         // Add the audio frame to the circular buffer
         updateBuffer (BufferSection::Write, BufferUpdateMode::Add, windowed_audio_frame, Channel::Mono);
@@ -297,25 +312,6 @@ namespace Core
         
         // Update write pointer position
         this->updateWritePointer(H);
-        
-//        DBG("\n- - - - - - - - - - - - - - - -");
-//        DBG("\nthis->buffer.pointers.write: ");
-//        DBG(this->buffer.pointers.write);
-//        DBG("\nthis->buffer.pointers.clean(this): ");
-//        DBG(this->buffer.pointers.clean(this));
-//        DBG("\nthis->buffer.pointers.play(this): ");
-//        DBG(this->buffer.pointers.play(this));
-//        DBG("\n- - - - - - - - - - - - - - - -");
-        
-        // TODO - Test
-//        return windowed_audio_frame;
-        
-//        if (this->live_values.last_frame)
-//        {
-//
-//        }
-
-//        return next_frame;
     }
     
     void Synthesis::getWindow()
@@ -526,39 +522,41 @@ namespace Core
         }
     }
     
-    void Synthesis::updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated)
+    void Synthesis::updatePhases(SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs,
+                                 int hop_size, bool append_to_generated)
     {
-        int id_harmonic = 0;
+        int idx_freq = 0;
         
-        // For each selected harmonic
-        for (int i = 0; i < idx_harmonics.size(); i++)
+        // For each selected frequency
+        for (int i = 0; i < idx_freqs.size(); i++)
         {
-            id_harmonic = idx_harmonics[i];
+            idx_freq = idx_freqs[i];
             
             // Update phase value
-            this->live_values.phases[id_harmonic] +=
-            ( M_PI * ( this->live_values.last_freqs[id_harmonic] + harmonics_freqs[id_harmonic] ) / this->parameters.fs ) * hop_size;
+            fp_values.phases[idx_freq] +=
+            ( M_PI * ( fp_values.last_freqs[idx_freq] + freqs[idx_freq] ) / this->parameters.fs ) * hop_size;
             
             // Keep phase inside 2 * pi
-            this->live_values.phases[id_harmonic] = std::fmod( this->live_values.phases[id_harmonic], ( 2.0 * M_PI ) );
+            fp_values.phases[idx_freq] = std::fmod( fp_values.phases[idx_freq], ( 2.0 * M_PI ) );
             
-            // Append to generated phases
-            if (append_to_generated) this->generated.harmonics_phases.push_back( this->live_values.phases[i] );
+//            // Append to generated phases
+//            if (append_to_generated) this->generated.harmonics_phases.push_back( harmonics_phases_to_update[i] );
         }
     }
     
     // TODO - Evaluate if "idx_harmonics" will be necessary in the near future
-    void Synthesis::updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics)
+    void Synthesis::updateLastFreqs(SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs)
     {
-        int id_harmonic = 0;
+        int idx_freq = 0;
         
         // For each selected harmonic
-        for (int i = 0; i < idx_harmonics.size(); i++)
+        for (int i = 0; i < idx_freqs.size(); i++)
         {
-            id_harmonic = idx_harmonics[i];
+            idx_freq = idx_freqs[i];
             
             // Update last freq value
-            this->live_values.last_freqs[id_harmonic] = harmonics_freqs[id_harmonic];
+            fp_values.last_freqs[idx_freq] = freqs[idx_freq];
+//            this->live_values.harmonic_last_freqs[idx_freq] = freqs[idx_freq];
         }
     }
     

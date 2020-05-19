@@ -41,6 +41,7 @@ class Core::Synthesis
 public:
     
     const static int MAX_HARMONICS = 100;
+    const static int MAX_SINUSOIDS = 100;
     const static int FS = 44100;
     const static int FFT_SIZE = 512; // 512
     const static int HOP_SIZE = int( FFT_SIZE / 4 ); // 128
@@ -65,15 +66,27 @@ public:
         int fs;
         int fft_size;
         int hop_size;
+        bool generate_harmonic = true;
+        bool generate_sinusoidal = true;
+        bool generate_attack = true;
         bool generate_residual = true;
     };
     SynthesisParameters parameters;
     
     struct SynthesisLiveValues
     {
-        std::vector<float> last_freqs;
-        std::vector<float> harmonic_phases;
-        std::vector<float> sinusoidal_phases;
+        struct FP
+        {
+            std::vector<float> last_freqs;
+            std::vector<float> phases;
+        };
+        
+        FP harmonic;
+        FP sinusoidal;
+//        std::vector<float> harmonic_last_freqs;
+//        std::vector<float> harmonic_phases;
+//        std::vector<float> sinusoidal_last_freqs;
+//        std::vector<float> sinusoidal_phases;
         int i_samples_ready;
         int i_current_frame;
         bool first_frame;
@@ -134,8 +147,8 @@ public:
     void generateSoundFrame(Sound::Frame sound_frame, bool append_to_generated = false);
     
     void updatePlayPointer(int i_pointer_increment);
-    void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
-    void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
+    void updatePhases(SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs, int hop_size, bool append_to_generated = false);
+    void updateLastFreqs(SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs);
     
 private:
     
@@ -153,7 +166,7 @@ private:
 //    void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
 //    void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
     
-    std::vector<float> synthesizeSoundFrame(Sound::Frame sound_frame, std::vector<int> idx_harmonics);
+    std::vector<float> synthesizeSoundFrame(Sound::Frame sound_frame);
     std::vector<float> generateSines(std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs);
     std::vector<float> generateStocs(std::vector<float> stocs_morph, int H, int NS);
     

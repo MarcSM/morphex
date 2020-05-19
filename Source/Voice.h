@@ -370,8 +370,11 @@ struct Voice
             // Instrument::Mode::Morphing
             if (this->instrument.mode == Instrument::Mode::Morphing)
             {
+                this->synthesis.parameters.generate_harmonic = true;
+                this->synthesis.parameters.generate_sinusoidal = false;
+                this->synthesis.parameters.generate_attack = false;
                 this->synthesis.parameters.generate_residual = false;
-                
+
                 // TODO - Get morph_sounds from instrument, the 4 sounds
                 // marked to be used on morhping mode
                 morph_sounds = this->instrument.getMorphSounds();
@@ -392,8 +395,11 @@ struct Voice
             // Instrument::Mode::FullRange
             else
             {
+                this->synthesis.parameters.generate_harmonic = true;
+                this->synthesis.parameters.generate_sinusoidal = true;
+                this->synthesis.parameters.generate_attack = true;
                 this->synthesis.parameters.generate_residual = true;
-                
+
                 if (this->instrument.interpolation_mode == Instrument::Interpolation::None or
                     this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
                 {
@@ -426,10 +432,22 @@ struct Voice
                     float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
                     float f_note_frequency = Tools::Midi::toFreq(selected_sound->note);
                     
-                    // Recalculate the harmonics for the current midi note
-                    for (int i=0; i<sound_frame.harmonic.freqs.size(); i++)
+                    if (sound_frame.hasHarmonic())
                     {
-                        sound_frame.harmonic.freqs[i] = (sound_frame.harmonic.freqs[i] / f_note_frequency) * f_target_frequency;
+                        // Recalculate the harmonics for the current midi note
+                        for (int i=0; i<sound_frame.harmonic.freqs.size(); i++)
+                        {
+                            sound_frame.harmonic.freqs[i] = (sound_frame.harmonic.freqs[i] / f_note_frequency) * f_target_frequency;
+                        }
+                    }
+                    
+                    if (sound_frame.hasSinusoidal())
+                    {
+                        // Recalculate the harmonics for the current midi note
+                        for (int i=0; i<sound_frame.sinusoidal.freqs.size(); i++)
+                        {
+                            sound_frame.sinusoidal.freqs[i] = (sound_frame.sinusoidal.freqs[i] / f_note_frequency) * f_target_frequency;
+                        }
                     }
                     
                     //                    // Transpose left note frequencies to the target frequency

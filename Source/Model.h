@@ -29,6 +29,12 @@ public:
     {
         struct FMP
         {
+//            enum Type
+//            {
+//                Harmonic = 0,
+//                Sinusoidal
+//            };
+            
             std::vector<std::vector<float>> freqs;
             std::vector<std::vector<float>> mags;
             std::vector<std::vector<float>> phases;

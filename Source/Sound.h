@@ -193,13 +193,21 @@ public:
             int max_harmonics = (int)std::max({
                 this->harmonic.freqs.size(),
                 this->harmonic.mags.size(),
-                this->harmonic.phases.size(),
+                this->harmonic.phases.size()
+            });
+            
+            return max_harmonics;
+        };
+        
+        int getMaxSinusoids()
+        {
+            int max_sinusoids = (int)std::max({
                 this->sinusoidal.freqs.size(),
                 this->sinusoidal.mags.size(),
                 this->sinusoidal.phases.size()
             });
             
-            return max_harmonics;
+            return max_sinusoids;
         };
         
         bool hasHarmonic() { return this->harmonic.freqs.size() > 0; };
