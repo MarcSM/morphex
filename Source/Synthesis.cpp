@@ -178,6 +178,7 @@ namespace Core
                 
                 // TODO - Is this faster in two separated for loops?
                 //            yw_sinusoidal[i] = 0.0;
+//                yw_sinusoidal[i] = y_sinusoidal[i] * this->window.stoc[i];
                 yw_sinusoidal[i] = y_sinusoidal[i] * this->window.harm[i];
                 yw[i] += yw_sinusoidal[i];
             }

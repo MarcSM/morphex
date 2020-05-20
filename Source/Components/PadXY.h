@@ -15,17 +15,22 @@
 //==============================================================================
 /*
 */
-class PadXY    :    public Component, public Timer
+class PadXY : public Component, public Timer
 {
 public:
     PadXY(SpectralMorphingToolAudioProcessor* inProcessor,
           AudioProcessorValueTreeState& stateToControl,
-          const String& x_parameterID, const String& x_parameterLabel,
-          const String& y_parameterID, const String& y_parameterLabel)
+          Morphex::Parameter<float> freqs_interp_factor_parameter,
+          Morphex::Parameter<float> mags_interp_factor_parameter)
     : circle(), mProcessor (inProcessor)
     {
         // In your constructor, you should add any child components, and
         // initialise any special settings that your component needs.
+        
+        const String& x_parameterID = freqs_interp_factor_parameter.parameter_ID;
+        const String& x_parameterLabel = freqs_interp_factor_parameter.parameter_label;
+        const String& y_parameterID = mags_interp_factor_parameter.parameter_ID;
+        const String& y_parameterLabel = mags_interp_factor_parameter.parameter_label;
         
         // Default dimensions
         setSize(getWidth(), getHeight());

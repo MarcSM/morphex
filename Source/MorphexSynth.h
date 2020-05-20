@@ -14,9 +14,9 @@
 
 #include "Instrument.h"
 #include "Sound.h"
-
 #include "Voice.h"
-//#include "MorphVoice.h"
+
+#include "DSP/Gain.h"
 
 using namespace Core;
 
@@ -34,7 +34,8 @@ public:
                           int startSample, int numSamples);
     
     void setup();
-    
+    void initializeDSP();
+
     Instrument instrument;
     
 protected:
@@ -43,6 +44,10 @@ protected:
     
 private:
 
+    AudioProcessorValueTreeState* mParameters;
+    
+    std::unique_ptr<DSP::Gain> mOutputGain[NUM_CHANNELS];
+    
     double currentSampleRate;
 };
 

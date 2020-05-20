@@ -19,6 +19,9 @@
       <FILE id="TnaLsd" name="Synthesis.h" compile="0" resource="0" file="Source/Synthesis.h"/>
       <FILE id="EO6CzR" name="Synthesis.cpp" compile="1" resource="0" file="Source/Synthesis.cpp"/>
     </GROUP>
+    <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="DSP">
+      <FILE id="OvuOxk" name="Gain.h" compile="0" resource="0" file="Source/DSP/Gain.h"/>
+    </GROUP>
     <GROUP id="{4E5E0A46-E03E-E82E-84AF-6D34C82A5934}" name="Entities">
       <FILE id="i5U6Ym" name="MorphSound.h" compile="0" resource="0" file="Source/MorphSound.h"/>
       <FILE id="tvr3eQ" name="MorphexSynth.cpp" compile="1" resource="0"
@@ -59,7 +62,6 @@
       <FILE id="GhMR7a" name="SMTParameters.h" compile="0" resource="0" file="Source/SMTParameters.h"/>
       <FILE id="PBKW3B" name="SMTUtils.h" compile="0" resource="0" file="Source/SMTUtils.h"/>
     </GROUP>
-    <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="DSP"/>
     <GROUP id="{50819E26-3EF6-F93E-380B-A567157B7389}" name="Source">
       <FILE id="Zbg3ub" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

@@ -13,9 +13,12 @@
 #include "SMTConstants.h"
 
 MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
+:   mParameters(parameters)
 {
 //    mSound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
 //    mSound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
+    
+    initializeDSP();
     
     // Initialize the instrument
     this->instrument = Instrument();
@@ -31,7 +34,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 //    std::string instrument_folder = "Suitcase Dry Full Velocity Test";
 //    std::string instrument_folder = "Suitcase Dry Full";
 //    std::string instrument_folder = "Morphing Test";
-    std::string instrument_folder = "Suitcase Dry Test 20200519";
+    std::string instrument_folder = "Suitcase Dry Test 20200520";
     std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
 
     DirectoryIterator iter (File (full_path), true, "*.had");
@@ -149,5 +152,35 @@ void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
                                     int startSample, int numSamples)
 {
     // Call base class method
-    Synthesiser::renderNextBlock(outputAudio, inputMidi, startSample, numSamples);
+    Synthesiser::renderNextBlock (outputAudio, inputMidi, startSample, numSamples);
+    
+//    int total_num_input_channels  = getTotalNumInputChannels();
+//    int total_num_output_channels = getTotalNumOutputChannels();
+    
+//    for (int i_sample = 0; i_sample < numSamples; i_sample++)
+//    {
+//        auto currentSample = (float) (frame[i_sample] * this->level * this->tailOff);
+//        //                    auto currentSample = (float) (std::sin (this->currentAngle) * this->level * this->tailOff);
+//
+//        for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
+//            outputBuffer.addSample (i, startSample, currentSample);
+//
+//        ++startSample;
+//    }
+    
+    for (int channel = 0; channel < outputAudio.getNumChannels(); ++channel)
+    {
+        auto* buffer = outputAudio.getWritePointer (channel);
+        
+        // Output gain
+        float output_gain = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::OutputGain].parameter_ID);
+        mOutputGain[channel]->process (buffer, output_gain, outputAudio.getNumSamples());
+    }
+}
+
+void MorphexSynth::initializeDSP()
+{
+    for (int i = 0; i < NUM_CHANNELS; i++) {
+        mOutputGain[i] = std::make_unique<DSP::Gain>();
+    }
 }

@@ -22,13 +22,12 @@ class CorePanel    : public Component
 public:
     CorePanel(SpectralMorphingToolAudioProcessor* inProcessor)
     {
-        
-        
+        Morphex::Parameter freqs_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::freqs_interp_factor];
+        Morphex::Parameter mags_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::mags_interp_factor];
+
         mPadXY = new PadXY(inProcessor, inProcessor->parameters,
-                           SMTParameterID[SMTParameter::kParameter_freqs_interp_factor],
-                           SMTParameterLabel[SMTParameter::kParameter_freqs_interp_factor],
-                           SMTParameterID[SMTParameter::kParameter_mags_interp_factor],
-                           SMTParameterLabel[SMTParameter::kParameter_mags_interp_factor]);
+                           freqs_interp_factor_parameter,
+                           mags_interp_factor_parameter);
         
         addAndMakeVisible(mPadXY);
     }

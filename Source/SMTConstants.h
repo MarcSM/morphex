@@ -47,7 +47,7 @@ const static String SOUND_FILE_1_PATH_PARAMETER_ID = "Sound1Path";
 const static String SOUND_FILE_2_PATH_PARAMETER_ID = "Sound2Path";
 
 // Audio parameters
-const static int NUMBER_OF_CHANNELS = 2; // Left and Right
+//const static int NUM_CHANNELS = 2; // Left and Right
 //const static int MAX_BUFFER_SIZE = 192000;
 //const static int NS = 512; // Size of fft used in synthesis
 //const static int H = (int)NS/4; // Hop size (it has to be 1/4 of NS) - 128

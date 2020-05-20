@@ -249,7 +249,8 @@ namespace Core
 //                this->saveOriginalValues();
                 
                 /** Normalize magnitudes on load by default */
-                this->normalizeMagnitudes();
+                // TODO - Fix this method
+//                this->normalizeMagnitudes();
                 
                 /** Updating flags */
                 this->had_file_loaded = true;
@@ -625,6 +626,9 @@ namespace Core
 
     void Sound::normalizeMagnitudes()
     {
+        jassertfalse;
+        DBG("This normalization function must be updated, now it is possible that we do not have an harmonic component");
+        
         // Define normalization range db
         float min_db = -100.0;
         float max_db = -1.0;

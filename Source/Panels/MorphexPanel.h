@@ -24,7 +24,7 @@ class MorphexPanel   : public Component
 public:
     //==============================================================================
     MorphexPanel(SpectralMorphingToolAudioProcessor* inProcessor)
-        : topPanel (),
+        : topPanel (inProcessor),
           mainPanel (inProcessor),
           bottomPanel (inProcessor)
     {

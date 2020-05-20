@@ -82,11 +82,11 @@ private:
     {
         std::vector<std::unique_ptr<AudioParameterFloat>> params;
         
-        for(int i = 0; i < kParameter_TotalNumParameters; i++) {
+        for(int i = 0; i < Morphex::Parameters::TotalNumParameters; i++) {
             
-            ParameterStruct<float> smt_parameter = SMT_PARAMETERS<float>[i];
+            Morphex::Parameter<float> smt_parameter = Morphex::PARAMETERS<float>[i];
             
-            params.push_back(std::make_unique<AudioParameterFloat>( smt_parameter.parameter_ID,
+            params.push_back(std::make_unique<AudioParameterFloat>(smt_parameter.parameter_ID,
                                                                    smt_parameter.parameter_ID,
                                                                    NormalisableRange<float>(
                                                                                             smt_parameter.min_value,
