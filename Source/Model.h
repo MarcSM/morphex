@@ -77,7 +77,7 @@ public:
         this->_values.harmonic.freqs = harmonic_freqs;
         
         // Matrix decoding
-        if (decode) Codec::decodeMatrix(this->_values.harmonic.freqs);
+        if (decode) Codec::decodeMatrix(this->_values.harmonic.freqs, DEFAULT_HZ);
     }
     
     void setHarmonicMagnitudes(std::vector<std::vector<float>> harmonic_mags, bool decode = false)
@@ -85,7 +85,7 @@ public:
         this->_values.harmonic.mags = harmonic_mags;
         
         // Matrix decoding
-        if (decode) Codec::decodeMatrix(this->_values.harmonic.mags, true);
+        if (decode) Codec::decodeMatrix(this->_values.harmonic.mags, DEFAULT_DB, true);
     }
     
     void setHarmonicPhases(std::vector<std::vector<float>> harmonic_phases, bool decode = false)
@@ -109,7 +109,7 @@ public:
         this->_values.sinusoidal.freqs = sinusoidal_freqs;
         
         // Matrix decoding
-        if (decode) Codec::decodeMatrix(this->_values.sinusoidal.freqs);
+        if (decode) Codec::decodeMatrix(this->_values.sinusoidal.freqs, DEFAULT_HZ);
     }
     
     void setSinusoidalMagnitudes(std::vector<std::vector<float>> sinusoidal_mags, bool decode = false)
@@ -117,7 +117,7 @@ public:
         this->_values.sinusoidal.mags = sinusoidal_mags;
         
         // Matrix decoding
-        if (decode) Codec::decodeMatrix(this->_values.sinusoidal.mags, true);
+        if (decode) Codec::decodeMatrix(this->_values.sinusoidal.mags, DEFAULT_DB, true);
     }
     
     void setSinusoidalPhases(std::vector<std::vector<float>> sinusoidal_phases, bool decode = false)
@@ -133,7 +133,7 @@ public:
         this->_values.stochastic = stochastic;
         
         // Matrix decoding
-        if (decode) Codec::decodeMatrix(this->_values.stochastic, true);
+        if (decode) Codec::decodeMatrix(this->_values.stochastic, DEFAULT_HZ, true);
     }
     
     void setAttack(std::vector<float> attack, bool decode = false)

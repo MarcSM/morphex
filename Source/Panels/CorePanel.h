@@ -21,6 +21,7 @@ class CorePanel    : public Component
 {
 public:
     CorePanel(SpectralMorphingToolAudioProcessor* inProcessor)
+    :   instrument (&inProcessor->mMorphexSynth.instrument)
     {
         Morphex::Parameter freqs_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::freqs_interp_factor];
         Morphex::Parameter mags_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::mags_interp_factor];
@@ -41,17 +42,27 @@ public:
         
         g.fillAll (Colours::black);
 //        g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-
+//        getWidth() * 0.75f , getHeight() * 0.75f, true);
         // Background gradient
         ColourGradient cg (GUI::Color::Accent.withAlpha(0.5f),
                            getWidth() * 0.5f, getHeight() * 0.5f,
                            GUI::Color::Accent.withAlpha(0.0f),
                            getWidth() * 0.65f , getHeight() * 1.0f, true);
-        
-//        getWidth() * 0.75f , getHeight() * 0.75f, true);
-
         g.setFillType (cg);
         g.fillRect (0, 0, getWidth(), getHeight());
+        
+        // Core controls
+        addAndMakeVisible (harmonicButton);
+        addAndMakeVisible (sinusoidalButton);
+        addAndMakeVisible (stochasticButton);
+        addAndMakeVisible (attackButton);
+        harmonicButton  .onClick = [this] { updateToggleCoreParameter (&harmonicButton,   instrument->generate.harmonic);   };
+        sinusoidalButton.onClick = [this] { updateToggleCoreParameter (&sinusoidalButton, instrument->generate.sinusoidal); };
+        stochasticButton.onClick = [this] { updateToggleCoreParameter (&stochasticButton, instrument->generate.stochastic); };
+        attackButton    .onClick = [this] { updateToggleCoreParameter (&attackButton,     instrument->generate.attack);     };
+        stochasticButton.onClick = [this] { updateToggleCoreParameter (&stochasticButton, instrument->generate.residual);   };
+
+        // Pad XY
         
         // Circle glow
         PadXY::PadCircle* circle = mPadXY->getCircle();
@@ -74,6 +85,13 @@ public:
 
     void resized() override
     {
+        // Core controls
+        harmonicButton  .setBounds (20, 140, getWidth() - 30, 20);
+        sinusoidalButton.setBounds (20, 170, getWidth() - 30, 20);
+        stochasticButton.setBounds (20, 200, getWidth() - 30, 20);
+        attackButton    .setBounds (20, 230, getWidth() - 30, 20);
+        residualButton  .setBounds (20, 260, getWidth() - 30, 20);
+
         // Pad XY
         const int pad_width = getWidth();
         const int pad_height = getWidth();
@@ -83,9 +101,27 @@ public:
         
         mPadXY->setBounds(pad_x, pad_y, pad_width, pad_height);
     }
+    
+    void updateToggleCoreParameter (Button* button, bool core_parameter)
+    {
+        core_parameter = button->getToggleState();
+//        bool state = button->getToggleState();
+//        core_parameter = state;
+//        String stateString = state ? "ON" : "OFF";
+        
+//        Logger::outputDebugString (name + " Button changed to " + stateString);
+    }
 
 private:
     
+    Instrument* instrument;
+    
+    ToggleButton harmonicButton   { "Harmonics" },
+                 sinusoidalButton { "Sinusoidal" },
+                 stochasticButton { "Stochastic"},
+                 attackButton     { "Attack"},
+                 residualButton   { "Residual"};
+
     PadXY* mPadXY;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CorePanel)

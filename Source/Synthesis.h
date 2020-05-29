@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "Tools.h"
+#include "Instrument.h"
 #include "Sound.h"
 
 #include "SMTConstants.h"
@@ -61,18 +62,23 @@ public:
         Delete      // The current content of the buffer will be set to 0.0
     };
     
-    struct SynthesisParameters
+    struct Parameters
     {
         int fs;
         int fft_size;
         int hop_size;
-        bool generate_harmonic = true;
-        bool generate_sinusoidal = true;
-        bool generate_attack = true;
-        bool generate_residual = true;
+        
+//        struct Generate
+//        {
+//            bool harmonic = true;
+//            bool sinusoidal = true;
+//            bool attack = true;
+//            bool residual = true;
+//        }
+//        Generate generate;
     };
-    SynthesisParameters parameters;
-    
+    Parameters parameters;
+
     struct SynthesisLiveValues
     {
         struct FP
@@ -138,7 +144,7 @@ public:
     
     dsp::FFT* fft;
 
-    Synthesis();
+    Synthesis(Instrument* instrument);
     ~Synthesis();
 
     void reset();
@@ -154,6 +160,8 @@ private:
     
 //    std::vector<int> idx_harmonics;
 //    std::vector<float> windowed_audio_frame;
+    
+    Instrument* instrument;
 
     void getWindow();
     

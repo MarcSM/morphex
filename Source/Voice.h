@@ -39,13 +39,15 @@ struct Voice
 //    bool loop_mode;
     
 //    Voice(Instrument instrument, AudioProcessorValueTreeState* parameters)
-    Voice(Instrument& instrument, AudioProcessorValueTreeState* parameters)
-    : mParameters(parameters), instrument(instrument)
+    Voice(Instrument* instrument, AudioProcessorValueTreeState* parameters)
+    :   mParameters (parameters),
+        instrument (instrument),
+        synthesis (instrument)
     {
 //        DBG(String(voice_ID) + " - VOICE INIT");
         
-        // Initialize the synthesis engine
-        this->synthesis = Synthesis();
+//        // Initialize the synthesis engine
+//        this->synthesis = Synthesis (instrument);
         
         // Default values
         this->adsr = StateADSR::Attack;
@@ -221,7 +223,7 @@ struct Voice
     void updateMorphSounds(float f_note, float f_velocity)
     {
         // Update morph samples
-        this->morph_sounds = this->instrument.getCloserSounds( f_note, f_velocity );
+        this->morph_sounds = this->instrument->getCloserSounds( f_note, f_velocity );
         
         // Compute common looping regions
         this->max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
@@ -368,16 +370,16 @@ struct Voice
             }
             
             // Instrument::Mode::Morphing
-            if (this->instrument.mode == Instrument::Mode::Morphing)
+            if (this->instrument->mode == Instrument::Mode::Morphing)
             {
-                this->synthesis.parameters.generate_harmonic = true;
-                this->synthesis.parameters.generate_sinusoidal = false;
-                this->synthesis.parameters.generate_attack = false;
-                this->synthesis.parameters.generate_residual = false;
+//                this->synthesis.parameters.generate_harmonic = true;
+//                this->synthesis.parameters.generate_sinusoidal = false;
+//                this->synthesis.parameters.generate_attack = false;
+//                this->synthesis.parameters.generate_residual = false;
 
                 // TODO - Get morph_sounds from instrument, the 4 sounds
                 // marked to be used on morhping mode
-                morph_sounds = this->instrument.getMorphSounds();
+                morph_sounds = this->instrument->getMorphSounds();
                 
 //                float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
 //                float adsr_decay = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_decay]);
@@ -392,23 +394,23 @@ struct Voice
                 
                 // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
 //                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
-                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
+                sound_frame = this->instrument->morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
                                                                 freqs_interp_factor, mags_interp_factor);
             }
             // Instrument::Mode::FullRange
             else
             {
-                this->synthesis.parameters.generate_harmonic = true;
-                this->synthesis.parameters.generate_sinusoidal = true;
-                this->synthesis.parameters.generate_attack = true;
-                this->synthesis.parameters.generate_residual = true;
+//                this->synthesis.parameters.generate_harmonic = true;
+//                this->synthesis.parameters.generate_sinusoidal = true;
+//                this->synthesis.parameters.generate_attack = true;
+//                this->synthesis.parameters.generate_residual = true;
 
-                if (this->instrument.interpolation_mode == Instrument::Interpolation::None or
+                if (this->instrument->interpolation_mode == Instrument::Interpolation::None or
                     this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
                 {
                     Sound* selected_sound;
                     
-                    if (this->instrument.interpolation_mode == Instrument::Interpolation::None)
+                    if (this->instrument->interpolation_mode == Instrument::Interpolation::None)
                     {
                         int left_note_distance = std::abs( this->f_pressed_midi_note - morph_sounds[MorphLocation::Left]->note );
                         int right_note_distance = std::abs( this->f_pressed_midi_note - morph_sounds[MorphLocation::Right]->note );
@@ -461,7 +463,7 @@ struct Voice
                 else
                 {
                     // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
-                    sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
+                    sound_frame = this->instrument->morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
                 }
             }
 
@@ -497,7 +499,7 @@ private:
 //    const int voice_ID;
     
     AudioProcessorValueTreeState* mParameters;
-    Instrument& instrument;
+    Instrument* instrument;
     Synthesis synthesis;
         
     // Midi

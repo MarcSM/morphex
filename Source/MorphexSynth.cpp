@@ -34,9 +34,10 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 //    std::string instrument_folder = "Suitcase Dry Full Velocity Test";
 //    std::string instrument_folder = "Suitcase Dry Full";
 //    std::string instrument_folder = "Morphing Test";
-    std::string instrument_folder = "Suitcase Dry Test 20200520";
+//    std::string instrument_folder = "Suitcase Dry Test 20200520";
+    std::string instrument_folder = "Morphex Test";
     std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
-
+    
     DirectoryIterator iter (File (full_path), true, "*.had");
 //    DirectoryIterator iter (File (full_path), true, "*.had");
     
@@ -75,10 +76,16 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
     
-//    this->instrument.mode = Mode::Morphing;
-//    this->instrument.interpolation_mode = Interpolation::Manual;
+//    this->instrument.mode = Instrument::Mode::Morphing;
+//    this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
     this->instrument.mode = Instrument::Mode::FullRange;
     this->instrument.interpolation_mode = Instrument::Interpolation::None;
+    
+    this->instrument.generate.harmonic = true;
+    this->instrument.generate.sinusoidal = false;
+    this->instrument.generate.attack = false;
+    this->instrument.generate.residual = false;
+
 
     /*
     AlertWindow aux ("Sound files loaded", "Sound files loaded: " + String(this->instrument.num_samples_loaded), AlertWindow::InfoIcon);
@@ -105,7 +112,7 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     {
         // Add the voice to the synth
 //        this->addVoice( new Voice(this->instrument, parameters) );
-        this->addVoice( new Voice(this->instrument, parameters) );
+        this->addVoice( new Voice (&this->instrument, parameters) );
 //        this->addVoice( new Voice(mSound, parameters) );
     }
     

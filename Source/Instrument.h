@@ -68,6 +68,16 @@ public:
         Stochastic          // Interpolate Stochastic components
     };
     
+    struct Generate
+    {
+        bool harmonic = true;
+        bool sinusoidal = true;
+        bool stochastic = true;
+        bool attack = true;
+        bool residual = true;
+    };
+    Generate generate;
+    
     // Notes
     std::vector<Note*> note;
     

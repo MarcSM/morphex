@@ -15,7 +15,8 @@ namespace Core
 //    int Synthesis::Buffer::Pointers::clean() { return write + this->parameters.fft_size };
 //    int Synthesis::Buffer::Pointers::play() { return clean() + this->parameters.hop_size };
     
-    Synthesis::Synthesis()
+    Synthesis::Synthesis (Instrument* instrument)
+    :   instrument (instrument)
     {
         // Default values
         this->parameters.fft_size = FFT_SIZE;
@@ -136,7 +137,7 @@ namespace Core
         std::vector<float> yw(NS, 0.0);
         
         // Harmonic component
-        if (this->parameters.generate_harmonic and sound_frame.hasHarmonic())
+        if (this->instrument->generate.harmonic and sound_frame.hasHarmonic())
         {
             // TODO - TOFIX - This does not work
             std::vector<float> y_harmonic = generateSines(sound_frame.harmonic.freqs,
@@ -160,7 +161,7 @@ namespace Core
         }
 
         // Sinusoidal component
-        if (this->parameters.generate_sinusoidal and sound_frame.hasSinusoidal())
+        if (this->instrument->generate.sinusoidal and sound_frame.hasSinusoidal())
         {
             // TODO - TOFIX - This does not work
             std::vector<float> y_sinusoidal = generateSines(sound_frame.sinusoidal.freqs,
@@ -200,7 +201,7 @@ namespace Core
 //        }
         
         // Attack compontent
-        if (this->parameters.generate_attack and sound_frame.hasAttack())
+        if (this->instrument->generate.attack and sound_frame.hasAttack())
         {
             for (int i = 0; i < sound_frame.attack.size(); i++)
             {
@@ -209,7 +210,7 @@ namespace Core
         }
         
         // Residual compontent
-        if (this->parameters.generate_residual and sound_frame.hasResidual())
+        if (this->instrument->generate.residual and sound_frame.hasResidual())
         {
             for (int i = 0; i < sound_frame.residual.size(); i++)
             {
