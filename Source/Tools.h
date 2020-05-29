@@ -424,4 +424,19 @@ namespace Core::Tools
             return (T)std::powf(10.0, db_value / 20.0);
         }
     }
+    
+    namespace Cast
+    {
+        
+        template<typename IT, typename OT>
+        inline void matrix(std::vector<IT> &input_vector, std::vector<OT> &output_vector)
+        {
+//            std::vector<std::vector<double>> doublevec;
+//            doublevec.reserve(intvec.size());
+//            for (auto&& v : intvec) doublevec.emplace_back(std::begin(v), std::end(v));
+            
+            output_vector.reserve (input_vector.size());
+            for (auto&& v : input_vector) output_vector.emplace_back(std::begin(v), std::end(v));
+        }
+    }
 }

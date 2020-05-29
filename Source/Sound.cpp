@@ -181,8 +181,8 @@ namespace Core
                 if (this->model->harmonic)
                 {
                     XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName("h"); // had["synthesis"]["h"]
-                    this->model->setHarmonic (getMatrixOfFloats(xml_synthesis_harmonic, "f"),
-                                              getMatrixOfFloats(xml_synthesis_harmonic, "m"), true);
+                    this->model->setHarmonic (getMatrixOfInts (xml_synthesis_harmonic, "f"),
+                                              getMatrixOfInts (xml_synthesis_harmonic, "m"), true);
                 }
                 if (this->model->sinusoidal)
                 {

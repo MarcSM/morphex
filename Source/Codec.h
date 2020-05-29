@@ -42,38 +42,39 @@ namespace Core::Codec
     // Matrix Decoding
     void inline decodeMatrix(std::vector<std::vector<float>> &given_matrix, float default_value = DEFAULT_NULL, bool abs_values = false, bool diff_decoding = true, int decimal_places = XML_DECIMAL_PLACES)
     {
+        for (int i = 0; i < given_matrix.size(); i++)
+        {
+            decodeVector(given_matrix[i], abs_values, decimal_places);
+        }
+    }
+    
+    // Matrix Diff Decoding
+    void inline decodeMatrixDiff(std::vector<std::vector<int>> &given_matrix)
+    {
         // Note: Start from 1 instead of 0 because, in case "diff_decoding"
         // is enabled, we want to subtract the values as integer to not lose
         // precision due to decimal errors, before actually decoding the
         // vector to obtain the float values.
-        if (diff_decoding)
+        for (int i = 1; i < given_matrix.size(); i++)
         {
-            for (int i = 1; i < given_matrix.size() + 1; i++)
+            if (i == 78)
             {
-                if (i == 78)
+                DBG("CHECK");
+            }
+            
+            for (int j = 0; j < given_matrix[i].size(); j++)
+            {
+                if (j < given_matrix[i-1].size())
                 {
-                    DBG("CHECK");
-                }
-                
-                for (int j = 0; j < given_matrix[i].size(); j++)
-                {
-                    if (j < given_matrix[i-1].size())
-                    {
-                        given_matrix[i][j] = given_matrix[i-1][j] + given_matrix[i][j];
-                        
-//                        // Ensure default values due to decimal precision errors
-//                        if ( (default_value != DEFAULT_NULL) and (given_matrix[i][j] < default_value) )
-//                        {
-//                            given_matrix[i][j] = default_value;
-//                        }
-                    }
+                    given_matrix[i][j] = given_matrix[i-1][j] + given_matrix[i][j];
+                    
+                    //                        // Ensure default values due to decimal precision errors
+                    //                        if ( (default_value != DEFAULT_NULL) and (given_matrix[i][j] < default_value) )
+                    //                        {
+                    //                            given_matrix[i][j] = default_value;
+                    //                        }
                 }
             }
-        }
-        
-        for (int i = 0; i < given_matrix.size(); i++)
-        {
-            decodeVector(given_matrix[i], abs_values, decimal_places);
         }
     }
     
