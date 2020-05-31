@@ -23,6 +23,13 @@ public:
     CorePanel(SpectralMorphingToolAudioProcessor* inProcessor)
     :   instrument (&inProcessor->mMorphexSynth.instrument)
     {
+        // Make button toggleable
+        harmonicButton  .setClickingTogglesState (true);
+        sinusoidalButton.setClickingTogglesState (true);
+        stochasticButton.setClickingTogglesState (true);
+        attackButton    .setClickingTogglesState (true);
+        residualButton  .setClickingTogglesState (true);
+        
         // Core parameters default values
         harmonicButton  .setToggleState (instrument->generate.harmonic,   NotificationType::dontSendNotification);
         sinusoidalButton.setToggleState (instrument->generate.sinusoidal, NotificationType::dontSendNotification);
@@ -70,7 +77,7 @@ public:
         stochasticButton.onClick = [this] { updateParameter (stochasticButton.getToggleState(), instrument->generate.stochastic); };
         attackButton    .onClick = [this] { updateParameter (attackButton.getToggleState(),     instrument->generate.attack);     };
         residualButton  .onClick = [this] { updateParameter (residualButton.getToggleState(),   instrument->generate.residual);   };
-
+        
         // Pad XY
         
         // Circle glow
@@ -94,21 +101,36 @@ public:
 
     void resized() override
     {
-        // Core controls
-        harmonicButton  .setBounds (20, 140, getWidth() - 30, 20);
-        sinusoidalButton.setBounds (20, 170, getWidth() - 30, 20);
-        stochasticButton.setBounds (20, 200, getWidth() - 30, 20);
-        attackButton    .setBounds (20, 230, getWidth() - 30, 20);
-        residualButton  .setBounds (20, 260, getWidth() - 30, 20);
-
-        // Pad XY
+        // Sizes
         const int pad_width = getWidth();
         const int pad_height = getWidth();
         
         const int pad_x = 0;
         const int pad_y = ( getHeight() - pad_height ) / 2;
         
-        mPadXY->setBounds(pad_x, pad_y, pad_width, pad_height);
+        const int num_buttons = 5;
+        const int button_width = getWidth() / num_buttons;
+        const int button_height = ( getHeight() - pad_height ) / 2;
+
+        // Core controls
+        harmonicButton  .setBounds (0, 0, button_width, button_height);
+        sinusoidalButton.setBounds (button_width, 0, button_width, button_height);
+        stochasticButton.setBounds (2 * button_width, 0, button_width, button_height);
+        attackButton    .setBounds (3 * button_width, 0, button_width, button_height);
+        residualButton  .setBounds (4 * button_width, 0, button_width, button_height);
+
+        // Pad XY
+        mPadXY->setBounds (pad_x, pad_y, pad_width, pad_height);
+    }
+    
+    void updateToggleState (Button* button, String name)
+    {
+        auto state = button->getToggleState();
+        String stateString    = state ? "ON" : "OFF";
+        String selectedString = state ? " (selected)" : "";
+        
+        Logger::outputDebugString (name + " Button changed to " + stateString);
+        button->setButtonText (name + selectedString);
     }
     
     template<typename T>
@@ -126,11 +148,11 @@ private:
     
     Instrument* instrument;
     
-    ToggleButton harmonicButton   { "Harmonics" },
-                 sinusoidalButton { "Sinusoidal" },
-                 stochasticButton { "Stochastic"},
-                 attackButton     { "Attack"},
-                 residualButton   { "Residual"};
+    TextButton harmonicButton   {"Harmonics"},
+               sinusoidalButton {"Sinusoidal"},
+               stochasticButton {"Stochastic"},
+               attackButton     {"Attack"},
+               residualButton   {"Residual"};
 
     PadXY* mPadXY;
     

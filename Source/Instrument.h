@@ -74,7 +74,7 @@ public:
         bool sinusoidal = true;
         bool stochastic = true;
         bool attack = true;
-        bool residual = true;
+        bool residual = false;
     };
     Generate generate;
     

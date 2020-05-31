@@ -22,33 +22,105 @@ public:
     MorphexLookAndFeel()
     {
         // General
-        setColour(ResizableWindow::backgroundColourId, GUI::Color::Background);
+        setColour (ResizableWindow::backgroundColourId, GUI::Color::Background);
         
         // Tabbed Component
-        setColour(TabbedButtonBar::tabOutlineColourId, GUI::Color::Transparent);
+        setColour (TabbedButtonBar::tabOutlineColourId, GUI::Color::Transparent);
         
         // Midi Keyboard Component
-        setColour(MidiKeyboardComponent::mouseOverKeyOverlayColourId, GUI::Color::KeyDown.withAlpha(0.75f));
-        setColour(MidiKeyboardComponent::keyDownOverlayColourId, GUI::Color::KeyDown);
-        setColour(MidiKeyboardComponent::textLabelColourId, GUI::Color::Transparent);
+        setColour (MidiKeyboardComponent::mouseOverKeyOverlayColourId, GUI::Color::KeyDown.withAlpha(0.75f));
+        setColour (MidiKeyboardComponent::keyDownOverlayColourId, GUI::Color::KeyDown);
+        setColour (MidiKeyboardComponent::textLabelColourId, GUI::Color::Transparent);
 
+        // TextButton
+        setColour (TextButton::buttonColourId, GUI::Color::Transparent);
+        setColour (TextButton::textColourOffId, Colours::white);
+        setColour (TextButton::buttonOnColourId, GUI::Color::Accent);
+        setColour (TextButton::textColourOnId, GUI::Color::Accent);
+        
         //// OLD STYLE
         
         // ComboBox Colours
-        setColour(ComboBox::backgroundColourId, SMTComboBoxBackgroundColour);
-        setColour(ComboBox::outlineColourId, SMTComboBoxOutlineColour);
-        setColour(ComboBox::arrowColourId, SMTComboBoxArrowColour);
-        setColour(ComboBox::textColourId, SMTComboBoxTextColour);
-        
-        // TextButton Colours
-        setColour(TextButton::buttonColourId, SMTButtonColour);
-        setColour(TextButton::textColourOnId, SMTButtonTextOnColour);
-        setColour(TextButton::textColourOffId, SMTButtonTextOffColour);
+//        setColour(ComboBox::backgroundColourId, SMTComboBoxBackgroundColour);
+//        setColour(ComboBox::outlineColourId, SMTComboBoxOutlineColour);
+//        setColour(ComboBox::arrowColourId, SMTComboBoxArrowColour);
+//        setColour(ComboBox::textColourId, SMTComboBoxTextColour);
+//
+//        // TextButton Colours
+//        setColour(TextButton::buttonColourId, SMTButtonColour);
+//        setColour(TextButton::textColourOnId, SMTButtonTextOnColour);
+//        setColour(TextButton::textColourOffId, SMTButtonTextOffColour);
         
         // HyperlinkButton Colours
         setColour(HyperlinkButton::textColourId, SMTHyperlinkButtonColour);
     }
     
+//    void drawButtonBackground(Graphics& g, Button& button)
+//    {
+//        // Draw borders
+//        GUI::Paint::drawBorders(g, button.getLocalBounds());
+//    }
+    
+    void drawButtonText (Graphics& g, TextButton& button,
+                                         bool /*shouldDrawButtonAsHighlighted*/, bool /*shouldDrawButtonAsDown*/)
+    {
+        Font font (getTextButtonFont (button, button.getHeight()));
+        g.setFont (font);
+        g.setColour (button.findColour (button.getToggleState() ? TextButton::textColourOnId
+                                        : TextButton::textColourOffId)
+                     .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
+        
+        const int yIndent = jmin (4, button.proportionOfHeight (0.3f));
+//        const int cornerSize = jmin (button.getHeight(), button.getWidth()) / 2;
+        const int cornerSize = 0;
+
+        const int fontHeight = roundToInt (font.getHeight() * 0.6f);
+        const int leftIndent  = jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
+        const int rightIndent = jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
+        const int textWidth = button.getWidth() - leftIndent - rightIndent;
+        
+        if (textWidth > 0)
+            g.drawFittedText (button.getButtonText(),
+                              leftIndent, yIndent, textWidth, button.getHeight() - yIndent * 2,
+                              Justification::centred, 2);
+        
+        // Draw borders
+        GUI::Paint::drawBorders(g, button.getLocalBounds());
+    }
+    
+//    void drawButtonText(Graphics& g, TextButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
+//    {
+//        LookAndFeel_V4::drawButtonText (g, button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
+//
+////        TextButton::paintButton(g);
+//
+//        //        // Background
+//        //        rectangle.setPosition(borderWidth / 2, borderWidth / 2);
+//        //        rectangle.setSize(getWidth() - borderWidth, getHeight() - borderWidth);
+//        //        g.setColour (Colours::transparentBlack);
+//        //        g.fillRoundedRectangle (rectangle, cornerSize);
+//
+////        int w = getWidth();
+//
+//        // Draw borders
+//        GUI::Paint::drawBorders(g, button.getLocalBounds());
+////        GUI::Paint::drawBorders(g, getLocalBounds());
+//    }
+    
+//    void TextButton::paintButton(Graphics& g)
+//    {
+//        TextButton::paintButton(g);
+//
+//        //        // Background
+//        //        rectangle.setPosition(borderWidth / 2, borderWidth / 2);
+//        //        rectangle.setSize(getWidth() - borderWidth, getHeight() - borderWidth);
+//        //        g.setColour (Colours::transparentBlack);
+//        //        g.fillRoundedRectangle (rectangle, cornerSize);
+//
+//        // Draw borders
+//        GUI::Paint::drawBorders(g, getLocalBounds());
+//    }
+
     // TabbedComponent
     int getTabButtonBestWidth (TabBarButton& button, int tabDepth) override
     {

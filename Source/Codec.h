@@ -35,33 +35,20 @@ namespace Core::Codec
             if (abs_values) given_list[i] = -given_list[i];
             
             // Recover the decmimal values ","
-            given_list[i] /= std::pow(10, decimal_places);
+            given_list[i] /= std::pow (10, decimal_places);
         }
     }
-    
-    // Matrix Decoding
-    void inline decodeMatrix(std::vector<std::vector<float>> &given_matrix, float default_value = DEFAULT_NULL, bool abs_values = false, bool diff_decoding = true, int decimal_places = XML_DECIMAL_PLACES)
-    {
-        for (int i = 0; i < given_matrix.size(); i++)
-        {
-            decodeVector(given_matrix[i], abs_values, decimal_places);
-        }
-    }
-    
+
     // Matrix Diff Decoding
-    template<typename T>
-    void inline decodeMatrixDiff(std::vector<std::vector<T>> &given_matrix)
+    template <typename T>
+    void inline decodeMatrixDiff (std::vector<std::vector<T>> &given_matrix)
     {
-        // Note: Start from 1 instead of 0 because, in case "diff_decoding"
-        // is enabled, we want to subtract the values as integer to not lose
-        // precision due to decimal errors, before actually decoding the
-        // vector to obtain the float values.
         for (int i = 1; i < given_matrix.size(); i++)
         {
-//            if (i == 78)
-//            {
-//                DBG("CHECK");
-//            }
+            //            if (i == 78)
+            //            {
+            //                DBG("CHECK");
+            //            }
             
             for (int j = 0; j < given_matrix[i].size(); j++)
             {
@@ -76,6 +63,17 @@ namespace Core::Codec
                     //                        }
                 }
             }
+        }
+    }
+    
+    // Matrix Decoding
+    void inline decodeMatrix (std::vector<std::vector<float>> &given_matrix, bool abs_values = false, bool diff_decoding = true, int decimal_places = XML_DECIMAL_PLACES)
+    {
+        if (diff_decoding) decodeMatrixDiff (given_matrix);
+        
+        for (int i = 0; i < given_matrix.size(); i++)
+        {
+            decodeVector (given_matrix[i], abs_values, decimal_places);
         }
     }
     
