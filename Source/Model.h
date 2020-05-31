@@ -58,22 +58,24 @@ public:
     bool hasAttack() { return this->_values.attack.size() > 0; };
     bool hasResidual() { return this->_values.residual.size() > 0; };
     
-    void setHarmonic(std::vector<std::vector<int>> harmonic_freqs_int,
-                     std::vector<std::vector<int>> harmonic_mags_int,
-                     bool decode = false )
+    void setHarmonic (std::vector<std::vector<long long>> harmonic_freqs_int,
+                      std::vector<std::vector<long long>> harmonic_mags_int,
+                      bool decode = false )
     {
+        if (decode)
+        {
+            Codec::decodeMatrixDiff (harmonic_freqs_int);
+            Codec::decodeMatrixDiff (harmonic_mags_int);
+        }
         
-        Codec::decodeMatrixDiff (harmonic_freqs_int);
-        Codec::decodeMatrixDiff (harmonic_mags_int);
-
         std::vector<std::vector<float>> harmonic_freqs;
         std::vector<std::vector<float>> harmonic_mags;
         
         Tools::Cast::matrix (harmonic_freqs_int, harmonic_freqs);
         Tools::Cast::matrix (harmonic_mags_int, harmonic_mags);
         
-        this->setHarmonicFrequencies(harmonic_freqs, decode);
-        this->setHarmonicMagnitudes(harmonic_mags, decode);
+        this->setHarmonicFrequencies (harmonic_freqs, decode);
+        this->setHarmonicMagnitudes (harmonic_mags, decode);
 
 //        this->_values.harmonic_freqs = harmonic_freqs;
 //        this->_values.harmonic_mags = harmonic_mags;
@@ -83,7 +85,7 @@ public:
 //        if (decode) Codec::decodeMatrix(this->_values.harmonic_mags, true);
     }
     
-    void setHarmonicFrequencies(std::vector<std::vector<float>> harmonic_freqs, bool decode = false)
+    void setHarmonicFrequencies (std::vector<std::vector<float>> harmonic_freqs, bool decode = false)
     {
         this->_values.harmonic.freqs = harmonic_freqs;
         
@@ -91,7 +93,7 @@ public:
         if (decode) Codec::decodeMatrix(this->_values.harmonic.freqs, DEFAULT_HZ);
     }
     
-    void setHarmonicMagnitudes(std::vector<std::vector<float>> harmonic_mags, bool decode = false)
+    void setHarmonicMagnitudes (std::vector<std::vector<float>> harmonic_mags, bool decode = false)
     {
         this->_values.harmonic.mags = harmonic_mags;
         
@@ -99,7 +101,7 @@ public:
         if (decode) Codec::decodeMatrix(this->_values.harmonic.mags, DEFAULT_DB, true);
     }
     
-    void setHarmonicPhases(std::vector<std::vector<float>> harmonic_phases, bool decode = false)
+    void setHarmonicPhases (std::vector<std::vector<float>> harmonic_phases, bool decode = false)
     {
         this->_values.harmonic.phases = harmonic_phases;
         
@@ -107,31 +109,43 @@ public:
         //if (decode) Codec::decodeMatrix(this->_values.harmonic.phases);
     }
     
-    void setSinusoidal(std::vector<std::vector<float>> sinusoidal_freqs,
-                       std::vector<std::vector<float>> sinusoidal_mags,
-                       bool decode = false )
+    void setSinusoidal (std::vector<std::vector<long long>> sinusoidal_freqs_int,
+                        std::vector<std::vector<long long>> sinusoidal_mags_int,
+                        bool decode = false )
     {
-        this->setSinusoidalFrequencies(sinusoidal_freqs, decode);
-        this->setSinusoidalMagnitudes(sinusoidal_mags, decode);
+        if (decode)
+        {
+            Codec::decodeMatrixDiff (sinusoidal_freqs_int);
+            Codec::decodeMatrixDiff (sinusoidal_mags_int);
+        }
+        
+        std::vector<std::vector<float>> sinusoidal_freqs;
+        std::vector<std::vector<float>> sinusoidal_mags;
+        
+        Tools::Cast::matrix (sinusoidal_freqs_int, sinusoidal_freqs);
+        Tools::Cast::matrix (sinusoidal_mags_int, sinusoidal_mags);
+        
+        this->setSinusoidalFrequencies (sinusoidal_freqs, decode);
+        this->setSinusoidalMagnitudes (sinusoidal_mags, decode);
     }
     
-    void setSinusoidalFrequencies(std::vector<std::vector<float>> sinusoidal_freqs, bool decode = false)
+    void setSinusoidalFrequencies (std::vector<std::vector<float>> sinusoidal_freqs, bool decode = false)
     {
-        //this->_values.sinusoidal.freqs = sinusoidal_freqs;
+        this->_values.sinusoidal.freqs = sinusoidal_freqs;
         
         // Matrix decoding
-        //if (decode) Codec::decodeMatrix(this->_values.sinusoidal.freqs, DEFAULT_HZ);
+        if (decode) Codec::decodeMatrix(this->_values.sinusoidal.freqs, DEFAULT_HZ);
     }
     
-    void setSinusoidalMagnitudes(std::vector<std::vector<float>> sinusoidal_mags, bool decode = false)
+    void setSinusoidalMagnitudes (std::vector<std::vector<float>> sinusoidal_mags, bool decode = false)
     {
-        //this->_values.sinusoidal.mags = sinusoidal_mags;
+        this->_values.sinusoidal.mags = sinusoidal_mags;
         
         // Matrix decoding
-        //if (decode) Codec::decodeMatrix(this->_values.sinusoidal.mags, DEFAULT_DB, true);
+        if (decode) Codec::decodeMatrix(this->_values.sinusoidal.mags, DEFAULT_DB, true);
     }
     
-    void setSinusoidalPhases(std::vector<std::vector<float>> sinusoidal_phases, bool decode = false)
+    void setSinusoidalPhases (std::vector<std::vector<float>> sinusoidal_phases, bool decode = false)
     {
         //this->_values.sinusoidal.phases = sinusoidal_phases;
         
@@ -139,7 +153,7 @@ public:
         //if (decode) Codec::decodeMatrix(this->_values.sinusoidal.phases);
     }
     
-    void setStochastic(std::vector<std::vector<float>> stochastic, bool decode = false)
+    void setStochastic (std::vector<std::vector<float>> stochastic, bool decode = false)
     {
         //this->_values.stochastic = stochastic;
         
@@ -147,7 +161,7 @@ public:
         //if (decode) Codec::decodeMatrix(this->_values.stochastic, DEFAULT_HZ, true);
     }
     
-    void setAttack(std::vector<float> attack, bool decode = false)
+    void setAttack (std::vector<float> attack, bool decode = false)
     {
         //this->_values.attack = attack;
         
@@ -155,7 +169,7 @@ public:
         //if (decode) Codec::decodeVector(this->_values.attack);
     }
     
-    void setResidual(std::vector<float> residual, bool decode = false)
+    void setResidual (std::vector<float> residual, bool decode = false)
     {
         //this->_values.residual = residual;
         

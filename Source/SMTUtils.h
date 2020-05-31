@@ -23,16 +23,28 @@ inline bool hasChild(XmlElement* parent, String child_name)
 }
 
 /** Split a list of ints in a string */
-inline std::vector<int> splitInts(const std::string& list_of_ints)
+inline std::vector<long long> splitInts(const std::string& list_of_ints)
 {
     std::string clean_list_of_ints = list_of_ints.substr(1, list_of_ints.size() - 2); // Removing the "[]"
-    clean_list_of_ints.erase(std::remove(clean_list_of_ints.begin(), clean_list_of_ints.end(), ','), clean_list_of_ints.end()); // Removing the ","
-    std::istringstream iss(clean_list_of_ints);
+    std::replace_if(clean_list_of_ints.begin() , clean_list_of_ints.end() ,
+                    [] (const char& c) { return c == ',' ;},' ');
+    //        [] (const char& c) { return std::ispunct(c) ;},' ');
+    std::stringstream ss(clean_list_of_ints);
+    std::vector<long long> result_int;
     
-    return std::vector<int>{
-        std::istream_iterator<int>(iss),
-        std::istream_iterator<int>()
-    };
+    long long num;
+    while (ss >> num) result_int.push_back(num);
+    
+    return result_int;
+    
+//    std::string clean_list_of_ints = list_of_ints.substr(1, list_of_ints.size() - 2); // Removing the "[]"
+//    clean_list_of_ints.erase(std::remove(clean_list_of_ints.begin(), clean_list_of_ints.end(), ','), clean_list_of_ints.end()); // Removing the ","
+//    std::istringstream iss(clean_list_of_ints);
+//
+//    return std::vector<int>{
+//        std::istream_iterator<int>(iss),
+//        std::istream_iterator<int>()
+//    };
 }
 
 /** Split a list of floats in a string */
@@ -45,6 +57,7 @@ inline std::vector<float> splitFloats(const std::string& list_of_floats, bool in
                         [] (const char& c) { return c == ',' ;},' ');
 //        [] (const char& c) { return std::ispunct(c) ;},' ');
         std::stringstream ss(clean_list_of_ints);
+        ss.precision(20);
         std::vector<float> result_float;
         
 //        stringstream lineStream(line);
@@ -52,8 +65,11 @@ inline std::vector<float> splitFloats(const std::string& list_of_floats, bool in
         // TODO - Check value precision (rounding when printing in scientific notation)
 //        std::vector<int> result_int;
         
-        float num;
-        while (ss >> num) result_float.push_back(num);
+        int num;
+        while (ss >> num) result_float.push_back((float)num);
+        
+//        float num;
+//        while (ss >> num) result_float.push_back(num);
         
 //        copy(std::istream_iterator<float>(ss),
 //             std::istream_iterator<float>(),
@@ -107,7 +123,7 @@ inline std::vector<double> splitDoubles(const std::string& list_of_doubles)
 }
 
 /** Get a vector of ints from an xml element */
-inline std::vector<int> getVectorOfInts(XmlElement* parent, String child_name )
+inline std::vector<long long> getVectorOfInts(XmlElement* parent, String child_name )
 {
     return splitInts(parent->getChildByName(child_name)->getAllSubText().toStdString());
 }
@@ -132,15 +148,20 @@ inline std::vector<double> getVectorOfDoubles(XmlElement* parent, String child_n
 }
 
 /** Get a matrix of ints from an xml element */
-inline std::vector<std::vector<int>> getMatrixOfInts(XmlElement* parent, String child_name )
+inline std::vector<std::vector<long long>> getMatrixOfInts(XmlElement* parent, String child_name )
 {
-    std::vector<std::vector<int>> result_matrix;
+    std::vector<std::vector<long long>> result_matrix;
     
+//    int i=1;
     // For each row of the matrix
     forEachXmlChildElementWithTagName(*parent, child, child_name)
     {
-        auto aux = child->getAllSubText();
+//        if(i == 28){
+//            DBG("CHECK");
+//        }
+//        auto aux = child->getAllSubText();
         result_matrix.push_back(splitInts(child->getAllSubText().toStdString()));
+//        i++;
     }
     
     return result_matrix;
@@ -151,11 +172,16 @@ inline std::vector<std::vector<float>> getMatrixOfFloats(XmlElement* parent, Str
 {
     std::vector<std::vector<float>> result_matrix;
     
+//    int i=1;
     // For each row of the matrix
     forEachXmlChildElementWithTagName(*parent, child, child_name)
     {
-        auto aux = child->getAllSubText();
+//        if(i == 28){
+//            DBG("CHECK");
+//        }
+//        auto aux = child->getAllSubText();
         result_matrix.push_back(splitFloats(child->getAllSubText().toStdString(), true));
+//        i++;
     }
     
     return result_matrix;

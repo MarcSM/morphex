@@ -49,7 +49,8 @@ namespace Core::Codec
     }
     
     // Matrix Diff Decoding
-    void inline decodeMatrixDiff(std::vector<std::vector<int>> &given_matrix)
+    template<typename T>
+    void inline decodeMatrixDiff(std::vector<std::vector<T>> &given_matrix)
     {
         // Note: Start from 1 instead of 0 because, in case "diff_decoding"
         // is enabled, we want to subtract the values as integer to not lose
@@ -57,10 +58,10 @@ namespace Core::Codec
         // vector to obtain the float values.
         for (int i = 1; i < given_matrix.size(); i++)
         {
-            if (i == 78)
-            {
-                DBG("CHECK");
-            }
+//            if (i == 78)
+//            {
+//                DBG("CHECK");
+//            }
             
             for (int j = 0; j < given_matrix[i].size(); j++)
             {
@@ -78,20 +79,20 @@ namespace Core::Codec
         }
     }
     
-    // Matrix Padding
-    void inline padMatrix(std::vector<std::vector<float>> X, int max_x, int max_y, float pad_value = 0.0)
-    {
-        for (int i = 0; i < max_y; i++)
-        {
-            // TODO
-//            if (i < X.size())
-//            {
-//                X[i] = X[i] + ( [pad_value] * ( max_x - X[i].size() ) )
-//            }
-//            else
-//            {
-//                X.push_back( [pad_value] * max_x )
-//            }
-        }
-    }
+//    // Matrix Padding
+//    void inline padMatrix(std::vector<std::vector<float>> X, int max_x, int max_y, float pad_value = 0.0)
+//    {
+//        for (int i = 0; i < max_y; i++)
+//        {
+//            // TODO
+////            if (i < X.size())
+////            {
+////                X[i] = X[i] + ( [pad_value] * ( max_x - X[i].size() ) )
+////            }
+////            else
+////            {
+////                X.push_back( [pad_value] * max_x )
+////            }
+//        }
+//    }
 };

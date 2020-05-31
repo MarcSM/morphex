@@ -187,8 +187,8 @@ namespace Core
                 if (this->model->sinusoidal)
                 {
                     XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName("s"); // had["synthesis"]["s"]
-                    this->model->setSinusoidal (getMatrixOfFloats(xml_synthesis_sinusoidal, "f"),
-                                                getMatrixOfFloats(xml_synthesis_sinusoidal, "m"), true);
+                    this->model->setSinusoidal (getMatrixOfInts (xml_synthesis_sinusoidal, "f"),
+                                                getMatrixOfInts (xml_synthesis_sinusoidal, "m"), true);
                 }
                 if (this->model->stochastic)    this->model->setStochastic  (getMatrixOfFloats(xml_synthesis, "c"), true);
                 if (this->model->attack)        this->model->setAttack      (getVectorOfFloats(xml_synthesis, "a"), true);

@@ -23,6 +23,14 @@ public:
     CorePanel(SpectralMorphingToolAudioProcessor* inProcessor)
     :   instrument (&inProcessor->mMorphexSynth.instrument)
     {
+        // Core parameters default values
+        harmonicButton  .setToggleState (instrument->generate.harmonic,   NotificationType::dontSendNotification);
+        sinusoidalButton.setToggleState (instrument->generate.sinusoidal, NotificationType::dontSendNotification);
+        stochasticButton.setToggleState (instrument->generate.stochastic, NotificationType::dontSendNotification);
+        attackButton    .setToggleState (instrument->generate.attack,     NotificationType::dontSendNotification);
+        residualButton  .setToggleState (instrument->generate.residual,   NotificationType::dontSendNotification);
+
+        // Pad XY
         Morphex::Parameter freqs_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::freqs_interp_factor];
         Morphex::Parameter mags_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::mags_interp_factor];
 
@@ -56,11 +64,12 @@ public:
         addAndMakeVisible (sinusoidalButton);
         addAndMakeVisible (stochasticButton);
         addAndMakeVisible (attackButton);
-        harmonicButton  .onClick = [this] { updateToggleCoreParameter (&harmonicButton,   instrument->generate.harmonic);   };
-        sinusoidalButton.onClick = [this] { updateToggleCoreParameter (&sinusoidalButton, instrument->generate.sinusoidal); };
-        stochasticButton.onClick = [this] { updateToggleCoreParameter (&stochasticButton, instrument->generate.stochastic); };
-        attackButton    .onClick = [this] { updateToggleCoreParameter (&attackButton,     instrument->generate.attack);     };
-        stochasticButton.onClick = [this] { updateToggleCoreParameter (&stochasticButton, instrument->generate.residual);   };
+        addAndMakeVisible (residualButton);
+        harmonicButton  .onClick = [this] { updateParameter (harmonicButton.getToggleState(),   instrument->generate.harmonic);   };
+        sinusoidalButton.onClick = [this] { updateParameter (sinusoidalButton.getToggleState(), instrument->generate.sinusoidal); };
+        stochasticButton.onClick = [this] { updateParameter (stochasticButton.getToggleState(), instrument->generate.stochastic); };
+        attackButton    .onClick = [this] { updateParameter (attackButton.getToggleState(),     instrument->generate.attack);     };
+        residualButton  .onClick = [this] { updateParameter (residualButton.getToggleState(),   instrument->generate.residual);   };
 
         // Pad XY
         
@@ -102,14 +111,15 @@ public:
         mPadXY->setBounds(pad_x, pad_y, pad_width, pad_height);
     }
     
-    void updateToggleCoreParameter (Button* button, bool core_parameter)
+    template<typename T>
+    void updateParameter (T new_value, T &parameter)
+    {
+        parameter = new_value;
+    }
+    
+    void updateToggleCoreParameter (Button* button, bool &core_parameter)
     {
         core_parameter = button->getToggleState();
-//        bool state = button->getToggleState();
-//        core_parameter = state;
-//        String stateString = state ? "ON" : "OFF";
-        
-//        Logger::outputDebugString (name + " Button changed to " + stateString);
     }
 
 private:

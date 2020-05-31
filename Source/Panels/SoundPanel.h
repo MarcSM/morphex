@@ -182,13 +182,16 @@ private:
             g.setColour (GUI::Color::Logo);
             g.setFont (font_2);
             
-            if ( sound_panel->i_sound_num == 1 or sound_panel->i_sound_num == 3 )
+            if (sound_panel->sound->loaded)
             {
-                g.drawText (sound_panel->sound->name, getLocalBounds(), Justification::topRight, false);
-            }
-            else
-            {
-                g.drawText (sound_panel->sound->name, getLocalBounds(), Justification::topLeft, false);
+                if ( sound_panel->i_sound_num == 1 or sound_panel->i_sound_num == 3 )
+                {
+                    g.drawText (sound_panel->sound->name, getLocalBounds(), Justification::topRight, false);
+                }
+                else
+                {
+                    g.drawText (sound_panel->sound->name, getLocalBounds(), Justification::topLeft, false);
+                }
             }
         }
         

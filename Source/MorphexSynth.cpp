@@ -35,7 +35,11 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 //    std::string instrument_folder = "Suitcase Dry Full";
 //    std::string instrument_folder = "Morphing Test";
 //    std::string instrument_folder = "Suitcase Dry Test 20200520";
-    std::string instrument_folder = "Morphex Test";
+//    std::string instrument_folder = "Morphex Test";
+    
+//    std::string instrument_folder = "02 Suitcase Dry 20200529";
+    std::string instrument_folder = "02 Suitcase Dry Test";
+//    std::string instrument_folder = "Morphex Test Optimized";
     std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
     
     DirectoryIterator iter (File (full_path), true, "*.had");
@@ -81,8 +85,9 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     this->instrument.mode = Instrument::Mode::FullRange;
     this->instrument.interpolation_mode = Instrument::Interpolation::None;
     
-    this->instrument.generate.harmonic = true;
-    this->instrument.generate.sinusoidal = false;
+    this->instrument.generate.harmonic = false;
+    this->instrument.generate.sinusoidal = true;
+    this->instrument.generate.stochastic = false;
     this->instrument.generate.attack = false;
     this->instrument.generate.residual = false;
 
