@@ -37,6 +37,7 @@ namespace Morphex
     enum Parameters
     {
         OutputGain = 0,
+        ReverbDryWet,
         freqs_interp_factor,
         mags_interp_factor,
         stocs_interp_factor,
@@ -58,15 +59,16 @@ namespace Morphex
     static IndexedParameters<T> PARAMETERS =
     {
     //  index                   parameter_ID            parameter_label             min_value   max_value   default_value
-        {OutputGain,            {"OutputGain",          "Master",                   0.0f,       1.0f,       0.85f}    },
-        {freqs_interp_factor,   {"FreqsInterpFactor",   "Harmonic Frequencies",     0.0f,       1.0f,       0.5f}    },
-        {mags_interp_factor,    {"MagsInterpFactor",    "Harmonic Magnitudes",      0.0f,       1.0f,       0.5f}    },
-        {stocs_interp_factor,   {"StocsInterpFactor",   "Stochastic Component",     0.0f,       1.0f,       0.5f}    },
-        {stocs_gain,            {"StocsGain",           "Stochastic Gain",          0.0f,       1.0f,       0.0f}    },
-        {asdr_attack,           {"ADSRAttack",          "Attack",                   0.1f,       5.0f,       0.1f}    },
-        {asdr_decay,            {"ADSRDecay",           "Decay",                    0.1f,       2.0f,       0.8f}    },
-        {asdr_sustain,          {"ADSRSustain",         "Sustain",                  0.1f,       5.0f,       0.8f}    },
-        {asdr_release,          {"ADSRRelease",         "Release",                  0.1f,       5.0f,       0.1f}    }
+        {OutputGain,            {"OutputGain",          "Master",                   0.0f,       1.0f,       0.85f}  },
+        {ReverbDryWet,          {"ReverbDryWet",        "Dry/Wet",                  0.0f,       1.0f,       0.15f}  },
+        {freqs_interp_factor,   {"FreqsInterpFactor",   "Harmonic Frequencies",     0.0f,       1.0f,       0.5f}   },
+        {mags_interp_factor,    {"MagsInterpFactor",    "Harmonic Magnitudes",      0.0f,       1.0f,       0.5f}   },
+        {stocs_interp_factor,   {"StocsInterpFactor",   "Stochastic Component",     0.0f,       1.0f,       0.5f}   },
+        {stocs_gain,            {"StocsGain",           "Stochastic Gain",          0.0f,       1.0f,       0.0f}   },
+        {asdr_attack,           {"ADSRAttack",          "Attack",                   0.1f,       5.0f,       0.1f}   },
+        {asdr_decay,            {"ADSRDecay",           "Decay",                    0.1f,       2.0f,       0.8f}   },
+        {asdr_sustain,          {"ADSRSustain",         "Sustain",                  0.1f,       5.0f,       0.8f}   },
+        {asdr_release,          {"ADSRRelease",         "Release",                  0.1f,       5.0f,       0.1f}   }
     };
 
     template<typename T>

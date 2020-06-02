@@ -58,7 +58,7 @@ parameters(*this,                   /** reference to processor */
 //    sound[2]->stochastic_residual.resize(max_len, std::vector<float>(max_harmonics));
     
     // Initialize the preset manager
-    mPresetManager = std::make_unique<SMTPresetManager>(this);
+    mPresetManager = std::make_unique<PresetManager>(this);
 }
 
 SpectralMorphingToolAudioProcessor::~SpectralMorphingToolAudioProcessor()

@@ -14,6 +14,7 @@
 
 #include "SoundPanel.h"
 #include "CorePanel.h"
+#include "FxPanel.h"
 
 #include "../Components/CollectionBrowser.h"
 
@@ -240,7 +241,8 @@ private:
         {
             // Core Panel
             mCorePanel = new CorePanel (inProcessor);
-            
+            mFxPanel = new FxPanel (inProcessor);
+
             // Browser
             const int browser_margin = 10;
             
@@ -262,7 +264,7 @@ private:
 //            mTabbedComponent->setTabBarDepth(50);
             mTabbedComponent->setOutline(0);
             mTabbedComponent->addTab(TRANS("CORE"), GUI::Color::Transparent, mCorePanel, true);
-            mTabbedComponent->addTab(TRANS("FX"), GUI::Color::Transparent, new Component(), true);
+            mTabbedComponent->addTab(TRANS("FX"), GUI::Color::Transparent, mFxPanel, true);
             mTabbedComponent->addTab(TRANS("SOUNDS"), GUI::Color::Transparent, mBrowser, true);
 //            mTabbedComponent->addTab(TRANS("OPTIONS"), GUI::Color::Transparent, new Component(), true);
             mTabbedComponent->setCurrentTabIndex(0);
@@ -277,8 +279,8 @@ private:
             auto area = getLocalBounds();
             mTabbedComponent->setBounds(area);
             
-            // Draw borders
-            GUI::Paint::drawBorders(g, mTabbedComponent->getLocalBounds());
+//            // Draw borders
+//            GUI::Paint::drawBorders(g, mTabbedComponent->getLocalBounds());
             
             //g.fillAll (Colours::hotpink);
         }
@@ -310,6 +312,7 @@ private:
         OwnedArray<Slider> sliders;
         ScopedPointer<TabbedComponent> mTabbedComponent;
         ScopedPointer<CorePanel> mCorePanel;
+        ScopedPointer<FxPanel> mFxPanel;
         ScopedPointer<CollectionBrowser> mBrowser;
     };
     

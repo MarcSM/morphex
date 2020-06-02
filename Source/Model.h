@@ -84,6 +84,9 @@ public:
         
         // Matrix decoding
         if (decode) Codec::decodeMatrix (this->_values.harmonic.freqs);
+        
+        // TODO - Sanity check, don't trsut the "had", check if there are any anomalies and,
+        // in such case, abort loading the sound, rise and exeption, and display a message to the user.
     }
     
     void setHarmonicMagnitudes (std::vector<std::vector<float>> harmonic_mags, bool decode = false)

@@ -20,7 +20,10 @@
       <FILE id="EO6CzR" name="Synthesis.cpp" compile="1" resource="0" file="Source/Synthesis.cpp"/>
     </GROUP>
     <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="DSP">
+      <FILE id="DXmxJ0" name="Delay.h" compile="0" resource="0" file="Source/DSP/Delay.h"/>
+      <FILE id="kvmGy3" name="Distortion.h" compile="0" resource="0" file="Source/DSP/Distortion.h"/>
       <FILE id="OvuOxk" name="Gain.h" compile="0" resource="0" file="Source/DSP/Gain.h"/>
+      <FILE id="jPF0Wj" name="Reverb.h" compile="0" resource="0" file="Source/DSP/Reverb.h"/>
     </GROUP>
     <GROUP id="{4E5E0A46-E03E-E82E-84AF-6D34C82A5934}" name="Entities">
       <FILE id="i5U6Ym" name="MorphSound.h" compile="0" resource="0" file="Source/MorphSound.h"/>
@@ -29,26 +32,29 @@
       <FILE id="T1P9yV" name="MorphexSynth.h" compile="0" resource="0" file="Source/MorphexSynth.h"/>
     </GROUP>
     <GROUP id="{3F9BEECA-86A6-CC88-63F8-6B2F26C9F9A4}" name="Managers">
-      <FILE id="bXUskW" name="SMTPresetManager.cpp" compile="1" resource="0"
-            file="Source/SMTPresetManager.cpp"/>
-      <FILE id="dJE4Xa" name="SMTPresetManager.h" compile="0" resource="0"
-            file="Source/SMTPresetManager.h"/>
+      <FILE id="rg8Fza" name="PresetManager.h" compile="0" resource="0" file="Source/Managers/PresetManager.h"/>
+      <FILE id="zNUnLV" name="PresetManager.cpp" compile="1" resource="0"
+            file="Source/Managers/PresetManager.cpp"/>
     </GROUP>
     <GROUP id="{A8DC72F7-DA5B-6243-1C16-AFA2E4D75948}" name="Components">
+      <FILE id="ui5uR3" name="Button.h" compile="0" resource="0" file="Source/Components/Button.h"/>
+      <FILE id="VCzmwz" name="PadXY.h" compile="0" resource="0" file="Source/Components/PadXY.h"/>
       <FILE id="NcLsvP" name="CollectionBrowser.h" compile="0" resource="0"
             file="Source/Components/CollectionBrowser.h"/>
-      <FILE id="VCzmwz" name="PadXY.h" compile="0" resource="0" file="Source/Components/PadXY.h"/>
     </GROUP>
     <GROUP id="{97E6AD4A-6F3E-8144-D45D-39DA01D25B9D}" name="Panels">
-      <FILE id="G4WCVM" name="BottomPanel.h" compile="0" resource="0" file="Source/Panels/BottomPanel.h"/>
-      <FILE id="XFDGyU" name="CorePanel.h" compile="0" resource="0" file="Source/Panels/CorePanel.h"/>
-      <FILE id="LAtgo9" name="MainPanel.h" compile="0" resource="0" file="Source/Panels/MainPanel.h"/>
       <FILE id="yG702c" name="MorphexLookAndFeel.h" compile="0" resource="0"
             file="Source/Panels/MorphexLookAndFeel.h"/>
       <FILE id="mGmPPY" name="MorphexPanel.h" compile="0" resource="0" file="Source/Panels/MorphexPanel.h"/>
+      <FILE id="LAtgo9" name="MainPanel.h" compile="0" resource="0" file="Source/Panels/MainPanel.h"/>
       <FILE id="ebnPhb" name="MorphingPanel.h" compile="0" resource="0" file="Source/Panels/MorphingPanel.h"/>
+      <FILE id="XFDGyU" name="CorePanel.h" compile="0" resource="0" file="Source/Panels/CorePanel.h"/>
+      <FILE id="qhEZQo" name="FxPanel.h" compile="0" resource="0" file="Source/Panels/FxPanel.h"/>
       <FILE id="bZGVbu" name="SoundPanel.h" compile="0" resource="0" file="Source/Panels/SoundPanel.h"/>
       <FILE id="OrvrnQ" name="TopPanel.h" compile="0" resource="0" file="Source/Panels/TopPanel.h"/>
+      <FILE id="RP5713" name="PresetManagerPanel.h" compile="0" resource="0"
+            file="Source/Panels/PresetManagerPanel.h"/>
+      <FILE id="G4WCVM" name="BottomPanel.h" compile="0" resource="0" file="Source/Panels/BottomPanel.h"/>
     </GROUP>
     <GROUP id="{840CB2F3-43B0-8278-25EF-7C5DA7E183FC}" name="Parameters"/>
     <GROUP id="{2FE0720A-2404-2915-1953-7D2767C6275A}" name="Helpers">
@@ -118,6 +124,7 @@
         <MODULEPATH id="juce_gui_extra" path="../../SDKs/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../SDKs/JUCE/modules"/>
         <MODULEPATH id="juce_dsp" path="../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/modules/danlin_fontawesome"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_IPHONE targetFolder="Builds/iOS">
@@ -141,10 +148,12 @@
         <MODULEPATH id="juce_audio_formats"/>
         <MODULEPATH id="juce_audio_devices"/>
         <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
   </EXPORTFORMATS>
   <MODULES>
+    <MODULE id="danlin_fontawesome" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

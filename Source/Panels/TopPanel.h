@@ -12,6 +12,8 @@
 
 #include <JuceHeader.h>
 
+#include "PresetManagerPanel.h"
+
 //==============================================================================
 /*
  */
@@ -121,7 +123,7 @@ private:
 //            g.drawText("v" + PLUGIN_VERSION, -12, getHeight() * 0.2, getWidth(), getHeight(), Justification::right);
             
             // Draw borders
-            GUI::Paint::drawBorders(g, getLocalBounds());
+            GUI::Paint::drawBorders (g, getLocalBounds());
         }
         
 //        static void drawToFit (juce::Graphics& g, juce::Drawable& svg, juce::Rectangle<float> targetArea)
@@ -288,8 +290,10 @@ private:
     struct CenterPanel    : public Component
     {
         CenterPanel (SpectralMorphingToolAudioProcessor* inProcessor)
+        :   preset_manager_panel (inProcessor)
         {
-            
+//            preset_manager_panel.setBounds (0, 0, getWidth(), getHeight());
+            addAndMakeVisible (preset_manager_panel);
         }
         
         void paint (Graphics& g) override
@@ -299,19 +303,22 @@ private:
             //g.setColour (Colours::grey);
             //g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
             
-            g.setColour (Colours::white);
-            g.setFont (14.0f);
-            g.drawText ("Preset Manager", getLocalBounds(),
-                        Justification::centred, true);   // draw some placeholder text
+//            g.setColour (Colours::white);
+//            g.setFont (14.0f);
+//            g.drawText ("Preset Manager", getLocalBounds(),
+//                        Justification::centred, true);   // draw some placeholder text
             
-            // Draw borders
-            GUI::Paint::drawBorders(g, getLocalBounds());
+//            // Draw borders
+//            GUI::Paint::drawBorders (g, getLocalBounds());
         }
         
         void resized() override
         {
-            
+            auto area = getLocalBounds();
+            preset_manager_panel.setBounds (area);
         }
+        
+        PresetManagerPanel preset_manager_panel;
     };
     
     LeftSidePanel leftPanel;

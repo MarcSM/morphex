@@ -1,20 +1,20 @@
 /*
   ==============================================================================
 
-    SMTPresetManager.cpp
+    PresetManager.cpp
     Created: 7 Jul 2019 12:48:04pm
     Author:  Marc Sanchez Martinez
 
   ================================¡==============================================
 */
 
-#include "SMTPresetManager.h"
+#include "PresetManager.h"
 
-#include "SMTConstants.h"
+#include "../SMTConstants.h"
 
-#include "SMTHelperFunctions.h"
+#include "../SMTHelperFunctions.h"
 
-SMTPresetManager::SMTPresetManager(AudioProcessor* inProcessor)
+PresetManager::PresetManager(AudioProcessor* inProcessor)
 :   mCurrentPresetIsSaved(false),
 mCurrentPresetName("Untitled"),
 mProcessor(inProcessor)
@@ -26,12 +26,12 @@ mProcessor(inProcessor)
     storeLocalPreset();
 }
 
-SMTPresetManager::~SMTPresetManager()
+PresetManager::~PresetManager()
 {
     
 }
 
-void SMTPresetManager::getXmlForPreset(XmlElement* inElement)
+void PresetManager::getXmlForPreset(XmlElement* inElement)
 {
     // Get the plugin parameters
     auto& parameters = mProcessor->getParameters();
@@ -46,7 +46,7 @@ void SMTPresetManager::getXmlForPreset(XmlElement* inElement)
     }
 }
 
-void SMTPresetManager::loadPresetForXml(XmlElement* inElement)
+void PresetManager::loadPresetForXml(XmlElement* inElement)
 {
     mCurrentPresetXml = inElement;
 
@@ -69,17 +69,17 @@ void SMTPresetManager::loadPresetForXml(XmlElement* inElement)
     }
 }
 
-int SMTPresetManager::getNumberOfPresets()
+int PresetManager::getNumberOfPresets()
 {
     return mLocalPresets.size();
 }
 
-String SMTPresetManager::getPresetName(int inPresetIndex)
+String PresetManager::getPresetName(int inPresetIndex)
 {
     return mLocalPresets[inPresetIndex].getFileNameWithoutExtension();
 }
 
-void SMTPresetManager::createNewPreset()
+void PresetManager::createNewPreset()
 {
     auto& parameters = mProcessor->getParameters();
     
@@ -98,7 +98,7 @@ void SMTPresetManager::createNewPreset()
     mCurrentPresetName = "Untitled";
 }
 
-void SMTPresetManager::savePreset()
+void PresetManager::savePreset()
 {
     MemoryBlock destinationData;
     mProcessor->getStateInformation(destinationData);
@@ -111,7 +111,7 @@ void SMTPresetManager::savePreset()
     mCurrentPresetIsSaved = true;
 }
 
-void SMTPresetManager::saveAsPreset(String inPresetName)
+void PresetManager::saveAsPreset(String inPresetName)
 {
     File presetFile = File(PLUGIN_DATA_PRESETS_DIRECTORY + directorySeparator + inPresetName + PRESET_FILE_EXTENSION);
     
@@ -133,7 +133,7 @@ void SMTPresetManager::saveAsPreset(String inPresetName)
     storeLocalPreset();
 }
 
-void SMTPresetManager::loadPreset(int inPresetIndex)
+void PresetManager::loadPreset(int inPresetIndex)
 {
     mCurrentlyLoadedPreset = mLocalPresets[inPresetIndex];
     
@@ -147,17 +147,17 @@ void SMTPresetManager::loadPreset(int inPresetIndex)
     }
 }
 
-bool SMTPresetManager::getIsCurrentPresetSaved()
+bool PresetManager::getIsCurrentPresetSaved()
 {
     return mCurrentPresetIsSaved;
 }
 
-String SMTPresetManager::getCurrentPresetName()
+String PresetManager::getCurrentPresetName()
 {
     return mCurrentPresetName;
 }
 
-void SMTPresetManager::storeLocalPreset()
+void PresetManager::storeLocalPreset()
 {
     mLocalPresets.clear();
     

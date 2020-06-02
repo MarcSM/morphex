@@ -38,13 +38,13 @@ public:
         setColour (TextButton::buttonOnColourId, GUI::Color::Accent);
         setColour (TextButton::textColourOnId, GUI::Color::Accent);
         
+        // ComboBox
+        setColour (ComboBox::backgroundColourId, GUI::Color::Transparent);
+        setColour (ComboBox::textColourId, Colours::white);
+        setColour (ComboBox::outlineColourId, GUI::Color::Transparent);
+        setColour (ComboBox::arrowColourId, Colours::white);
         //// OLD STYLE
         
-        // ComboBox Colours
-//        setColour(ComboBox::backgroundColourId, SMTComboBoxBackgroundColour);
-//        setColour(ComboBox::outlineColourId, SMTComboBoxOutlineColour);
-//        setColour(ComboBox::arrowColourId, SMTComboBoxArrowColour);
-//        setColour(ComboBox::textColourId, SMTComboBoxTextColour);
 //
 //        // TextButton Colours
 //        setColour(TextButton::buttonColourId, SMTButtonColour);
@@ -60,6 +60,113 @@ public:
 //        // Draw borders
 //        GUI::Paint::drawBorders(g, button.getLocalBounds());
 //    }
+    
+    Font getTabButtonFont (TabBarButton&, float height) override
+    {
+        return { height * 0.2f };
+    }
+    
+//    void drawComboBox (Graphics& g, int width, int height, bool isButtonDown,
+//                       int buttonX, int buttonY, int buttonW, int buttonH,
+//                       ComboBox& box) override
+//    {
+//        const float cornerSize = 3.0f;
+//        const Rectangle<int> boxBounds (0, 0, width, height);
+//
+//        g.setColour(SMTColour_3);
+//
+//        Rectangle<int> arrow (width - 30, 0, 20, height);
+//        g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
+//
+//        Path path;
+//
+//        path.startNewSubPath(arrow.getX() + 3.0f, arrow.getCentreY() - 2.0f);
+//        path.lineTo(arrow.toFloat().getCentreX(), arrow.toFloat().getCentreY() + 3.0f);
+//        path.lineTo(arrow.toFloat().getRight() - 3.0f, arrow.toFloat().getCentreY() - 2.0f);
+//
+//        Colour arrowColour = box.findColour(ComboBox::arrowColourId).withAlpha(box.isEnabled() ? 0.9f : 0.2f);
+//        g.setColour(arrowColour);
+//        g.strokePath(path, PathStrokeType(2.0f));
+//    }
+    
+    void drawComboBox (Graphics& g, int width, int height, bool isButtonDown,
+                       int buttonX, int buttonY, int buttonW, int buttonH,
+                       ComboBox& comboBox) override
+    {
+        LookAndFeel_V4::drawComboBox (g, width, height, isButtonDown,
+                                      buttonX, buttonY, buttonW, buttonH,
+                                      comboBox);
+        
+//        auto cornerSize = box.findParentComponentOfClass<ChoicePropertyComponent>() != nullptr ? 0.0f : 3.0f;
+//        Rectangle<int> boxBounds (0, 0, width, height);
+//
+//        g.setColour (box.findColour (ComboBox::backgroundColourId));
+//        g.fillRoundedRectangle (boxBounds.toFloat(), cornerSize);
+//
+//        g.setColour (box.findColour (ComboBox::outlineColourId));
+//        g.drawRoundedRectangle (boxBounds.toFloat().reduced (0.5f, 0.5f), cornerSize, 1.0f);
+//
+//        Path path;
+//
+//        path.startNewSubPath(arrow.getX() + 3.0f, arrow.getCentreY() - 2.0f);
+//        path.lineTo(arrow.toFloat().getCentreX(), arrow.toFloat().getCentreY() + 3.0f);
+//        path.lineTo(arrow.toFloat().getRight() - 3.0f, arrow.toFloat().getCentreY() - 2.0f);
+//
+//        Colour arrowColour = box.findColour(ComboBox::arrowColourId).withAlpha(box.isEnabled() ? 0.9f : 0.2f);
+//        g.setColour(arrowColour);
+//        g.strokePath(path, PathStrokeType(2.0f));
+        
+        // Draw borders
+        GUI::Paint::drawBorders(g, comboBox.getLocalBounds());
+    }
+    
+    // TODO - Tab button text
+    void drawTabButtonText (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
+    {
+        auto area = button.getTextArea().toFloat();
+        
+        auto length = area.getWidth();
+        auto depth  = area.getHeight();
+        
+        if (button.getTabbedButtonBar().isVertical())
+            std::swap (length, depth);
+        
+        Font font (getTabButtonFont (button, depth));
+        font.setUnderline (button.hasKeyboardFocus (false));
+        
+        AffineTransform t;
+        
+        switch (button.getTabbedButtonBar().getOrientation())
+        {
+            case TabbedButtonBar::TabsAtLeft:   t = t.rotated (MathConstants<float>::pi * -0.5f).translated (area.getX(), area.getBottom()); break;
+            case TabbedButtonBar::TabsAtRight:  t = t.rotated (MathConstants<float>::pi *  0.5f).translated (area.getRight(), area.getY()); break;
+            case TabbedButtonBar::TabsAtTop:
+            case TabbedButtonBar::TabsAtBottom: t = t.translated (area.getX(), area.getY()); break;
+            default:                            jassertfalse; break;
+        }
+        
+        Colour col;
+        
+        if (button.isFrontTab() && (button.isColourSpecified (TabbedButtonBar::frontTextColourId)
+                                    || isColourSpecified (TabbedButtonBar::frontTextColourId)))
+            col = findColour (TabbedButtonBar::frontTextColourId);
+        else if (button.isColourSpecified (TabbedButtonBar::tabTextColourId)
+                 || isColourSpecified (TabbedButtonBar::tabTextColourId))
+            col = findColour (TabbedButtonBar::tabTextColourId);
+        else
+            col = button.getTabBackgroundColour().contrasting();
+        
+        auto alpha = button.isEnabled() ? ((isMouseOver || isMouseDown) ? 1.0f : 0.8f) : 0.3f;
+        
+        g.setColour (col.withMultipliedAlpha (alpha));
+        g.setFont (font);
+        g.addTransform (t);
+        
+        g.drawFittedText (button.getButtonText().trim(),
+                          0, 0, (int) length, (int) depth,
+                          Justification::centred,
+                          jmax (1, ((int) depth) / 12));
+    }
     
     void drawButtonText (Graphics& g, TextButton& button,
                                          bool /*shouldDrawButtonAsHighlighted*/, bool /*shouldDrawButtonAsDown*/)
@@ -127,53 +234,53 @@ public:
         return button.getTabbedButtonBar().getWidth() / button.getTabbedButtonBar().getNumTabs();
     }
     
-    void drawTabAreaBehindFrontButton (TabbedButtonBar& bar, Graphics& g, const int w, const int h) override
-    {
-        /*
-        const float shadowSize = 0.f;
-
-        Rectangle<int> shadowRect, line;
-        ColourGradient gradient (Colours::black.withAlpha (bar.isEnabled() ? 0.08f : 0.04f), 0, 0,
-                                 Colours::transparentBlack, 0, 0, false);
-        
-        switch (bar.getOrientation())
-        {
-            case TabbedButtonBar::TabsAtLeft:
-                gradient.point1.x = (float) w;
-                gradient.point2.x = w * (1.0f - shadowSize);
-                shadowRect.setBounds ((int) gradient.point2.x, 0, w - (int) gradient.point2.x, h);
-                line.setBounds (w - 1, 0, 1, h);
-                break;
-                
-            case TabbedButtonBar::TabsAtRight:
-                gradient.point2.x = w * shadowSize;
-                shadowRect.setBounds (0, 0, (int) gradient.point2.x, h);
-                line.setBounds (0, 0, 1, h);
-                break;
-                
-            case TabbedButtonBar::TabsAtTop:
-                gradient.point1.y = (float) h;
-                gradient.point2.y = h * (1.0f - shadowSize);
-                shadowRect.setBounds (0, (int) gradient.point2.y, w, h - (int) gradient.point2.y);
-                line.setBounds (0, h - 1, w, 1);
-                break;
-                
-            case TabbedButtonBar::TabsAtBottom:
-                gradient.point2.y = h * shadowSize;
-                shadowRect.setBounds (0, 0, w, (int) gradient.point2.y);
-                line.setBounds (0, 0, w, 1);
-                break;
-                
-            default: break;
-        }
-        
-        g.setGradientFill (gradient);
-        g.fillRect (shadowRect.expanded (2, 2));
-        
-        g.setColour (bar.findColour (TabbedButtonBar::tabOutlineColourId));
-        g.fillRect (line);
-        */
-    }
+//    void drawTabAreaBehindFrontButton (TabbedButtonBar& bar, Graphics& g, const int w, const int h) override
+//    {
+//        /*
+//        const float shadowSize = 0.f;
+//
+//        Rectangle<int> shadowRect, line;
+//        ColourGradient gradient (Colours::black.withAlpha (bar.isEnabled() ? 0.08f : 0.04f), 0, 0,
+//                                 Colours::transparentBlack, 0, 0, false);
+//        
+//        switch (bar.getOrientation())
+//        {
+//            case TabbedButtonBar::TabsAtLeft:
+//                gradient.point1.x = (float) w;
+//                gradient.point2.x = w * (1.0f - shadowSize);
+//                shadowRect.setBounds ((int) gradient.point2.x, 0, w - (int) gradient.point2.x, h);
+//                line.setBounds (w - 1, 0, 1, h);
+//                break;
+//                
+//            case TabbedButtonBar::TabsAtRight:
+//                gradient.point2.x = w * shadowSize;
+//                shadowRect.setBounds (0, 0, (int) gradient.point2.x, h);
+//                line.setBounds (0, 0, 1, h);
+//                break;
+//                
+//            case TabbedButtonBar::TabsAtTop:
+//                gradient.point1.y = (float) h;
+//                gradient.point2.y = h * (1.0f - shadowSize);
+//                shadowRect.setBounds (0, (int) gradient.point2.y, w, h - (int) gradient.point2.y);
+//                line.setBounds (0, h - 1, w, 1);
+//                break;
+//                
+//            case TabbedButtonBar::TabsAtBottom:
+//                gradient.point2.y = h * shadowSize;
+//                shadowRect.setBounds (0, 0, w, (int) gradient.point2.y);
+//                line.setBounds (0, 0, w, 1);
+//                break;
+//                
+//            default: break;
+//        }
+//        
+//        g.setGradientFill (gradient);
+//        g.fillRect (shadowRect.expanded (2, 2));
+//        
+//        g.setColour (bar.findColour (TabbedButtonBar::tabOutlineColourId));
+//        g.fillRect (line);
+//        */
+//    }
     
     /*
     void drawTabButton(TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
@@ -192,9 +299,30 @@ public:
 //        GUI::Paint::drawBorders(g, getLocalBounds());
 //    }
     
-    void drawTabButtonText (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
+//    void drawTabButtonText (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
+//    {
+//        LookAndFeel_V2::drawTabButtonText (button, g, isMouseOver, isMouseDown);
+//    }
+    
+    void drawTabAreaBehindFrontButton (TabbedButtonBar& bar, Graphics& g, const int w, const int h) override
     {
-        LookAndFeel_V2::drawTabButtonText (button, g, isMouseOver, isMouseDown);
+        LookAndFeel_V3::drawTabAreaBehindFrontButton (bar, g, w, h);
+        
+        // Draw borders
+        GUI::Paint::drawBorders(g, bar.getLocalBounds());
+    }
+    
+    void createTabTextLayout (const TabBarButton& button, float length, float depth,
+                                              Colour colour, TextLayout& textLayout)
+    {
+        Font font (depth * 0.4f);
+        font.setUnderline (button.hasKeyboardFocus (false));
+        
+        AttributedString s;
+        s.setJustification (Justification::centred);
+        s.append (button.getButtonText().trim(), font, colour);
+        
+        textLayout.createLayout (s, length);
     }
     
     void drawTabButton (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
@@ -430,28 +558,7 @@ public:
         g.drawFittedText(text, r, Justification::left, 1);
     }
     
-    void drawComboBox (Graphics& g, int width, int height, bool isButtonDown,
-                       int buttonX, int buttonY, int buttonW, int buttonH,
-                       ComboBox& box) override
-    {
-        const float cornerSize = 3.0f;
-        const Rectangle<int> boxBounds (0, 0, width, height);
-        
-        g.setColour(SMTColour_3);
-        
-        Rectangle<int> arrow (width - 30, 0, 20, height);
-        g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
-        
-        Path path;
-        
-        path.startNewSubPath(arrow.getX() + 3.0f, arrow.getCentreY() - 2.0f);
-        path.lineTo(arrow.toFloat().getCentreX(), arrow.toFloat().getCentreY() + 3.0f);
-        path.lineTo(arrow.toFloat().getRight() - 3.0f, arrow.toFloat().getCentreY() - 2.0f);
-        
-        Colour arrowColour = box.findColour(ComboBox::arrowColourId).withAlpha(box.isEnabled() ? 0.9f : 0.2f);
-        g.setColour(arrowColour);
-        g.strokePath(path, PathStrokeType(2.0f));
-    }
+    
     
 private:
     

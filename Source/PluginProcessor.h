@@ -13,8 +13,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 #include "MorphexSynth.h"
+#include "Managers/PresetManager.h"
 
-#include "SMTPresetManager.h"
 #include "SMTParameters.h"
 
 //==============================================================================
@@ -64,7 +64,7 @@ public:
     //==============================================================================
     AudioProcessorValueTreeState parameters;
     
-    SMTPresetManager* getPresetManager()
+    PresetManager* getPresetManager()
     {
         return mPresetManager.get();
     }
@@ -102,7 +102,7 @@ private:
     MidiKeyboardState midiState;
     MidiMessageCollector midiCollector;
     
-    std::unique_ptr<SMTPresetManager> mPresetManager;
+    std::unique_ptr<PresetManager> mPresetManager;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpectralMorphingToolAudioProcessor)

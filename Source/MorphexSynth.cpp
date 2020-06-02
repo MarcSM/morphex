@@ -13,7 +13,7 @@
 #include "SMTConstants.h"
 
 MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
-:   mParameters(parameters)
+:   mParameters (parameters)
 {
 //    mSound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
 //    mSound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
@@ -37,8 +37,9 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 //    std::string instrument_folder = "Suitcase Dry Test 20200520";
 //    std::string instrument_folder = "Morphex Test";
     
-//    std::string instrument_folder = "02 Suitcase Dry 20200529";
-    std::string instrument_folder = "02 Suitcase Dry Test";
+//    std::string instrument_folder = "Suitcase Dry 20200529";
+//    std::string instrument_folder = "Suitcase Dry Test";
+    std::string instrument_folder = "Suitcase Dry Full";
 //    std::string instrument_folder = "Morphex Test Optimized";
     std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
     
@@ -85,10 +86,10 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     this->instrument.mode = Instrument::Mode::FullRange;
     this->instrument.interpolation_mode = Instrument::Interpolation::None;
     
-    this->instrument.generate.harmonic = false;
+    this->instrument.generate.harmonic = true;
     this->instrument.generate.sinusoidal = true;
     this->instrument.generate.stochastic = false;
-    this->instrument.generate.attack = false;
+    this->instrument.generate.attack = true;
     this->instrument.generate.residual = false;
 
 
@@ -180,6 +181,8 @@ void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
 //        ++startSample;
 //    }
     
+    mReverb->process (outputAudio, outputAudio.getNumSamples());
+    
     for (int channel = 0; channel < outputAudio.getNumChannels(); ++channel)
     {
         auto* buffer = outputAudio.getWritePointer (channel);
@@ -192,7 +195,9 @@ void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
 
 void MorphexSynth::initializeDSP()
 {
+    mReverb = std::make_unique <DSP::Reverb> (mParameters);
+    
     for (int i = 0; i < NUM_CHANNELS; i++) {
-        mOutputGain[i] = std::make_unique<DSP::Gain>();
+        mOutputGain[i] = std::make_unique <DSP::Gain>();
     }
 }

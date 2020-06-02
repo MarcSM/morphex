@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    SMTPresetManager.h
+    PresetManager.h
     Created: 7 Jul 2019 12:48:04pm
     Author:  Marc Sanchez Martinez
 
@@ -12,16 +12,16 @@
 
 #include "JuceHeader.h"
 
-#include "Sound.h"
+#include "../Sound.h"
 
 #define PRESET_FILE_EXTENSION ".mpf"
 
-class SMTPresetManager
+class PresetManager
 {
 public:
     
-    SMTPresetManager(AudioProcessor* inProcessor);
-    ~SMTPresetManager();
+    PresetManager(AudioProcessor* inProcessor);
+    ~PresetManager();
     
     void getXmlForPreset(XmlElement* inElement);
     void loadPresetForXml(XmlElement* inElement);

@@ -38,6 +38,7 @@ namespace GUI
         const Colour Background = Colour(34, 34, 34);
         const Colour BackgroundGradientStart = Colour(70, 70, 70).withAlpha(0.75f);
         const Colour BackgroundGradientEnd = BackgroundGradientStart.withAlpha(0.0f);
+        const Colour BackgroundDark = Background.overlaidWith (Colour(0, 0, 0).withAlpha(0.25f));
         const Colour Logo = Colour(250, 250, 250);
         const Colour BrowserBackground = Colour(0, 0, 0);
         const Colour KeyDown = Colour(180, 180, 180);
