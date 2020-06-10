@@ -17,12 +17,66 @@
 //==============================================================================
 /*
 */
-class CollectionBrowser    : public Component
+class CollectionBrowser    : public FileBrowserComponent
 {
 public:
-    CollectionBrowser()
+    
+//    CollectionBrowser()
+//    {
+//        if (!File(PLUGIN_DATA_COLLECTIONS_DIRECTORY).exists())
+//        {
+//            File(PLUGIN_DATA_COLLECTIONS_DIRECTORY).createDirectory();
+//        }
+//
+//        int flags = FileBrowserComponent::openMode |
+//        FileBrowserComponent::canSelectFiles |
+//        FileBrowserComponent::useTreeView |
+//        FileBrowserComponent::filenameBoxIsReadOnly;
+//
+//        m_wcFileFilter = new WildcardFileFilter("*.had", "*", "somedescription");
+//
+//        // Create the browser component
+//        m_fileBrowser = new FileBrowserComponent(flags, PLUGIN_DATA_COLLECTIONS_DIRECTORY, m_wcFileFilter, NULL);
+//
+//        pTreeComponent = static_cast<FileTreeComponent*> (m_fileBrowser->getDisplayComponent());
+//        if (pTreeComponent) pTreeComponent->setDragAndDropDescription("DragAndDrop");
+//
+//        // Add browser compoenent
+//        addAndMakeVisible(m_fileBrowser);
+//    }
+    
+//    CollectionBrowser (int flags,
+//                       const File& initialFileOrDirectory,
+//                       const juce::FileFilter* fileFilter,
+//                       FilePreviewComponent* previewComp)
+    
+    CollectionBrowser (int flags = FileBrowserComponent::openMode |
+                       FileBrowserComponent::canSelectFiles |
+                       FileBrowserComponent::useTreeView |
+                       FileBrowserComponent::filenameBoxIsReadOnly,
+                       const File& initialFileOrDirectory = PLUGIN_DATA_COLLECTIONS_DIRECTORY,
+                       const juce::FileFilter* fileFilter = new WildcardFileFilter("*.had", "*", "somedescription"),
+                       FilePreviewComponent* previewComp = NULL)
+    : FileBrowserComponent(flags, initialFileOrDirectory, fileFilter, previewComp)
     {
-        
+        pTreeComponent = static_cast<FileTreeComponent*> (this->getDisplayComponent());
+        if (pTreeComponent) pTreeComponent->setDragAndDropDescription("DragAndDrop");
+    }
+    
+//    CollectionBrowser (int flags = FileBrowserComponent::openMode |
+//                       FileBrowserComponent::canSelectFiles |
+//                       FileBrowserComponent::useTreeView |
+//                       FileBrowserComponent::filenameBoxIsReadOnly,
+//                       const File& initialFileOrDirectory = PLUGIN_DATA_COLLECTIONS_DIRECTORY,
+//                       const FileFilter* fileFilter = new WildcardFileFilter("*.had", "*", "somedescription"),
+//                       FilePreviewComponent* previewComp = NULL)
+    
+//    CollectionBrowser (int flags,
+//                       const File& initialFileOrDirectory,
+//                       const juce::FileFilter* fileFilter,
+//                       FilePreviewComponent* previewComp)
+//    {
+    
         
 //        FileTreeComponent* pTreeComponent = static_cast<FileTreeComponent*> (mFileBrowserComp->getDisplayComponent());
 //
@@ -34,27 +88,27 @@ public:
         // In your constructor, you should add any child components, and
         // initialise any special settings that your component needs.
         
-        if (!File(PLUGIN_DATA_COLLECTIONS_DIRECTORY).exists())
-        {
-            File(PLUGIN_DATA_COLLECTIONS_DIRECTORY).createDirectory();
-        }
-   
-        int flags = FileBrowserComponent::openMode |
-                    FileBrowserComponent::canSelectFiles |
-                    FileBrowserComponent::useTreeView |
-                    FileBrowserComponent::filenameBoxIsReadOnly;
-   
-        m_wcFileFilter = new WildcardFileFilter("*.had", "*", "somedescription");
-
-        // Create the browser component
-        m_fileBrowser = new FileBrowserComponent(flags, PLUGIN_DATA_COLLECTIONS_DIRECTORY, m_wcFileFilter, NULL);
-        
-        pTreeComponent = static_cast<FileTreeComponent*> (m_fileBrowser->getDisplayComponent());
-        if (pTreeComponent) pTreeComponent->setDragAndDropDescription("DragAndDrop");
-        
-        // Add browser compoenent
-        addAndMakeVisible(m_fileBrowser);
-    }
+//        if (!File(PLUGIN_DATA_COLLECTIONS_DIRECTORY).exists())
+//        {
+//            File(PLUGIN_DATA_COLLECTIONS_DIRECTORY).createDirectory();
+//        }
+//
+//        int flags = FileBrowserComponent::openMode |
+//                    FileBrowserComponent::canSelectFiles |
+//                    FileBrowserComponent::useTreeView |
+//                    FileBrowserComponent::filenameBoxIsReadOnly;
+//
+//        m_wcFileFilter = new WildcardFileFilter("*.had", "*", "somedescription");
+//
+//        // Create the browser component
+//        m_fileBrowser = new FileBrowserComponent(flags, PLUGIN_DATA_COLLECTIONS_DIRECTORY, m_wcFileFilter, NULL);
+//
+//        pTreeComponent = static_cast<FileTreeComponent*> (m_fileBrowser->getDisplayComponent());
+//        if (pTreeComponent) pTreeComponent->setDragAndDropDescription("DragAndDrop");
+//
+//        // Add browser compoenent
+//        addAndMakeVisible(m_fileBrowser);
+//    }
 
     ~CollectionBrowser()
     {
@@ -91,20 +145,20 @@ public:
         GUI::Paint::drawBorders(g, getLocalBounds());
     }
 
-    void resized() override
-    {
-        auto area = getLocalBounds();
-        m_fileBrowser->setBounds(area);
-    }
+//    void resized() override
+//    {
+//        auto area = getLocalBounds();
+//        m_fileBrowser->setBounds(area);
+//    }
 
 private:
     
 //    void fileClicked (const File& f, const MouseEvent& e) override
-//    void fileClicked (const File& f, const MouseEvent& e) override
-//    {
-//        m_fileBrowser->fileClicked (f, e);
-//        pTreeComponent->setDragAndDropDescription (pTreeComponent->getSelectedFile().getFullPathName());
-//    }
+    void fileClicked (const File& f, const MouseEvent& e) override
+    {
+        FileBrowserComponent::fileClicked (f, e);
+        pTreeComponent->setDragAndDropDescription (pTreeComponent->getSelectedFile().getFullPathName());
+    }
     
 //    void selectionChanged() override
 //    {
@@ -122,8 +176,8 @@ private:
     String mCollectionsDirectory;
     String mPluginDirectory;
 
-    ScopedPointer<FileBrowserComponent> m_fileBrowser;
-    ScopedPointer<WildcardFileFilter> m_wcFileFilter;
+//    ScopedPointer<FileBrowserComponent> m_fileBrowser;
+//    ScopedPointer<WildcardFileFilter> m_wcFileFilter;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CollectionBrowser)
 };

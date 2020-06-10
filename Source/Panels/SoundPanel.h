@@ -29,18 +29,12 @@ public:
         // In your constructor, you should add any child components, and
         // initialise any special settings that your component needs.
         
-        if (i_sound_num == 1)
-        {
-            sound = instrument->getMorphSounds()[MorphLocation::Left];
-        }
-        else if (i_sound_num == 4)
-        {
-            sound = instrument->getMorphSounds()[MorphLocation::Right];
-        }
-        else
-        {
-            sound = new Sound();
-        }
+        if (i_sound_num == 1) morph_location = MorphLocation::Left;
+        else if (i_sound_num == 4) morph_location = MorphLocation::Right;
+        else morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
+        
+        if (morph_location != MorphLocation::NUM_MORPH_LOCATIONS) sound = instrument->getMorphSounds()[morph_location];
+        else sound = new Sound();
         
 //        soundNamePanel = new SoundNamePanel (sound)
         
@@ -114,7 +108,7 @@ public:
         
 //        grid.autoFlow = Grid::AutoFlow::column;
 
-        if (i_sound_num == 1 or i_sound_num == 3)
+        if (morph_location == MorphLocation::Left or i_sound_num == 3)
         {
             grid.items.addArray ({
                 GridItem (soundNumberPanel),
@@ -150,23 +144,41 @@ public:
     
     void itemDragEnter (const SourceDetails&) override
     {
-//        isDragOver = true;
+        isDragOver = true;
         repaint();
     }
     
     void itemDragExit (const SourceDetails&) override
     {
-//        isDragOver = false;
+        isDragOver = false;
         repaint();
     }
     
     void itemDropped (const SourceDetails& dragSourceDetails) override
     {
-        DBG("itemDropped");
-        DBG(dragSourceDetails.description.toString());
-        //        setFile (dragSourceDetails.description.toString());
-        //        isDragOver = false;
+        if (morph_location != MorphLocation::NUM_MORPH_LOCATIONS)
+        {
+            // TODO - Improve load / destroy sounds method
+//            std::string sound_file_name = dragSourceDetails.description.toString();
+            std::string sound_file_name = dragSourceDetails.description.toString().toStdString();
+            Core::Sound aux_sound = Core::Sound( sound_file_name );
+            instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->sound = aux_sound;
+            instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->loaded = true;
+//            Core::Sound* aux = &instrument->note[ sound.note ]->velocity[ sound.velocity ]->sound;
+            sound = &instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->sound;
+            instrument->setMorphSound (sound, morph_location);
+        }
+        isDragOver = false;
         repaint();
+    }
+    
+    void paintOverChildren (Graphics& g) override
+    {
+        if (isDragOver)
+        {
+            g.setColour (Colours::red);
+            g.drawRect (getLocalBounds(), 2);
+        }
     }
 
 private:
@@ -242,6 +254,7 @@ private:
     };
     
     int i_sound_num;
+    MorphLocation morph_location;
     
     Instrument* instrument;
     Sound* sound;
@@ -251,6 +264,8 @@ private:
     SoundNamePanel soundNamePanel;
     OwnedArray<GridItemPanel> items;
     OwnedArray<TextButton> buttons;
+    
+    bool isDragOver = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SoundPanel)
 };

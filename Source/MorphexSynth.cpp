@@ -38,9 +38,9 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 //    std::string instrument_folder = "Morphex Test";
     
 //    std::string instrument_folder = "Suitcase Dry 20200529";
-//    std::string instrument_folder = "Suitcase Dry Test";
+    std::string instrument_folder = "Suitcase Dry Test";
 //    std::string instrument_folder = "Suitcase Dry Full";
-    std::string instrument_folder = "Morphing Test Optimized";
+//    std::string instrument_folder = "Morphing Test Optimized";
     std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
     
     DirectoryIterator iter (File (full_path), true, "*.had");
@@ -81,10 +81,10 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
     
-//    this->instrument.mode = Instrument::Mode::Morphing;
-//    this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
-    this->instrument.mode = Instrument::Mode::FullRange;
-    this->instrument.interpolation_mode = Instrument::Interpolation::None;
+    this->instrument.mode = Instrument::Mode::Morphing;
+    this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
+//    this->instrument.mode = Instrument::Mode::FullRange;
+//    this->instrument.interpolation_mode = Instrument::Interpolation::None;
     
     this->instrument.generate.harmonic = true;
     this->instrument.generate.sinusoidal = true;

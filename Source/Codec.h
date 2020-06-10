@@ -15,7 +15,8 @@ namespace Core
     const static float DEFAULT_HZ = 0.0;
     const static float DEFAULT_DB = -200.0;
     const static float DEFAULT_NULL = -1;
-    const static int XML_DECIMAL_PLACES = 5;
+//    const static int XML_DECIMAL_PLACES = 5;
+    const static int XML_DECIMAL_PLACES = 3;
 }
 
 namespace Core::Codec

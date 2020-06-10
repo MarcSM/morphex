@@ -390,65 +390,104 @@ namespace Core
         
         // NOTE - idx_harmonics is not beign used right now
         
+        float DEFAULT_VALUE = (frame_type == FrameType::Magnitudes) ? DEFAULT_DB : DEFAULT_HZ;
+        
         // Output
-        std::vector<float> interpolated_frame(i_frame_length, 0.0);
+        std::vector<float> interpolated_frame(i_frame_length, DEFAULT_VALUE);
         
-        int len_frame_1 = (int)frame_1.size();
-        int len_frame_2 = (int)frame_2.size();
-
-        // Magnitudes
-        if (frame_type == FrameType::Magnitudes)
+        if (i_frame_length != 0)
         {
+            // Aux values
+            float aux_value_1 = DEFAULT_VALUE;
+            float aux_value_2 = DEFAULT_VALUE;
             
-//            len_frame_1 = (int)count_if(frame_1.begin(), frame_1.end(),
-//                                        [](float value) { return value > DEFAULT_DB; });
-//
-//            len_frame_2 = (int)count_if(frame_2.begin(), frame_2.end(),
-//                                        [](float value) { return value > DEFAULT_DB; });
-            
-            // Fill with -180.0
-            std::fill(interpolated_frame.begin(), interpolated_frame.end(), DEFAULT_DB);
-        }
-        // Harmonics (and everything else)
-        else
-        {
-//            len_frame_1 = (int)count_if(frame_1.begin(), frame_1.end(),
-//                                        [](float value) { return value > DEFAULT_HZ; });
-//
-//            len_frame_2 = (int)count_if(frame_2.begin(), frame_2.end(),
-//                                        [](float value) { return value > DEFAULT_HZ; });
-            
-            // Fill with 0.0
-            std::fill(interpolated_frame.begin(), interpolated_frame.end(), DEFAULT_HZ);
-        }
-        
-        // Aux frames
-        std::vector<float> master_frame;
-        std::vector<float> second_frame;
-
-        if (len_frame_1 > len_frame_2)
-        {
-            master_frame = frame_1;
-            second_frame = frame_2;
-        }
-        else
-        {
-            master_frame = frame_2;
-            second_frame = frame_1;
-        }
-        
-        // The master frame is always longer or equal than the second frame
-        for (int i = 0; i < master_frame.size(); i++)
-        {
-            if (i < second_frame.size())
+            for (int i = 0; i < i_frame_length; i++)
             {
-                interpolated_frame[i] = interp_factor * master_frame[i] + (1-interp_factor) * second_frame[i];
-//                interpolated_frame[i] = (1-interp_factor) * master_frame[i] + interp_factor * second_frame[i];
+                if (i < frame_1.size()) aux_value_1 = frame_1[i];
+                else aux_value_1 = DEFAULT_VALUE;
+                
+                if (i < frame_2.size()) aux_value_2 = frame_2[i];
+                else aux_value_2 = DEFAULT_VALUE;
+                
+                interpolated_frame[i] = interp_factor * aux_value_1 + (1-interp_factor) * aux_value_2;
             }
-            else
-            {
-                interpolated_frame[i] = master_frame[i];
-            }
+            
+//            // Frame lengths
+//            int len_frame_1 = (int)frame_1.size();
+//            int len_frame_2 = (int)frame_2.size();
+            
+//            // Aux frames
+//            std::vector<float> aux_frame_1;
+//            std::vector<float> aux_frame_2;
+            
+
+//
+//            // Magnitudes
+//            if (frame_type == FrameType::Magnitudes)
+//            {
+//
+//                //            len_frame_1 = (int)count_if(frame_1.begin(), frame_1.end(),
+//                //                                        [](float value) { return value > DEFAULT_DB; });
+//                //
+//                //            len_frame_2 = (int)count_if(frame_2.begin(), frame_2.end(),
+//                //                                        [](float value) { return value > DEFAULT_DB; });
+//
+//                // Fill with -200.0
+//                std::fill(interpolated_frame.begin(), interpolated_frame.end(), DEFAULT_DB);
+//            }
+//            // Harmonics (and everything else)
+//            else
+//            {
+//                //            len_frame_1 = (int)count_if(frame_1.begin(), frame_1.end(),
+//                //                                        [](float value) { return value > DEFAULT_HZ; });
+//                //
+//                //            len_frame_2 = (int)count_if(frame_2.begin(), frame_2.end(),
+//                //                                        [](float value) { return value > DEFAULT_HZ; });
+//
+//                // Fill with 0.0
+//                std::fill(interpolated_frame.begin(), interpolated_frame.end(), DEFAULT_HZ);
+//            }
+            
+            
+            
+            
+            
+            
+            
+//            // Aux frames
+//            std::vector<float> master_frame;
+//            std::vector<float> second_frame;
+//
+//            if (len_frame_1 > len_frame_2)
+//            {
+//                master_frame = frame_1;
+//                second_frame = frame_2;
+//            }
+//            else
+//            {
+//                master_frame = frame_2;
+//                second_frame = frame_1;
+//            }
+//
+//            // The master frame is always longer or equal than the second frame
+//            for (int i = 0; i < master_frame.size(); i++)
+//            {
+//                if (i < second_frame.size())
+//                {
+//                    if (frame_type == FrameType::Magnitudes)
+//                    {
+//                        if (master_frame[i] == DEFAULT_DB) interpolated_frame[i] = second_frame[i];
+//                        else if (second_frame[i] == DEFAULT_DB) interpolated_frame[i] = master_frame[i];
+//                    }
+//
+//                    interpolated_frame[i] = interp_factor * master_frame[i] + (1-interp_factor) * second_frame[i];
+//                    //                interpolated_frame[i] = (1-interp_factor) * master_frame[i] + interp_factor * second_frame[i];
+//                }
+//                else
+//                {
+//                    interpolated_frame[i] = master_frame[i];
+//                }
+//            }
         }
         
         return interpolated_frame;
