@@ -39,8 +39,8 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
 //    std::string instrument_folder = "Suitcase Dry 20200529";
 //    std::string instrument_folder = "Suitcase Dry Test";
-    std::string instrument_folder = "Suitcase Dry Full";
-//    std::string instrument_folder = "Morphex Test Optimized";
+//    std::string instrument_folder = "Suitcase Dry Full";
+    std::string instrument_folder = "Morphing Test Optimized";
     std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
     
     DirectoryIterator iter (File (full_path), true, "*.had");

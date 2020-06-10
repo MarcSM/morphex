@@ -22,6 +22,15 @@ class CollectionBrowser    : public Component
 public:
     CollectionBrowser()
     {
+        
+        
+//        FileTreeComponent* pTreeComponent = static_cast<FileTreeComponent*> (mFileBrowserComp->getDisplayComponent());
+//
+//        if(pTreeComponent)
+//        {
+//            pTreeComponent->setDragAndDropDescription("DragAndDrop");
+//        }
+        
         // In your constructor, you should add any child components, and
         // initialise any special settings that your component needs.
         
@@ -32,13 +41,17 @@ public:
    
         int flags = FileBrowserComponent::openMode |
                     FileBrowserComponent::canSelectFiles |
+                    FileBrowserComponent::useTreeView |
                     FileBrowserComponent::filenameBoxIsReadOnly;
    
         m_wcFileFilter = new WildcardFileFilter("*.had", "*", "somedescription");
 
         // Create the browser component
         m_fileBrowser = new FileBrowserComponent(flags, PLUGIN_DATA_COLLECTIONS_DIRECTORY, m_wcFileFilter, NULL);
-   
+        
+        pTreeComponent = static_cast<FileTreeComponent*> (m_fileBrowser->getDisplayComponent());
+        if (pTreeComponent) pTreeComponent->setDragAndDropDescription("DragAndDrop");
+        
         // Add browser compoenent
         addAndMakeVisible(m_fileBrowser);
     }
@@ -85,6 +98,21 @@ public:
     }
 
 private:
+    
+//    void fileClicked (const File& f, const MouseEvent& e) override
+//    void fileClicked (const File& f, const MouseEvent& e) override
+//    {
+//        m_fileBrowser->fileClicked (f, e);
+//        pTreeComponent->setDragAndDropDescription (pTreeComponent->getSelectedFile().getFullPathName());
+//    }
+    
+//    void selectionChanged() override
+//    {
+//        // we're just going to update the drag description of out tree so that rows can be dragged onto the file players
+//        pTreeComponent->setDragAndDropDescription (pTreeComponent->getSelectedFile().getFullPathName());
+//    }
+    
+    FileTreeComponent* pTreeComponent;
 
     Rectangle<float> rectangle;
    

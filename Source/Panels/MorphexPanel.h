@@ -19,7 +19,8 @@
 //==============================================================================
 /*
 */
-class MorphexPanel   : public Component
+class MorphexPanel :    public Component,
+                        public DragAndDropContainer
 {
 public:
     //==============================================================================

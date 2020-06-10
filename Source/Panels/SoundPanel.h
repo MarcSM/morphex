@@ -15,7 +15,8 @@
 //==============================================================================
 /*
 */
-class SoundPanel    : public Component
+class SoundPanel :  public Component,
+                    public DragAndDropTarget
 {
 public:
     
@@ -143,6 +144,29 @@ public:
                                    getHeight() - ( grid_margin * 2.0f ));
         grid.performLayout (grid_bounds);
 //        grid.performLayout (getLocalBounds());
+    }
+    
+    bool isInterestedInDragSource (const SourceDetails&) override   { return true; }
+    
+    void itemDragEnter (const SourceDetails&) override
+    {
+//        isDragOver = true;
+        repaint();
+    }
+    
+    void itemDragExit (const SourceDetails&) override
+    {
+//        isDragOver = false;
+        repaint();
+    }
+    
+    void itemDropped (const SourceDetails& dragSourceDetails) override
+    {
+        DBG("itemDropped");
+        DBG(dragSourceDetails.description.toString());
+        //        setFile (dragSourceDetails.description.toString());
+        //        isDragOver = false;
+        repaint();
     }
 
 private:

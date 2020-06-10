@@ -21,7 +21,7 @@
 //==============================================================================
 /*
  */
-class MorphingPanel    : public Component
+class MorphingPanel :   public Component
 {
 public:
     MorphingPanel(SpectralMorphingToolAudioProcessor* inProcessor)
