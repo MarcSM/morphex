@@ -81,10 +81,10 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
     
-    this->instrument.mode = Instrument::Mode::Morphing;
-    this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
-//    this->instrument.mode = Instrument::Mode::FullRange;
-//    this->instrument.interpolation_mode = Instrument::Interpolation::None;
+//    this->instrument.mode = Instrument::Mode::Morphing;
+//    this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
+    this->instrument.mode = Instrument::Mode::FullRange;
+    this->instrument.interpolation_mode = Instrument::Interpolation::None;
     
     this->instrument.generate.harmonic = true;
     this->instrument.generate.sinusoidal = true;
