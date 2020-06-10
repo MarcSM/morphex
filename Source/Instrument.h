@@ -64,8 +64,8 @@ public:
     {
         Frequencies = 0,    // Interpolate Frequencies
         Magnitudes,         // Interpolate Magnitudes
-        Residual,           // Interpolate Residual components
-        Stochastic          // Interpolate Stochastic components
+        Stochastic,         // Interpolate Stochastic
+        Waveform,           // Interpolate Waveforms
     };
     
     struct Generate

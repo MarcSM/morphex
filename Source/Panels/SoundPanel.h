@@ -156,11 +156,12 @@ public:
     
     void itemDropped (const SourceDetails& dragSourceDetails) override
     {
-        if (morph_location != MorphLocation::NUM_MORPH_LOCATIONS)
+        std::string sound_file_name = dragSourceDetails.description.toString().toStdString();
+        
+        if ( sound_file_name != "directory" and morph_location != MorphLocation::NUM_MORPH_LOCATIONS)
         {
             // TODO - Improve load / destroy sounds method
 //            std::string sound_file_name = dragSourceDetails.description.toString();
-            std::string sound_file_name = dragSourceDetails.description.toString().toStdString();
             Core::Sound aux_sound = Core::Sound( sound_file_name );
             instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->sound = aux_sound;
             instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->loaded = true;
@@ -168,6 +169,7 @@ public:
             sound = &instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->sound;
             instrument->setMorphSound (sound, morph_location);
         }
+        
         isDragOver = false;
         repaint();
     }
@@ -176,7 +178,7 @@ public:
     {
         if (isDragOver)
         {
-            g.setColour (Colours::red);
+            g.setColour (Colours::white.withAlpha(0.75f));
             g.drawRect (getLocalBounds(), 2);
         }
     }

@@ -157,7 +157,14 @@ private:
     void fileClicked (const File& f, const MouseEvent& e) override
     {
         FileBrowserComponent::fileClicked (f, e);
-        pTreeComponent->setDragAndDropDescription (pTreeComponent->getSelectedFile().getFullPathName());
+        if (f.isDirectory())
+        {
+            pTreeComponent->setDragAndDropDescription ("directory");
+        }
+        else
+        {
+            pTreeComponent->setDragAndDropDescription (pTreeComponent->getSelectedFile().getFullPathName());
+        }
     }
     
 //    void selectionChanged() override

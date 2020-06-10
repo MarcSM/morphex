@@ -290,8 +290,9 @@ namespace Core
         }
         
         float f_stocs_interp_factor = f_freqs_interp_factor;
+        float f_attack_interp_factor = f_freqs_interp_factor;
         float f_residual_interp_factor = f_freqs_interp_factor;
-        
+
         MorphSoundFrames morph_sound_frames;
         
         // Select current frame
@@ -317,19 +318,21 @@ namespace Core
         // //             explicit_fundamental = i_note
         //             return (note_hfreq / f_note_freq) * f_target_frequency
         
-        // Transpose left note frequencies to the target frequency
-        Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].harmonic.freqs,
-                                         Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
-        Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Left].harmonic.freqs, f_target_frequency);
         
-        // Transpose right note frequencies to the target frequency
-        Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Right].harmonic.freqs,
-                                         Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note));
-        Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Right].harmonic.freqs, f_target_frequency);
         
         if (morph_sound_frames[MorphLocation::Left].hasHarmonic() or
             morph_sound_frames[MorphLocation::Right].hasHarmonic())
         {
+            // Transpose left note frequencies to the target frequency
+            Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].harmonic.freqs,
+                                             Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+            Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Left].harmonic.freqs, f_target_frequency);
+            
+            // Transpose right note frequencies to the target frequency
+            Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Right].harmonic.freqs,
+                                             Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note));
+            Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Right].harmonic.freqs, f_target_frequency);
+            
             // Interpolating the frequencies of the given harmonics
             morphed_sound_frame.harmonic.freqs =
             interpolateFrames(FrameType::Frequencies,
@@ -350,6 +353,37 @@ namespace Core
         }
         
         // TODO - Add sinusoidal component
+//        if (morph_sound_frames[MorphLocation::Left].hasSinusoidal() or
+//            morph_sound_frames[MorphLocation::Right].hasSinusoidal())
+//        {
+//            // Transpose left note frequencies to the target frequency
+//            Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].sinusoidal.freqs,
+//                                             Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+//            Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Left].sinusoidal.freqs, f_target_frequency);
+//
+//            // Transpose right note frequencies to the target frequency
+//            Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Right].sinusoidal.freqs,
+//                                             Tools::Midi::toFreq(morph_sounds[MorphLocation::Right]->note));
+//            Tools::Calculate::multiplyByScalar(morph_sound_frames[MorphLocation::Right].sinusoidal.freqs, f_target_frequency);
+//
+//            // Interpolating the frequencies of the given sinusoids
+//            morphed_sound_frame.sinusoidal.freqs =
+//            interpolateFrames(FrameType::Frequencies,
+//                              f_freqs_interp_factor,
+//                              morph_sound_frames[MorphLocation::Left].sinusoidal.freqs,
+//                              morph_sound_frames[MorphLocation::Right].sinusoidal.freqs,
+//                              i_max_harmonics,
+//                              idx_harmonics);
+//
+//            // Interpolating the magnitudes of the given sinusoids
+//            morphed_sound_frame.sinusoidal.mags =
+//            interpolateFrames(FrameType::Magnitudes,
+//                              f_mags_interp_factor,
+//                              morph_sound_frames[MorphLocation::Left].sinusoidal.mags,
+//                              morph_sound_frames[MorphLocation::Right].sinusoidal.mags,
+//                              i_max_harmonics,
+//                              idx_harmonics);
+//        }
         
         if (morph_sound_frames[MorphLocation::Left].hasStochastic() or
             morph_sound_frames[MorphLocation::Right].hasStochastic())
@@ -363,12 +397,24 @@ namespace Core
                               i_max_harmonics);
         }
         
+        if (morph_sound_frames[MorphLocation::Left].hasAttack() or
+            morph_sound_frames[MorphLocation::Right].hasAttack())
+        {
+            // Interpolating the stochastic components of the given harmonics
+            morphed_sound_frame.attack =
+            interpolateFrames(FrameType::Waveform,
+                              f_attack_interp_factor,
+                              morph_sound_frames[MorphLocation::Left].attack,
+                              morph_sound_frames[MorphLocation::Right].attack,
+                              i_frame_length);
+        }
+        
         if (morph_sound_frames[MorphLocation::Left].hasResidual() or
             morph_sound_frames[MorphLocation::Right].hasResidual())
         {
             // Interpolating the stochastic components of the given harmonics
             morphed_sound_frame.residual =
-            interpolateFrames(FrameType::Residual,
+            interpolateFrames(FrameType::Waveform,
                               f_residual_interp_factor,
                               morph_sound_frames[MorphLocation::Left].residual,
                               morph_sound_frames[MorphLocation::Right].residual,
@@ -409,7 +455,7 @@ namespace Core
                 if (i < frame_2.size()) aux_value_2 = frame_2[i];
                 else aux_value_2 = DEFAULT_VALUE;
                 
-                interpolated_frame[i] = interp_factor * aux_value_1 + (1-interp_factor) * aux_value_2;
+                interpolated_frame[i] = interp_factor * aux_value_2 + (1-interp_factor) * aux_value_1;
             }
             
 //            // Frame lengths
