@@ -46,9 +46,19 @@ namespace GUI
     
     namespace Paint
     {
-        inline void drawBorders(Graphics& g, Rectangle<int> componentBounds, float light_transparency = 0.10f)
+        enum BorderType
+        {
+            Normal = 0,
+            Glass
+        };
+        
+        inline void drawBorders (Graphics& g,
+                                 Rectangle<int> componentBounds,
+                                 BorderType border_type = BorderType::Normal)
         {
             int line_thickness = 3;
+            
+//            border_type = BorderType::Normal;
             
             // Get borders points
             Point<int> topLeft = componentBounds.getTopLeft();
@@ -58,21 +68,36 @@ namespace GUI
             
             // Shadow color
             g.setColour (Colour(0, 0, 0).withAlpha(0.75f));
+//            switch (border_type)
+//            {
+//                case BorderType::Normal: g.setColour (Colour(0, 0, 0).withAlpha(0.75f));        break;
+//                case BorderType::Glass:  g.setColour (Colour(255, 255, 255).withAlpha(0.10f));  break;
+//                default:                 jassertfalse; break;
+//            }
             
             // Right Border
-            g.drawLine (topRight.getX(), topRight.getY(), bottomRight.getX(), bottomRight.getY(), line_thickness);
+            g.drawLine (topRight.getX(), topRight.getY(),
+                        bottomRight.getX(), bottomRight.getY(), line_thickness);
             
             // Bottom Border
-            g.drawLine (bottomRight.getX(), bottomRight.getY(), bottomLeft.getX(), bottomLeft.getY(), line_thickness);
+            g.drawLine (bottomRight.getX(), bottomRight.getY(),
+                        bottomLeft.getX(), bottomLeft.getY(), line_thickness);
             
             // Light color
-            g.setColour (Colour(255, 255, 255).withAlpha(light_transparency));
+            switch (border_type)
+            {
+                case BorderType::Normal: g.setColour (Colour(255, 255, 255).withAlpha(0.10f));  break;
+                case BorderType::Glass:  g.setColour (Colour(255, 255, 255).withAlpha(0.15f));  break;
+                default:                 jassertfalse; break;
+            }
             
             // Left Border
-            g.drawLine (bottomLeft.getX(), bottomLeft.getY(), topLeft.getX(), topLeft.getY(), line_thickness);
+            g.drawLine (bottomLeft.getX(), bottomLeft.getY(),
+                        topLeft.getX(), topLeft.getY(), line_thickness);
             
             // Top Border
-            g.drawLine (topLeft.getX(), topLeft.getY(), topRight.getX(), topRight.getY(), line_thickness);
+            g.drawLine (topLeft.getX(), topLeft.getY(),
+                        topRight.getX(), topRight.getY(), line_thickness);
             
             //g.drawRect (componentBounds, 1);   // draw an outline around the component
         }

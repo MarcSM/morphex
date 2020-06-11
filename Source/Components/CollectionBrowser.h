@@ -142,7 +142,7 @@ public:
         g.fillAll (GUI::Color::BrowserBackground);
         
         // Draw borders
-        GUI::Paint::drawBorders(g, getLocalBounds());
+        GUI::Paint::drawBorders(g, getLocalBounds(), GUI::Paint::BorderType::Glass);
     }
 
 //    void resized() override

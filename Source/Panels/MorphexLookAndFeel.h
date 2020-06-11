@@ -117,7 +117,7 @@ public:
 //        g.strokePath(path, PathStrokeType(2.0f));
         
         // Draw borders
-        GUI::Paint::drawBorders(g, comboBox.getLocalBounds());
+        GUI::Paint::drawBorders(g, comboBox.getLocalBounds(), GUI::Paint::BorderType::Glass);
     }
     
     // TODO - Tab button text
@@ -192,7 +192,7 @@ public:
                               Justification::centred, 2);
         
         // Draw borders
-        GUI::Paint::drawBorders(g, button.getLocalBounds());
+        GUI::Paint::drawBorders(g, button.getLocalBounds(), GUI::Paint::BorderType::Glass);
     }
     
 //    void drawButtonText(Graphics& g, TextButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)

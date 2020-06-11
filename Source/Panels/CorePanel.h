@@ -102,25 +102,28 @@ public:
     void resized() override
     {
         // Sizes
-        const int pad_width = getWidth();
-        const int pad_height = getWidth();
+        const float pad_width = getWidth();
+        const float pad_height = getWidth();
         
-        const int pad_x = 0;
-        const int pad_y = ( getHeight() - pad_height ) / 2;
+        const float pad_x = 0;
+        const float pad_y = 0;
+//        const int pad_y = ( getHeight() - pad_height ) / 2;
         
-        const int num_buttons = 5;
-        const int button_width = getWidth() / num_buttons;
-        const int button_height = ( getHeight() - pad_height ) / 2;
-
-        // Core controls
-        harmonicButton  .setBounds (0, 0, button_width, button_height);
-        sinusoidalButton.setBounds (button_width, 0, button_width, button_height);
-        stochasticButton.setBounds (2 * button_width, 0, button_width, button_height);
-        attackButton    .setBounds (3 * button_width, 0, button_width, button_height);
-        residualButton  .setBounds (4 * button_width, 0, button_width, button_height);
-
         // Pad XY
         mPadXY->setBounds (pad_x, pad_y, pad_width, pad_height);
+        
+        const int num_buttons = 5;
+        const float button_width = getWidth() / num_buttons;
+        const float button_height = ( getHeight() - pad_height ) / 2;
+
+        // Core controls
+        const int core_controls_y = pad_y + pad_height;
+        
+        harmonicButton  .setBounds (0,                core_controls_y, button_width, button_height);
+        sinusoidalButton.setBounds (button_width,     core_controls_y, button_width, button_height);
+        stochasticButton.setBounds (2 * button_width, core_controls_y, button_width, button_height);
+        attackButton    .setBounds (3 * button_width, core_controls_y, button_width, button_height);
+        residualButton  .setBounds (4 * button_width, core_controls_y, button_width, button_height);
     }
     
     void updateToggleState (Button* button, String name)
