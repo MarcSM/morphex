@@ -22,7 +22,9 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     // Initialize the instrument
     this->instrument = Instrument();
-    this->instrument.name = "Test Instrument";
+    
+//    // Initialize the instrument
+//    this->instrument = Instrument();
 
     //    JUCE::DirectoryIterator()
 //    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Morph";
@@ -191,6 +193,12 @@ void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
         float output_gain = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::OutputGain].parameter_ID);
         mOutputGain[channel]->process (buffer, output_gain, outputAudio.getNumSamples());
     }
+}
+
+void MorphexSynth::reset()
+{
+    // Reset the instrument
+    this->instrument.reset();
 }
 
 void MorphexSynth::initializeDSP()

@@ -34,7 +34,7 @@ public:
                           const MidiBuffer& inputMidi,
                           int startSample, int numSamples);
     
-    void setup();
+    void reset();
     void initializeDSP();
 
     Instrument instrument;

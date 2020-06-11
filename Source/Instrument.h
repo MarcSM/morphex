@@ -100,28 +100,34 @@ public:
     Instrument();
     ~Instrument();
     
+    void reset();
+    void loadSound (std::string file_path, MorphLocation morph_location = MorphLocation::NUM_MORPH_LOCATIONS);
     std::vector<Note*> getLoadedNotes();
-    MorphNotes getCloserNotes(float f_target_note);
-    MorphSounds getCloserSounds(float f_target_note, float f_velocity);
+    MorphNotes getCloserNotes (float f_target_note);
+    MorphSounds getCloserSounds (float f_target_note, float f_velocity);
+    MorphNotes getMorphNotes();
+    void setMorphNote (Note* note, MorphLocation morph_location, int midi_velocity = DEFAULT_MIDI_VELOCITY);
+    Sound* getMorphSound (MorphLocation morph_location);
     MorphSounds getMorphSounds();
-    void setMorphSound(Sound*, MorphLocation);
+    void setMorphSound (Sound* sound, MorphLocation morph_location);
 
-    Sound* getSound(float f_note, float f_velocity);
-    Sound::Frame getSoundFrame(float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
-    Sound::Frame morphSoundFrames(float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_freqs_interp_factor = -1, float f_mags_interp_factor = -1);
+    Sound* getSound (float f_note, float f_velocity);
+    Sound::Frame getSoundFrame (float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
+    Sound::Frame morphSoundFrames (float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_freqs_interp_factor = -1, float f_mags_interp_factor = -1);
     
-    std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
+    std::vector<float> getNextFrame (float f_note, float f_velocity, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
     
-    std::vector<float> interpolateFrames(FrameType frame_type,
-                                         float interp_factor,
-                                         std::vector<float> frame_1,
-                                         std::vector<float> frame_2,
-                                         int i_frame_length,
-                                         std::vector<int> idx_harmonics = std::vector<int>());
+    std::vector<float> interpolateFrames (FrameType frame_type,
+                                          float interp_factor,
+                                          std::vector<float> frame_1,
+                                          std::vector<float> frame_2,
+                                          int i_frame_length,
+                                          std::vector<int> idx_harmonics = std::vector<int>());
 private:
     
+    MorphNotes morph_notes;
     MorphSounds morph_sounds;
-    
+
 //    std::vector<float> interpolateFrames(FrameType frame_type,
 //                                         float interp_factor,
 //                                         std::vector<float> frame_1,

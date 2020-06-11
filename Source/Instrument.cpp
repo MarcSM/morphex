@@ -15,16 +15,8 @@ namespace Core
 {
     Instrument::Instrument()
     {
-        // Notes
-        this->note = std::vector<Note*>(NUM_MIDI_NOTES);
-//        this->note.resize( NUM_MIDI_NOTES, nullptr );
-        for (int i = 0; i < this->note.size(); i++)
-        {
-            this->note[i] = new Note(i);
-        }
+        reset();
         
-        // Mode
-        if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::None;
 //        if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::FrequencyBased;
 
 //        // Voices
@@ -46,12 +38,48 @@ namespace Core
         // self.note = [None] * 128
         // self.note = np.empty((NUM_MIDI_NOTES, NUM_MIDI_VELOCITIES), dtype=object)
 
-        // Data
-        this->name = "";
-        this->samples_dirpath = "";
+        
     };
     
     Instrument::~Instrument() {}
+    
+    void Instrument::reset()
+    {
+        // Data
+        this->name = "New Instrument";
+        this->samples_dirpath = "";
+        
+        // Notes
+        this->note = std::vector<Note*> (NUM_MIDI_NOTES);
+        //        this->note.resize( NUM_MIDI_NOTES, nullptr );
+        for (int i = 0; i < this->note.size(); i++)
+        {
+            this->note[i] = new Note(i);
+        }
+        
+        // Morph Notes
+        for (int i = 0; i < MorphLocation::NUM_MORPH_LOCATIONS; i++)
+        {
+            this->setMorphNote (this->note[i], (MorphLocation) i);
+        }
+
+        // Mode
+        if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::None;
+        
+    }
+    
+    void Instrument::loadSound (std::string file_path, MorphLocation morph_location)
+    {
+        Sound sound = Sound (file_path);
+        
+        this->note[sound.note]->velocity[sound.velocity]->sound = sound;
+        this->note[sound.note]->velocity[sound.velocity]->loaded = true;
+        
+        if (morph_location != NUM_MORPH_LOCATIONS)
+        {
+            this->setMorphNote (this->note[sound.note], morph_location, sound.velocity);
+        }
+    }
     
     std::vector<Note*> Instrument::getLoadedNotes()
     {
@@ -76,7 +104,7 @@ namespace Core
         int l_i_target_note = round(f_target_note);
         int h_i_target_note = ceil(f_target_note);
         
-        MorphNotes closer_notes{};
+        MorphNotes closer_notes {};
         
 //        closer_notes[MorphLocation::Left] = this->note[59];
 //        closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
@@ -97,8 +125,10 @@ namespace Core
         // Instrument::Mode::Morphing
         if (this->mode == Instrument::Mode::Morphing)
         {
-            int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
+//            closer_notes = getMorphNotes();
             
+            int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
+
             for (int i = 0; i < i_notes_to_load; i++)
             {
                 closer_notes[i] = loaded_notes[i];
@@ -169,7 +199,7 @@ namespace Core
             std::vector<Velocity*> loaded_velocities = closer_notes[i]->getLoadedVelocities();
             
             int i_closer_velocity = 0;
-            float f_shortest_velocity_distance = Note::NUM_MIDI_VELOCITIES;
+            float f_shortest_velocity_distance = NUM_MIDI_VELOCITIES;
 
             for (int j = 0; j < loaded_velocities.size(); j++)
             {
@@ -194,31 +224,61 @@ namespace Core
         return closer_sounds;
     }
     
+    MorphNotes Instrument::getMorphNotes()
+    {
+        return morph_notes;
+    }
+    
+    void Instrument::setMorphNote (Note* note, MorphLocation morph_location, int midi_velocity)
+    {
+        morph_notes[morph_location] = note;
+        morph_sounds[morph_location] = &morph_notes[morph_location]->velocity[midi_velocity]->sound;
+    }
+    
+    Sound* Instrument::getMorphSound (MorphLocation morph_location)
+    {
+//        return &morph_notes[morph_location]->velocity[DEFAULT_MIDI_VELOCITY]->sound;
+        return morph_sounds[morph_location];
+    }
+    
     MorphSounds Instrument::getMorphSounds()
     {
+//        MorphSounds morph_sounds;
+//
+//        morph_sounds[MorphLocation::Left] = &morph_notes[MorphLocation::Left]->velocity[DEFAULT_MIDI_VELOCITY]->sound;
+//        morph_sounds[MorphLocation::Right] = &morph_notes[MorphLocation::Right]->velocity[DEFAULT_MIDI_VELOCITY]->sound;
+//
+//        return morph_sounds;
+        
         return morph_sounds;
     }
     
-    void Instrument::setMorphSound(Sound* sound, MorphLocation morph_location)
+    void Instrument::setMorphSound (Sound* sound, MorphLocation morph_location)
     {
         morph_sounds[morph_location] = sound;
-        
-//        // Output
-//        MorphSounds morph_sounds;
-//
-//        std::vector<Note*> loaded_notes = getLoadedNotes();
-//
-//        int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
-//
-//        for (int i = 0; i < i_notes_to_load; i++)
-//        {
-//            std::vector<Velocity*> loaded_velocities = loaded_notes[i]->getLoadedVelocities();
-//
-//            morph_sounds[i] = &loaded_velocities[0]->sound;
-//        }
-//
-//        return morph_sounds;
+//        morph_notes[morph_location]->velocity[DEFAULT_MIDI_VELOCITY]->sound = *sound;
     }
+    
+//    void Instrument::setMorphSound(Sound* sound, MorphLocation morph_location)
+//    {
+//        morph_sounds[morph_location] = sound;
+//
+////        // Output
+////        MorphSounds morph_sounds;
+////
+////        std::vector<Note*> loaded_notes = getLoadedNotes();
+////
+////        int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
+////
+////        for (int i = 0; i < i_notes_to_load; i++)
+////        {
+////            std::vector<Velocity*> loaded_velocities = loaded_notes[i]->getLoadedVelocities();
+////
+////            morph_sounds[i] = &loaded_velocities[0]->sound;
+////        }
+////
+////        return morph_sounds;
+//    }
     
 //    Sound* Instrument::getSound(float f_note, int i_velocity)
 //    {

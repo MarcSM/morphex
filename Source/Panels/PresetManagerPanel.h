@@ -23,8 +23,18 @@ class PresetManagerPanel
     public ComboBox::Listener
 {
 public:
+    
+    enum MenuOption
+    {
+        None = 0,
+        Init,
+        Save,
+        SaveAs,
+        NUM_OPTIONS
+    };
+    
     PresetManagerPanel (SpectralMorphingToolAudioProcessor* inProcessor)
-    :   mProcessor (inProcessor)
+    :   mProcessor (inProcessor), mPresetManager (inProcessor->getPresetManager())
     {
         // Save Preset Button
         mSavePreset = new Morphex::Button();
@@ -87,11 +97,12 @@ public:
         updatePresetComboBox();
         
         mMenu = new ComboBox();
-        mMenu->setText ("Menu");
 //        mMenu->setText ("Menu", const NotificationType notification)
         //        mMenu->setBounds(comboBox_x, comboBox_y, comboBox_w, comboBox_h);
-        mMenu->addListener (this);
+        mMenu->onChange = [this] { onChangeMenuOption(); };
+//        mMenu->addListener (this);
         addAndMakeVisible (mMenu);
+        updateMenuOptions();
         
         // Information Panel
         addAndMakeVisible (informationPanel);
@@ -231,12 +242,39 @@ private:
         }
     };
     
+    void updateMenuOptions()
+    {
+        mMenu->clear();
+        mMenu->setTextWhenNothingSelected ("Menu");
+        mMenu->addItem ("Init", MenuOption::Init);
+        mMenu->addSeparator();
+        mMenu->addItem ("Save", MenuOption::Save);
+        mMenu->addItem ("Save as", MenuOption::SaveAs);
+//        mMenu.addSeparator();
+    }
+    
+    void onChangeMenuOption()
+    {
+        int selected_id = mMenu->getSelectedId();
+        
+        switch (selected_id)
+        {
+            case MenuOption::None:   break;
+            case MenuOption::Init:   displayInitPopup();           break;
+            case MenuOption::Save:   mPresetManager->savePreset(); break;
+            case MenuOption::SaveAs: displaySaveAsPopup();         break;
+            default:                 jassertfalse; break;
+        }
+        
+        if (selected_id != MenuOption::None) mMenu->setSelectedId (MenuOption::None);
+    }
+    
     void buttonClicked (Button* b)
     {
-        PresetManager* presetManager = mProcessor->getPresetManager();
+//        PresetManager* presetMana'ger = mProcessor->getPresetManager();
         
         if (b == mSavePreset) {
-            presetManager->savePreset();
+            mPresetManager->savePreset();
         }
 
 //        if (b == mNewPreset) {
@@ -253,20 +291,48 @@ private:
     
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
-        if (comboBoxThatHasChanged == mPresetDisplay) {
-            
-            PresetManager* presetManager = mProcessor->getPresetManager();
-            
+        if (comboBoxThatHasChanged == mPresetDisplay)
+        {
+//            PresetManager* presetManager = mProcessor->getPresetManager();
+//
             const int index = mPresetDisplay->getSelectedItemIndex();
-            presetManager->loadPreset(index);
+            mPresetManager->loadPreset (index);
+        }
+        
+        if (comboBoxThatHasChanged == mMenu) {
+
+            DBG ("HERE");
+//            PresetManager* presetManager = mProcessor->getPresetManager();
+//
+//            const int index = mPresetDisplay->getSelectedItemIndex();
+//            presetManager->loadPreset(index);
+        }
+    }
+    
+    void displayInitPopup()
+    {
+//        PresetManager* presetManager = mProcessor->getPresetManager();
+        
+        String currentPresetName = mPresetManager->getCurrentPresetName();
+        
+        AlertWindow window ("Init", "Are you sure you want to initialize this preset?", AlertWindow::NoIcon);
+        
+        window.centreAroundComponent (this, getWidth(), getHeight());
+        window.addButton ("Confirm", 1);
+        window.addButton ("Cancel", 0);
+        
+        if (window.runModalLoop())
+        {
+            mPresetManager->createNewPreset();
+            updatePresetComboBox();
         }
     }
     
     void displaySaveAsPopup()
     {
-        PresetManager* presetManager = mProcessor->getPresetManager();
+//        PresetManager* presetManager = mProcessor->getPresetManager();
         
-        String currentPresetName = presetManager->getCurrentPresetName();
+        String currentPresetName = mPresetManager->getCurrentPresetName();
         
         AlertWindow window ("Save As", "Please enter a name for your preset", AlertWindow::NoIcon);
         
@@ -277,26 +343,28 @@ private:
         
         if (window.runModalLoop()) {
             String presetName = window.getTextEditor("presetName")->getText();
-            presetManager->saveAsPreset(presetName);
+            mPresetManager->saveAsPreset(presetName);
             updatePresetComboBox();
         }
     }
     
     void updatePresetComboBox()
     {
-        PresetManager* presetManager = mProcessor->getPresetManager();
-        String presetName = presetManager->getCurrentPresetName();
+//        PresetManager* presetManager = mProcessor->getPresetManager();
+        String presetName = mPresetManager->getCurrentPresetName();
         
         mPresetDisplay->clear(dontSendNotification);
         
-        const int numPresets = presetManager->getNumberOfPresets();
+        const int numPresets = mPresetManager->getNumberOfPresets();
         
         for (int i=0; i < numPresets; i++) {
-            mPresetDisplay->addItem(presetManager->getPresetName(i), (i+1));
+            mPresetDisplay->addItem(mPresetManager->getPresetName(i), (i+1));
         }
         
-        mPresetDisplay->setText(presetManager->getCurrentPresetName());
+        mPresetDisplay->setText(mPresetManager->getCurrentPresetName());
     }
+    
+    PresetManager* mPresetManager;
     
     InformationPanel informationPanel;
     

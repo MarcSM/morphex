@@ -218,20 +218,34 @@ namespace Core
                 this->analysis.parameters.hop_size = xml_parameters->getChildByName("hop_size")->getAllSubText().getIntValue();
                 
                 // Fix missing data
-                if (this->max_frames == 0)
-                {
-                    this->max_frames = (int)std::max({
-                        this->model->values.harmonic.freqs.size(),
-                        this->model->values.harmonic.mags.size(),
-                        this->model->values.harmonic.phases.size(),
-                        this->model->values.sinusoidal.freqs.size(),
-                        this->model->values.sinusoidal.mags.size(),
-                        this->model->values.sinusoidal.phases.size(),
-                        this->model->values.stochastic.size(),
-                        this->model->values.attack.size(),
-                        this->model->values.residual.size()
-                    });
-                };
+//                if (this->max_frames == 0)
+//                {
+//                    this->max_frames = (int)std::max({
+//                        this->model->values.harmonic.freqs.size(),
+//                        this->model->values.harmonic.mags.size(),
+//                        this->model->values.harmonic.phases.size(),
+//                        this->model->values.sinusoidal.freqs.size(),
+//                        this->model->values.sinusoidal.mags.size(),
+//                        this->model->values.sinusoidal.phases.size(),
+//                        this->model->values.stochastic.size(),
+//                        this->model->values.attack.size(),
+//                        this->model->values.residual.size()
+//                    });
+//                };
+                
+                // TODO TOFIX - Fix max_frames on .had files (max_frames    int    22050 (attack))
+                // and add XML_DECIMAL_PLACES on the .had file too
+                this->max_frames = (int)std::max({
+                    this->model->values.harmonic.freqs.size(),
+                    this->model->values.harmonic.mags.size(),
+                    this->model->values.harmonic.phases.size(),
+                    this->model->values.sinusoidal.freqs.size(),
+                    this->model->values.sinusoidal.mags.size(),
+                    this->model->values.sinusoidal.phases.size(),
+                    this->model->values.stochastic.size(),
+                    this->model->values.attack.size(),
+                    this->model->values.residual.size()
+                });
                 
                 this->sound_length = this->max_frames * this->analysis.parameters.hop_size;
                 if (this->loop.end == 0) this->loop.end = this->sound_length;

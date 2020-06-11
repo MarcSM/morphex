@@ -14,10 +14,11 @@
 
 #include "../SMTHelperFunctions.h"
 
-PresetManager::PresetManager(AudioProcessor* inProcessor)
-:   mCurrentPresetIsSaved(false),
-mCurrentPresetName("Untitled"),
-mProcessor(inProcessor)
+PresetManager::PresetManager(AudioProcessor* inProcessor, MorphexSynth* inMorphexSynth)
+:   mCurrentPresetIsSaved (false),
+    mCurrentPresetName ("Untitled"),
+    mProcessor (inProcessor),
+    mMorphexSynth (inMorphexSynth)
 {
     if (!File(PLUGIN_DATA_PRESETS_DIRECTORY).exists()) {
         File(PLUGIN_DATA_PRESETS_DIRECTORY).createDirectory();
@@ -93,6 +94,8 @@ void PresetManager::createNewPreset()
         
         parameter->setValueNotifyingHost(defaultValue);
     }
+    
+    mMorphexSynth->reset();
     
     mCurrentPresetIsSaved = false;
     mCurrentPresetName = "Untitled";

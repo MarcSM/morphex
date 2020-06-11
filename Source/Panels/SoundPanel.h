@@ -33,8 +33,8 @@ public:
         else if (i_sound_num == 4) morph_location = MorphLocation::Right;
         else morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
         
-        if (morph_location != MorphLocation::NUM_MORPH_LOCATIONS) sound = instrument->getMorphSounds()[morph_location];
-        else sound = new Sound();
+        if (morph_location != MorphLocation::NUM_MORPH_LOCATIONS) this->sound = instrument->getMorphSounds()[morph_location];
+        else this->sound = new Sound();
         
 //        soundNamePanel = new SoundNamePanel (sound)
         
@@ -156,18 +156,22 @@ public:
     
     void itemDropped (const SourceDetails& dragSourceDetails) override
     {
-        std::string sound_file_name = dragSourceDetails.description.toString().toStdString();
+        std::string sound_file_path = dragSourceDetails.description.toString().toStdString();
         
-        if ( sound_file_name != "directory" and morph_location != MorphLocation::NUM_MORPH_LOCATIONS)
+        if (sound_file_path != "directory" and morph_location != MorphLocation::NUM_MORPH_LOCATIONS)
         {
+            instrument->loadSound (sound_file_path, morph_location);
+            
+            this->sound = instrument->getMorphSound (morph_location);
+            
             // TODO - Improve load / destroy sounds method
 //            std::string sound_file_name = dragSourceDetails.description.toString();
-            Core::Sound aux_sound = Core::Sound( sound_file_name );
-            instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->sound = aux_sound;
-            instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->loaded = true;
-//            Core::Sound* aux = &instrument->note[ sound.note ]->velocity[ sound.velocity ]->sound;
-            sound = &instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->sound;
-            instrument->setMorphSound (sound, morph_location);
+//            Core::Sound aux_sound = Core::Sound( sound_file_name );
+//            instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->sound = aux_sound;
+//            instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->loaded = true;
+////            Core::Sound* aux = &instrument->note[ sound.note ]->velocity[ sound.velocity ]->sound;
+//            sound = &instrument->note[ aux_sound.note ]->velocity[ aux_sound.velocity ]->sound;
+//            instrument->setMorphSound (sound, morph_location);
         }
         
         isDragOver = false;

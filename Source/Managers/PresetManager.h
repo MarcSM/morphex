@@ -12,6 +12,8 @@
 
 #include "JuceHeader.h"
 
+#include "../MorphexSynth.h"
+
 #include "../Sound.h"
 
 #define PRESET_FILE_EXTENSION ".mpf"
@@ -20,7 +22,7 @@ class PresetManager
 {
 public:
     
-    PresetManager(AudioProcessor* inProcessor);
+    PresetManager(AudioProcessor* inProcessor, MorphexSynth* inMorphexSynth);
     ~PresetManager();
     
     void getXmlForPreset(XmlElement* inElement);
@@ -52,5 +54,7 @@ private:
     
     XmlElement* mCurrentPresetXml;
     
+//    AudioProcessor* mProcessor;
     AudioProcessor* mProcessor;
+    MorphexSynth* mMorphexSynth;
 };
