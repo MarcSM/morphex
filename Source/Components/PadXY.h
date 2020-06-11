@@ -85,7 +85,7 @@ public:
         g.fillRoundedRectangle (rectangle, cornerSize);
         
         // Draw borders
-        GUI::Paint::drawBorders(g, getLocalBounds(), GUI::Paint::BorderType::Glass);
+        GUI::Paint::drawBorders (g, getLocalBounds(), GUI::Paint::BorderType::Glass);
         
 //        // Background gradient
 //        ColourGradient cg (GUI::Color::Accent.withAlpha(0.5f),

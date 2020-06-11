@@ -323,6 +323,9 @@ namespace Core
         if (morph_sound_frames[MorphLocation::Left].hasHarmonic() or
             morph_sound_frames[MorphLocation::Right].hasHarmonic())
         {
+            // TODO - Check parameter morph_sounds[MorphLocation::Left]->parameters.transpose.harmonic
+            // if false, do not transpose the frame of this note
+            
             // Transpose left note frequencies to the target frequency
             Tools::Calculate::divideByScalar(morph_sound_frames[MorphLocation::Left].harmonic.freqs,
                                              Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
@@ -400,6 +403,9 @@ namespace Core
         if (morph_sound_frames[MorphLocation::Left].hasAttack() or
             morph_sound_frames[MorphLocation::Right].hasAttack())
         {
+            // TODO - Check parameter morph_sounds[MorphLocation::Left]->parameters.transpose.attack
+            // if false, do not transpose the frame of this note
+            
             // Interpolating the stochastic components of the given harmonics
             morphed_sound_frame.attack =
             interpolateFrames(FrameType::Waveform,
@@ -412,6 +418,9 @@ namespace Core
         if (morph_sound_frames[MorphLocation::Left].hasResidual() or
             morph_sound_frames[MorphLocation::Right].hasResidual())
         {
+            // TODO - Check parameter morph_sounds[MorphLocation::Left]->parameters.transpose.residual
+            // if false, do not transpose the frame of this note
+            
             // Interpolating the stochastic components of the given harmonics
             morphed_sound_frame.residual =
             interpolateFrames(FrameType::Waveform,

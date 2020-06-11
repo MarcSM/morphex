@@ -66,6 +66,22 @@ namespace GUI
             Point<int> bottomLeft = componentBounds.getBottomLeft();
             Point<int> bottomRight = componentBounds.getBottomRight();
             
+            // Light color
+            switch (border_type)
+            {
+                case BorderType::Normal: g.setColour (Colour(255, 255, 255).withAlpha(0.10f));  break;
+                case BorderType::Glass:  g.setColour (Colour(255, 255, 255).withAlpha(0.15f));  break;
+                default:                 jassertfalse; break;
+            }
+            
+            // Left Border
+            g.drawLine (bottomLeft.getX(), bottomLeft.getY(),
+                        topLeft.getX(), topLeft.getY(), line_thickness);
+            
+            // Top Border
+            g.drawLine (topLeft.getX(), topLeft.getY(),
+                        topRight.getX(), topRight.getY(), line_thickness);
+            
             // Shadow color
             g.setColour (Colour(0, 0, 0).withAlpha(0.75f));
 //            switch (border_type)
@@ -82,22 +98,6 @@ namespace GUI
             // Bottom Border
             g.drawLine (bottomRight.getX(), bottomRight.getY(),
                         bottomLeft.getX(), bottomLeft.getY(), line_thickness);
-            
-            // Light color
-            switch (border_type)
-            {
-                case BorderType::Normal: g.setColour (Colour(255, 255, 255).withAlpha(0.10f));  break;
-                case BorderType::Glass:  g.setColour (Colour(255, 255, 255).withAlpha(0.15f));  break;
-                default:                 jassertfalse; break;
-            }
-            
-            // Left Border
-            g.drawLine (bottomLeft.getX(), bottomLeft.getY(),
-                        topLeft.getX(), topLeft.getY(), line_thickness);
-            
-            // Top Border
-            g.drawLine (topLeft.getX(), topLeft.getY(),
-                        topRight.getX(), topRight.getY(), line_thickness);
             
             //g.drawRect (componentBounds, 1);   // draw an outline around the component
         }

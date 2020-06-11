@@ -93,6 +93,8 @@ public:
         mMenu->addListener (this);
         addAndMakeVisible (mMenu);
         
+        // Information Panel
+        addAndMakeVisible (informationPanel);
     }
 
     ~PresetManagerPanel()
@@ -151,18 +153,22 @@ public:
         
         grid.templateColumns = {Track (1_fr), Track (6_fr), Track (2_fr)};
 //                                Track (1_fr), Track (1_fr), Track (1_fr), Track (1_fr)};
-//        grid.templateAreas = { "button button button input control editor" };
+        grid.templateAreas = {
+            "save preset menu",
+            "info info info"
+        };
         
         grid.autoColumns = Track (1_fr);
         grid.autoRows    = Track (1_fr);
 //        grid.autoFlow = Grid::AutoFlow::column;
         
             grid.items.addArray ({
-                GridItem (mSavePreset),
+                GridItem (mSavePreset).withArea("save"),
 //                GridItem (mSavePreset),
 //                GridItem (mSaveAsPreset),
-                GridItem (mPresetDisplay),
-                GridItem (mMenu),
+                GridItem (mPresetDisplay).withArea("preset"),
+                GridItem (mMenu).withArea("menu"),
+                GridItem (informationPanel).withArea("info")
             });
         
         grid.justifyContent = Grid::JustifyContent::spaceBetween;
@@ -205,6 +211,25 @@ public:
     }
 
 private:
+    
+    struct InformationPanel : public Component
+    {
+        InformationPanel ()
+        {
+            
+        }
+        
+        void paint (Graphics& g) override
+        {
+            // Draw borders
+            GUI::Paint::drawBorders (g, getLocalBounds(), GUI::Paint::BorderType::Glass);
+        }
+        
+        void resized() override
+        {
+            
+        }
+    };
     
     void buttonClicked (Button* b)
     {
@@ -272,6 +297,8 @@ private:
         
         mPresetDisplay->setText(presetManager->getCurrentPresetName());
     }
+    
+    InformationPanel informationPanel;
     
     ScopedPointer<Morphex::Button> mSavePreset;
     
