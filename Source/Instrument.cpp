@@ -15,7 +15,16 @@ namespace Core
 {
     Instrument::Instrument()
     {
-        reset();
+        // Notes
+        this->note = std::vector<Note*> (NUM_MIDI_NOTES);
+        
+        //        this->note.resize( NUM_MIDI_NOTES, nullptr );
+        for (int i = 0; i < this->note.size(); i++)
+        {
+            this->note[i] = new Note(i);
+        }
+        
+        this->init();
         
 //        if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::FrequencyBased;
 
@@ -43,29 +52,31 @@ namespace Core
     
     Instrument::~Instrument() {}
     
-    void Instrument::reset()
+    void Instrument::init()
     {
         // Data
         this->name = "New Instrument";
         this->samples_dirpath = "";
-        
-        // Notes
-        this->note = std::vector<Note*> (NUM_MIDI_NOTES);
-        //        this->note.resize( NUM_MIDI_NOTES, nullptr );
-        for (int i = 0; i < this->note.size(); i++)
-        {
-            this->note[i] = new Note(i);
-        }
         
         // Morph Notes
         for (int i = 0; i < MorphLocation::NUM_MORPH_LOCATIONS; i++)
         {
             this->setMorphNote (this->note[i], (MorphLocation) i);
         }
-
+        
         // Mode
         if (this->mode == Mode::FullRange) this->interpolation_mode = Interpolation::None;
+    }
+    
+    void Instrument::reset()
+    {
+        this->init();
         
+        // Reset Notes
+        for (int i = 0; i < this->note.size(); i++)
+        {
+            this->note[i]->reset();
+        }
     }
     
     void Instrument::loadSound (std::string file_path, MorphLocation morph_location)
@@ -104,7 +115,7 @@ namespace Core
         int l_i_target_note = round(f_target_note);
         int h_i_target_note = ceil(f_target_note);
         
-        MorphNotes closer_notes {};
+        MorphNotes closer_notes;
         
 //        closer_notes[MorphLocation::Left] = this->note[59];
 //        closer_notes[MorphLocation::Right] = closer_notes[MorphLocation::Left];
@@ -128,6 +139,16 @@ namespace Core
 //            closer_notes = getMorphNotes();
             
             int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
+
+//            Note* aux_note = nullptr;
+            Note* aux_note = new Note(0);
+
+//            a.operator=(b)
+            closer_notes[0]->operator=(*aux_note);
+
+            closer_notes[0] = new Note(0);
+            closer_notes[0] = *new Note(0);
+            closer_notes[1] = nullptr;
 
             for (int i = 0; i < i_notes_to_load; i++)
             {
@@ -153,7 +174,7 @@ namespace Core
                 }
                 else
                 {
-                    closer_notes[MorphLocation::Left] = note;
+                    closer_notes[MorphLocation::Left] = *note;
                     closer_notes[MorphLocation::Right] = note;
                     if (h_i_target_note <= note->value) break;
                 }

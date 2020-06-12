@@ -43,12 +43,25 @@ public:
         }
     }
     
+    void reset()
+    {
+        // Reset Velocities
+        for (int i = 0; i < this->velocity.size(); i++)
+        {
+            this->velocity[i]->reset();
+        }
+    }
+    
     std::vector<Velocity*> getLoadedVelocities()
     {
         std::vector<Velocity*> loaded_velocities;
         
-        for (Velocity* & velocity : this->velocity)
+//        for (Velocity* & velocity : this->velocity)
+        
+        for (int i = 0; i < loaded_velocities.size(); i++)
         {
+            Velocity* velocity = this->velocity[i];
+            
             if (velocity->loaded)
             {
                 loaded_velocities.push_back( velocity );

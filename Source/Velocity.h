@@ -31,18 +31,30 @@ public:
     int value;
     int midi_note_value;
     
-    Velocity(int midi_note_value, int value)
+    void init()
     {
         // Flags
         this->loaded = false;
-//        this->loaded_metadata = false;
+        //        this->loaded_metadata = false;
+    }
+    
+    void reset()
+    {
+        // Initialize
+        this->init();
         
-        // Initializing the harmonic analysis data structure for the .had file
-//        this->sound = NULL;
-        
+        // Reset the sound
+        this->sound.reset();
+    }
+    
+    Velocity(int midi_note_value, int value)
+    {
         // Midi values
         this->value = value;
         this->midi_note_value = midi_note_value;
+        
+        // Initialize
+        this->init();
     }
     
     void setSound(Sound sound)

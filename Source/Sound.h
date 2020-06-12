@@ -190,7 +190,8 @@ public:
         
         int getMaxHarmonics()
         {
-            int max_harmonics = (int)std::max({
+            int max_harmonics = (int) std::max
+            ({
                 this->harmonic.freqs.size(),
                 this->harmonic.mags.size(),
                 this->harmonic.phases.size()
@@ -201,7 +202,8 @@ public:
         
         int getMaxSinusoids()
         {
-            int max_sinusoids = (int)std::max({
+            int max_sinusoids = (int) std::max
+            ({
                 this->sinusoidal.freqs.size(),
                 this->sinusoidal.mags.size(),
                 this->sinusoidal.phases.size()
@@ -212,22 +214,23 @@ public:
         
         bool hasHarmonic() { return this->harmonic.freqs.size() > 0; };
         bool hasSinusoidal() { return this->sinusoidal.freqs.size() > 0; };
-        bool hasPhases(SoundFrameFMP sound_frame_fmp) { return sound_frame_fmp.phases.size() > 0; };
+        bool hasPhases (SoundFrameFMP sound_frame_fmp) { return sound_frame_fmp.phases.size() > 0; };
         bool hasStochastic() { return this->stochastic.size() > 0; };
         bool hasAttack() { return this->attack.size() > 0; };
         bool hasResidual() { return this->residual.size() > 0; };
     };
     
     Sound();
-    Sound (const Sound& obj);
+//    Sound (const Sound& obj);
     Sound (std::string file_path);
     Sound (std::string file_path, int note, int velocity = 1);
     Sound (String file_data, std::string filepath);
     ~Sound();
     
-    String loadDataFromFile (std::string file_path);
+    void init (bool init_model = true);
+    void reset();
     
-    void commonInit();
+    String loadDataFromFile (std::string file_path);
     void load (String file_data, HadFileSource file_source = HadFileSource::Path);
     
     Sound::Frame getFrame (int i_num_frame, int i_hop_size);
@@ -240,7 +243,7 @@ public:
     
     void saveOriginalValues();
     void normalizeMagnitudes();
-    void normalizeWaveform(std::vector<float>& waveform, float max_val, float max_db);
+    void normalizeWaveform (std::vector<float>& waveform, float max_val, float max_db);
 
 private:
     

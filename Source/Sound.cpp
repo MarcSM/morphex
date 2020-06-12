@@ -16,7 +16,96 @@
 
 namespace Core
 {
-    void Sound::commonInit()
+    Sound::Sound()
+    {
+        this->init();
+    };
+    
+//    Sound::Sound (const Sound& obj)
+//    {
+//
+//    }
+    
+//    Sound::Sound (const Sound& obj)
+//    :   model (obj.model)
+//    {
+//        // Initialize default values
+//        this->loaded = obj.loaded;
+//        this->analyzed = obj.analyzed;
+//        this->had_file_loaded = obj.had_file_loaded;
+//
+//        // Initializing default values
+//        this->fs = obj.fs;
+//        this->note = obj.note;
+//        this->velocity = obj.velocity;
+//        this->max_harmonics = obj.max_harmonics;
+//        this->max_frames = obj.max_frames;
+//        this->loop = obj.loop;
+//
+////        // Model object
+////        this->model = obj.model;
+//
+//        // File
+//        this->file = obj.file;
+//        this->path = obj.path;
+//        this->name = obj.name;
+//        this->extension = obj.extension;
+//        this->dirpath = obj.dirpath;
+//
+//        // Analysis
+//        this->analysis = obj.analysis;
+//
+//        // Synthesis
+//        this->synthesis = obj.synthesis;
+//
+//        // Features
+//        this->features = obj.features;
+//
+//        // Original Values
+//        this->original = obj.original;
+//    };
+
+    // Read the file from a file_path
+    Sound::Sound (std::string file_path)
+    {
+        this->init();
+        
+        // Load data from file_path
+        String file_data = loadDataFromFile(file_path);
+        
+        // Load the sound
+        this->load(file_data, HadFileSource::Binary);
+    };
+
+    Sound::Sound (std::string file_path, int note, int velocity)
+    {
+        this->init();
+        
+        this->note = note;
+        this->velocity = velocity;
+        
+        // Load data from file_path
+        String file_data = loadDataFromFile(file_path);
+        
+        // Load the sound
+        this->load(file_data, HadFileSource::Binary);
+    };
+
+    // Read the file from a binary file with an hypothetical file_path
+    Sound::Sound (String file_data, std::string file_path)
+    {
+        this->init();
+        
+        // Save the file_path
+        this->path = file_path;
+        
+        // Load the sound
+        this->load(file_data, HadFileSource::Binary);
+    };
+
+    Sound::~Sound() {};
+    
+    void Sound::init (bool init_model)
     {
         // Initialize default values
         this->loaded = false;
@@ -33,96 +122,24 @@ namespace Core
         this->sound_length = 0;
         this->loop.start = 0;
         this->loop.end = 0;
-
+        
+        if (init_model) this->model = new Model();
+        
         // Model object
-        this->model = new Model();
+        //        if (this->model == nullptr) this->model = new Model();
+        //        else this->model->reset();
+        
         
         //    // Initializing the harmonic analysis data structure for the .had file
         //    this->had = {}
     }
-
-    Sound::Sound()
-    {
-        this->commonInit();
-    };
     
-    Sound::Sound (const Sound& obj)
+    void Sound::reset()
     {
-        // Initialize default values
-        this->loaded = obj.loaded;
-        this->analyzed = obj.analyzed;
-        this->had_file_loaded = obj.had_file_loaded;
+        this->init (false);
         
-        // Initializing default values
-        this->fs = obj.fs;
-        this->note = obj.note;
-        this->velocity = obj.velocity;
-        this->max_harmonics = obj.max_harmonics;
-        this->max_frames = obj.max_frames;
-        this->loop = obj.loop;
-        
-        // Model object
-        this->model = obj.model;
-        
-        // File
-        this->file = obj.file;
-        this->path = obj.path;
-        this->name = obj.name;
-        this->extension = obj.extension;
-        this->dirpath = obj.dirpath;
-        
-        // Analysis
-        this->analysis = obj.analysis;
-        
-        // Synthesis
-        this->synthesis = obj.synthesis;
-        
-        // Features
-        this->features = obj.features;
-        
-        // Original Values
-        this->original = obj.original;
-    };
-
-    // Read the file from a file_path
-    Sound::Sound (std::string file_path)
-    {
-        this->commonInit();
-        
-        // Load data from file_path
-        String file_data = loadDataFromFile(file_path);
-        
-        // Load the sound
-        this->load(file_data, HadFileSource::Binary);
-    };
-
-    Sound::Sound (std::string file_path, int note, int velocity)
-    {
-        this->commonInit();
-        
-        this->note = note;
-        this->velocity = velocity;
-        
-        // Load data from file_path
-        String file_data = loadDataFromFile(file_path);
-        
-        // Load the sound
-        this->load(file_data, HadFileSource::Binary);
-    };
-
-    // Read the file from a binary file with an hypothetical file_path
-    Sound::Sound (String file_data, std::string file_path)
-    {
-        this->commonInit();
-        
-        // Save the file_path
-        this->path = file_path;
-        
-        // Load the sound
-        this->load(file_data, HadFileSource::Binary);
-    };
-
-    Sound::~Sound() {};
+        this->model->reset();
+    }
 
     // Load data of ".had" file
     String Sound::loadDataFromFile (std::string file_path)

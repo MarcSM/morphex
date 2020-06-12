@@ -76,8 +76,8 @@ namespace Core
 //        this->generated.stochastic.resize(0);
         
         // Harmonic live values
-        this->live_values.harmonic.last_freqs.resize(MAX_HARMONICS);
-        this->live_values.harmonic.phases.resize(MAX_HARMONICS);
+        this->live_values.harmonic.last_freqs.resize (MAX_HARMONICS);
+        this->live_values.harmonic.phases.resize (MAX_HARMONICS);
         
         std::fill(this->live_values.harmonic.last_freqs.begin(),
                   this->live_values.harmonic.last_freqs.end(), 0.0);
