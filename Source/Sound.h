@@ -136,8 +136,8 @@ public:
     {
         struct NotesMap : public std::map<float, int, std::less<float>>
         {
-            ADD_ITER(iterFrequency, iterOccurences);
-            ADD_MAPPAIR(frequency, occurences);
+            ADD_ITER (iterFrequency, iterOccurences);
+            ADD_MAPPAIR (frequency, occurences);
         };
         NotesMap notes;
         float predominant_note;
