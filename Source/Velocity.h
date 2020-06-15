@@ -23,7 +23,12 @@ public:
 //    bool loaded_metadata;
     
     // Initializing the harmonic analysis data structure for the .had file
-    Sound sound;
+    ValueTree sound (Sound);
+//    myNode.addChild (childNode, -1, nullptr);
+    //    Sound sound;
+    Sound _sound;
+
+    
 //    Sound* sound;
 //    std::unique_ptr<Sound> sound;
 
@@ -36,6 +41,8 @@ public:
         // Flags
         this->loaded = false;
         //        this->loaded_metadata = false;
+        
+        myNode.addChild (childNode, -1, nullptr);
     }
     
     void reset()

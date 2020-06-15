@@ -16,7 +16,8 @@
 /*
 */
 class SoundPanel :  public Component,
-                    public DragAndDropTarget
+                    public DragAndDropTarget,
+                    public AsyncUpdater
 {
 public:
     
@@ -46,6 +47,11 @@ public:
 
     ~SoundPanel()
     {
+    }
+    
+    void handleAsyncUpdate() override
+    {
+        repaint();
     }
 
     void paint (Graphics& g) override

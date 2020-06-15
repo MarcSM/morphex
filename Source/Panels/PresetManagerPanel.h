@@ -21,6 +21,7 @@ class PresetManagerPanel
 :   public Component,
     public Button::Listener,
     public ComboBox::Listener
+//    public AsyncUpdater
 {
 public:
     
@@ -325,6 +326,8 @@ private:
         {
             mPresetManager->createNewPreset();
             updatePresetComboBox();
+            // TODO - Repaint the whole GUI
+//            triggerAsyncUpdate();
         }
     }
     
