@@ -51,6 +51,10 @@ namespace Morphex
 
     //typedef std::map<int, Parameter> IndexedParameters;
 
+    
+//    params.push_back(std::make_unique<AudioParameterFloat>(things));
+//    params.push_back(std::make_unique<AudioParameterBool>(things));
+
     template <typename T>
     using IndexedParameters = std::map<int, Parameter<T>>;
 

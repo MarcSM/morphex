@@ -16,6 +16,8 @@
 
 namespace Core
 {
+    // TODO - Adapt / remake the "Sound" class to use "ValueTree"
+    
     Sound::Sound()
     {
         this->init();
@@ -108,6 +110,9 @@ namespace Core
     void Sound::init (bool init_model)
     {
         // Initialize default values
+        this->path = "";
+        this->name = "";
+        this->extension = "";
         this->loaded = false;
         this->analyzed = false;
         this->had_file_loaded = false;

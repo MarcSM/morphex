@@ -68,6 +68,17 @@ void PresetManager::loadPresetForXml(XmlElement* inElement)
             }
         }
     }
+    
+//    // Save morph sound's file path
+//    MorphSounds morph_sounds = this->mMorphexSynth->instrument.getMorphSounds();
+//
+//    for (int i = 0; i < morph_sounds.size(); i++)
+//    {
+//        std::string sound_file_path = morph_sounds[i]->path;
+//        removeSubStr (sound_file_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString());
+//        String sound_file_path_id = SOUND_FILE_PATH_PARAMETER_ID + String (i + 1);
+//        presetBody->setAttribute (sound_file_path_id, sound_file_path);
+//    }
 }
 
 int PresetManager::getNumberOfPresets()

@@ -80,8 +80,9 @@ private:
     
     AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     {
-        std::vector<std::unique_ptr<AudioParameterFloat>> params;
-        
+//        std::vector<std::unique_ptr<AudioParameterFloat>> params;
+        std::vector<std::unique_ptr<RangedAudioParameter>> params;
+
         for(int i = 0; i < Morphex::Parameters::TotalNumParameters; i++) {
             
             Morphex::Parameter<float> smt_parameter = Morphex::PARAMETERS<float>[i];

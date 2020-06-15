@@ -20,8 +20,9 @@ const static std::string PLUGIN_VERSION = ProjectInfo::versionString;
 const static int MAX_VOICES = 10;
 
 // Timers
-const static int WAVEFORM_PREVIEW_UI_REFRESH_TIMER_CALLBACK = 5000; // 0.5 seconds
-const static int XYPAD_UI_REFRESH_TIMER_CALLBACK = 5000; // 0.5 seconds
+const static int WAVEFORM_PREVIEW_UI_REFRESH_TIMER_CALLBACK = 1000; // 1 second
+const static int XYPAD_UI_REFRESH_TIMER_CALLBACK = 5000; // 1 second
+const static int GUI_REFRESH_TIMER_CALLBACK_SOUND = 100; // 0.1 seconds
 
 // Paths
 # if JUCE_WINDOWS
@@ -43,8 +44,11 @@ const static std::string DEFAULT_SOUND_FILE_2 = BinaryData::sopranoE4_had;
 const static std::string DEFAULT_SOUND_FILE_2_COLLECTION_PATH = PLUGIN_DATA_COLLECTIONS_DIRECTORY.toStdString() + "/Factory/soprano-E4.had";
 
 // Sound parameters ID
-const static String SOUND_FILE_1_PATH_PARAMETER_ID = "Sound1Path";
-const static String SOUND_FILE_2_PATH_PARAMETER_ID = "Sound2Path";
+const static String SOUND_FILE_PATH_PARAMETER_ID = "MorphSoundFilePath";
+//const static String SOUND_1_FILE_PATH_PARAMETER_ID = "Sound1Path";
+//const static String SOUND_2_FILE_PATH_PARAMETER_ID = "Sound2Path";
+//const static String SOUND_3_FILE_PATH_PARAMETER_ID = "Sound3Path";
+//const static String SOUND_4_FILE_PATH_PARAMETER_ID = "Sound4Path";
 
 // Audio parameters
 //const static int NUM_CHANNELS = 2; // Left and Right

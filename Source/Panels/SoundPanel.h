@@ -17,7 +17,9 @@
 */
 class SoundPanel :  public Component,
                     public DragAndDropTarget,
-                    public AsyncUpdater
+//                    public ValueTree::Listener,
+//                    public AsyncUpdater,
+                    public Timer
 {
 public:
     
@@ -43,16 +45,19 @@ public:
         addAndMakeVisible (soundNamePanel);
         addAndMakeVisible (items.add (new GridItemPanel (Colours::blue, "2")));
         addAndMakeVisible (items.add (new GridItemPanel (Colours::green, "3")));
+        
+        // Start the timer callback
+        startTimer (GUI_REFRESH_TIMER_CALLBACK_SOUND);
     }
 
     ~SoundPanel()
     {
     }
     
-    void handleAsyncUpdate() override
-    {
-        repaint();
-    }
+//    void handleAsyncUpdate() override
+//    {
+//        repaint();
+//    }
 
     void paint (Graphics& g) override
     {
@@ -169,6 +174,7 @@ public:
             instrument->loadSound (sound_file_path, morph_location);
             
             this->sound = instrument->getMorphSound (morph_location);
+            this->current_sound_path = this->sound->path;
             
             // TODO - Improve load / destroy sounds method
 //            std::string sound_file_name = dragSourceDetails.description.toString();
@@ -264,6 +270,18 @@ private:
         Colour colour;
         String text;
     };
+    
+    void timerCallback() override
+    {
+//        if (this->current_sound_path != this->sound->path)
+        if (this->current_sound_path != this->sound->path)
+        {
+            this->current_sound_path = this->sound->path;
+            repaint();
+        }
+    }
+    
+    std::string current_sound_path;
     
     int i_sound_num;
     MorphLocation morph_location;

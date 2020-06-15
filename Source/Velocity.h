@@ -23,10 +23,14 @@ public:
 //    bool loaded_metadata;
     
     // Initializing the harmonic analysis data structure for the .had file
-    ValueTree sound (Sound);
+    
+//    Sound _sound;
+//    ValueTree sound (Sound);
+//    ValueTree sound (_sound);
+//    ValueTree sound (Sound);
 //    myNode.addChild (childNode, -1, nullptr);
-    //    Sound sound;
-    Sound _sound;
+    Sound sound;
+    
 
     
 //    Sound* sound;
@@ -42,7 +46,7 @@ public:
         this->loaded = false;
         //        this->loaded_metadata = false;
         
-        myNode.addChild (childNode, -1, nullptr);
+//        this->sound.addChild (_sound, -1, nullptr);
     }
     
     void reset()

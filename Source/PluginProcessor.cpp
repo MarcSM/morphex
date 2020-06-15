@@ -202,6 +202,17 @@ void SpectralMorphingToolAudioProcessor::getStateInformation (MemoryBlock& destD
     
     XmlElement* presetBody = new XmlElement("MPF_Preset");
     
+    // Save morph sound's file path
+    MorphSounds morph_sounds = this->mMorphexSynth.instrument.getMorphSounds();
+    
+    for (int i = 0; i < morph_sounds.size(); i++)
+    {
+        std::string sound_file_path = morph_sounds[i]->path;
+        removeSubStr (sound_file_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString());
+        String sound_file_path_id = SOUND_FILE_PATH_PARAMETER_ID + String (i + 1);
+        presetBody->setAttribute (sound_file_path_id, sound_file_path);
+    }
+    
 //    // Save the path of the sound 1
 //    std::string sound_1_collection_path = sound[1]->path;
 //    removeSubStr(sound_1_collection_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() );
@@ -223,8 +234,6 @@ void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, 
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
     
-    bool error_loading_sounds = false;
-    
     std::unique_ptr<XmlElement> xmlState;
     
 //    pluginStateInfoXML = parameters.state.createXml();
@@ -243,53 +252,110 @@ void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, 
     if (xmlState != nullptr) {
         forEachXmlChildElement(*xmlState, subChild) {
             
-            // Retrieve the path of the sounds
-            std::string sound_1_file_path = subChild->getStringAttribute(SOUND_FILE_1_PATH_PARAMETER_ID).toStdString();
-            std::string sound_2_file_path = subChild->getStringAttribute(SOUND_FILE_2_PATH_PARAMETER_ID).toStdString();
+            // Get morph sound's file path
+            MorphSounds morph_sounds = this->mMorphexSynth.instrument.getMorphSounds();
             
-            // Construct the full path
-            sound_1_file_path = (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() + sound_1_file_path;
-            sound_2_file_path = (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() + sound_2_file_path;
+            // Error vars
+            bool error_loading_sounds = false;
+            String error_message = "The preset couldn't be loaded, the following sounds are not in your library:\n";
             
-            // Remove the path of the sounds from the xml
-            subChild->removeAttribute(SOUND_FILE_1_PATH_PARAMETER_ID);
-            subChild->removeAttribute(SOUND_FILE_2_PATH_PARAMETER_ID);
-            
-            // Check if sound 1 file path is valid
-            File sound_1_check(sound_1_file_path);
-            
-            if (!sound_1_check.existsAsFile())
+            for (int i = 0; i < morph_sounds.size(); i++)
             {
-                error_loading_sounds = true;
-//                AlertWindow aux ("Sound not found", "The sound '" + sound_1_file_path + "' is not in your collection", AlertWindow::NoIcon);
-//                aux.showMessageBox (AlertWindow::WarningIcon,
-//                                    "Sound not found",
-//                                    "The preset couldn't be loaded, the sound '" + sound_1_file_path + "' is not in your library",
-//                                    "Accept");
+                // Generate sound ID
+                String sound_file_path_id = SOUND_FILE_PATH_PARAMETER_ID + String (i + 1);
+                
+                // Retrieve the sound file path
+                std::string sound_file_path = subChild->getStringAttribute (sound_file_path_id).toStdString();
+                
+                // If it's not empty
+                if (!sound_file_path.empty())
+                {
+                    // Prepend the user's plugin data directory
+                    sound_file_path = (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() + sound_file_path;
+                    
+                    // Check if sound file path is valid
+                    File sound_file_path_check (sound_file_path);
+                    
+                    if (!sound_file_path_check.existsAsFile())
+                    {
+                        error_loading_sounds = true;
+                        error_message += String ("\n" + sound_file_path);
+                    }
+                    else
+                    {
+                        this->mMorphexSynth.instrument.loadSound (sound_file_path, (MorphLocation) i);
+                    }
+                }
+                
+                // Remove the sound file path element from the xml
+                subChild->removeAttribute ( String(sound_file_path_id) );
             }
             
-            // Check if sound 2 file path is valid
-            File sound_2_check(sound_2_file_path);
-            
-            if (!sound_2_check.existsAsFile())
+            if (error_loading_sounds)
             {
-                error_loading_sounds = true;
-//                AlertWindow aux ("Sound not found", "The sound '" + sound_2_file_path + "' is not in your collection", AlertWindow::NoIcon);
-//                aux.showMessageBox (AlertWindow::WarningIcon,
-//                                    "Sound not found",
-//                                    "The preset couldn't be loaded, the sound '" + sound_2_file_path + "' is not in your library",
-//                                    "Accept");
+                AlertWindow aux ("Sounds not found", "", AlertWindow::NoIcon);
+                aux.showMessageBox (AlertWindow::WarningIcon, "Sounds not found", error_message, "Accept");
             }
-            
-            if (!error_loading_sounds)
+            else
             {
                 // Load the sounds
-//                sound[1]->load(sound_1_file_path);
-//                sound[2]->load(sound_2_file_path);
+                //                sound[1]->load(sound_1_file_path);
+                //                sound[2]->load(sound_2_file_path);
                 
-                // Load the preset parameters
-                mPresetManager->loadPresetForXml(subChild);
+//                // Load the preset parameters
+//                mPresetManager->loadPresetForXml(subChild);
             }
+            
+            // Load the preset parameters
+            mPresetManager->loadPresetForXml(subChild);
+            
+////            // Retrieve the path of the sounds
+////            std::string sound_1_file_path = subChild->getStringAttribute(SOUND_FILE_1_PATH_PARAMETER_ID).toStdString();
+////            std::string sound_2_file_path = subChild->getStringAttribute(SOUND_FILE_2_PATH_PARAMETER_ID).toStdString();
+////
+////            // Construct the full path
+////            sound_1_file_path = (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() + sound_1_file_path;
+////            sound_2_file_path = (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() + sound_2_file_path;
+//            
+////            // Remove the path of the sounds from the xml
+////            subChild->removeAttribute(SOUND_FILE_1_PATH_PARAMETER_ID);
+////            subChild->removeAttribute(SOUND_FILE_2_PATH_PARAMETER_ID);
+//            
+//            // Check if sound 1 file path is valid
+//            File sound_1_check(sound_1_file_path);
+//            
+//            if (!sound_1_check.existsAsFile())
+//            {
+//                error_loading_sounds = true;
+////                AlertWindow aux ("Sound not found", "The sound '" + sound_1_file_path + "' is not in your collection", AlertWindow::NoIcon);
+////                aux.showMessageBox (AlertWindow::WarningIcon,
+////                                    "Sound not found",
+////                                    "The preset couldn't be loaded, the sound '" + sound_1_file_path + "' is not in your library",
+////                                    "Accept");
+//            }
+//            
+//            // Check if sound 2 file path is valid
+//            File sound_2_check(sound_2_file_path);
+//            
+//            if (!sound_2_check.existsAsFile())
+//            {
+//                error_loading_sounds = true;
+////                AlertWindow aux ("Sound not found", "The sound '" + sound_2_file_path + "' is not in your collection", AlertWindow::NoIcon);
+////                aux.showMessageBox (AlertWindow::WarningIcon,
+////                                    "Sound not found",
+////                                    "The preset couldn't be loaded, the sound '" + sound_2_file_path + "' is not in your library",
+////                                    "Accept");
+//            }
+//            
+//            if (!error_loading_sounds)
+//            {
+//                // Load the sounds
+////                sound[1]->load(sound_1_file_path);
+////                sound[2]->load(sound_2_file_path);
+//                
+//                // Load the preset parameters
+//                mPresetManager->loadPresetForXml(subChild);
+//            }
         }
     } else {
         jassertfalse;
