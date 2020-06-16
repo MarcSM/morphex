@@ -83,8 +83,36 @@ namespace Core
     {
         Sound sound = Sound (file_path);
         
-        this->note[sound.note]->velocity[sound.velocity]->sound = sound;
-        this->note[sound.note]->velocity[sound.velocity]->loaded = true;
+        // TODO - Improve this code
+        if (morph_location < NUM_MORPH_LOCATIONS)
+        {
+            MorphLocation other_sound_morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
+            
+            if (morph_location == MorphLocation::Left)
+            {
+                other_sound_morph_location = MorphLocation::Right;
+            }
+            else if (morph_location == MorphLocation::Right)
+            {
+                other_sound_morph_location = MorphLocation::Left;
+            }
+            
+            Sound* other_loaded_sound = this->getMorphSound (other_sound_morph_location);
+            
+            if (sound.note == other_loaded_sound->note and
+                sound.velocity == other_loaded_sound->velocity)
+            {
+                if (sound.velocity == 0) sound.velocity = NUM_MIDI_VELOCITIES;
+                else if (sound.velocity == 1) sound.velocity = NUM_MIDI_VELOCITIES;
+                else sound.velocity = 1;
+            }
+        }
+        else
+        {
+            this->note[sound.note]->velocity[sound.velocity]->sound = sound;
+            this->note[sound.note]->velocity[sound.velocity]->loaded = true;
+        }
+        
         
         if (morph_location != NUM_MORPH_LOCATIONS)
         {

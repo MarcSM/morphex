@@ -45,10 +45,7 @@ public:
 //                             normalImage.getHeight());
     }
 
-    ~Button()
-    {
-        juce::TextButton::~TextButton();
-    }
+    ~Button() {}
     
     void paintButton (Graphics& g,
                       bool shouldDrawButtonAsHighlighted,
