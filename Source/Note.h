@@ -58,7 +58,7 @@ public:
         
 //        for (Velocity* & velocity : this->velocity)
         
-        for (int i = 0; i < loaded_velocities.size(); i++)
+        for (int i = 0; i < this->velocity.size(); i++)
         {
             Velocity* velocity = this->velocity[i];
             

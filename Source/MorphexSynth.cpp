@@ -39,22 +39,28 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 //    std::string instrument_folder = "Suitcase Dry Test 20200520";
 //    std::string instrument_folder = "Morphex Test";
     
-    //    this->instrument.mode = Instrument::Mode::Morphing;
-    //    this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
-    this->instrument.mode = Instrument::Mode::FullRange;
-    this->instrument.interpolation_mode = Instrument::Interpolation::None;
+        this->instrument.mode = Instrument::Mode::Morphing;
+        this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
+//    this->instrument.mode = Instrument::Mode::FullRange;
+//    this->instrument.interpolation_mode = Instrument::Interpolation::None;
     
     this->instrument.generate.harmonic = true;
-    this->instrument.generate.sinusoidal = true;
+    this->instrument.generate.sinusoidal = false;
     this->instrument.generate.stochastic = false;
-    this->instrument.generate.attack = true;
+    this->instrument.generate.attack = false;
     this->instrument.generate.residual = false;
     
-    std::string instrument_folder = "Suitcase Dry 20200615";
-//    std::string instrument_folder = "Suitcase Dry Test";
-//    std::string instrument_folder = "Suitcase Dry Full";
-//    std::string instrument_folder = "Morphing Test Optimized";
-    std::string full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
+    std::string full_path = PLUGIN_DATA_COLLECTIONS_FACTORY_DIRECTORY.toStdString();
+    
+    if (this->instrument.mode == Instrument::Mode::FullRange)
+    {
+        //    std::string instrument_folder = "Suitcase Dry 20200615";
+        std::string instrument_folder = "Suitcase Dry Test";
+        //    std::string instrument_folder = "Suitcase Dry Full";
+        //    std::string instrument_folder = "Morphing Test Optimized";
+        full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
+    }
+
     
     DirectoryIterator iter (File (full_path), true, "*.had");
 //    DirectoryIterator iter (File (full_path), true, "*.had");
@@ -64,35 +70,49 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     while (iter.next())
     {
         File sound_file (iter.getFile());
-    //        String sound_file_name = sound_file.getFullPathName();
-        std::string sound_file_name = sound_file.getFullPathName().toStdString();
-//        DBG(sound_file_name);
+        std::string sound_file_path = sound_file.getFullPathName().toStdString();
 
-        Core::Sound sound = Core::Sound( sound_file_name );
-
-    //        Core::Sound scopy = sound;
         
-//        mSound[i] = std::make_unique<Core::Sound>(sound_file_name);
-//
         
-        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound = sound;
-        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loaded = true;
+//        Core::Sound sound = Core::Sound( sound_file_path );
+        
+//        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound = sound;
+//        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loaded = true;
+        
+        MorphLocation morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
         
         if (this->instrument.mode == Instrument::Mode::Morphing)
         {
-            if (this->instrument.num_samples_loaded == 0)
+            if (this->instrument.num_samples_loaded < MorphLocation::NUM_MORPH_LOCATIONS)
             {
-                this->instrument.setMorphSound (&this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound, MorphLocation::Left);
-            }
-            else if (this->instrument.num_samples_loaded == 1)
-            {
-                this->instrument.setMorphSound (&this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound, MorphLocation::Right);
+                morph_location = (MorphLocation) this->instrument.num_samples_loaded;
+                this->instrument.loadSound (sound_file_path, morph_location);
+                this->instrument.num_samples_loaded++;
             }
         }
+        else
+        {
+            this->instrument.loadSound (sound_file_path, morph_location);
+            this->instrument.num_samples_loaded++;
+        }
         
-        this->instrument.num_samples_loaded++;
+        
+
+//        if (this->instrument.mode == Instrument::Mode::Morphing)
+//        {
+//            if (this->instrument.num_samples_loaded == 0)
+//            {
+//                this->instrument.setMorphSound (&this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound, MorphLocation::Left);
+//            }
+//            else if (this->instrument.num_samples_loaded == 1)
+//            {
+//                this->instrument.setMorphSound (&this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound, MorphLocation::Right);
+//            }
+//        }
+        
+        
     //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->setSound( sound );
-    //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loadSound( sound_file_name );
+    //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loadSound( sound_file_path );
     }
     
     DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));

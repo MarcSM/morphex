@@ -16,6 +16,9 @@
 const static std::string PLUGIN_NAME = ProjectInfo::projectName;
 const static std::string PLUGIN_VERSION = ProjectInfo::versionString;
 
+// Files
+const static int CURRENT_FILE_VERSION = 1;
+
 // Synthesis
 const static int MAX_VOICES = 10;
 
@@ -35,6 +38,7 @@ const static int GUI_REFRESH_TIMER_CALLBACK_SOUND = 100; // 0.1 seconds
 
 static const String PLUGIN_DATA_DIRECTORY = (File::getSpecialLocation(File::userDesktopDirectory)).getFullPathName() + directorySeparator + PLUGIN_NAME;
 static const String PLUGIN_DATA_COLLECTIONS_DIRECTORY = PLUGIN_DATA_DIRECTORY + directorySeparator + "Collections";
+static const String PLUGIN_DATA_COLLECTIONS_FACTORY_DIRECTORY = PLUGIN_DATA_DIRECTORY + directorySeparator + "Collections" + directorySeparator + "Factory";
 static const String PLUGIN_DATA_PRESETS_DIRECTORY = PLUGIN_DATA_DIRECTORY + directorySeparator + "Presets";
 
 // Sound files

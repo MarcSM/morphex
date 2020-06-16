@@ -235,6 +235,8 @@ private:
             FlexBox fb;
             fb.flexDirection = FlexBox::Direction::column;
             fb.flexWrap = FlexBox::Wrap::wrap;
+            fb.alignContent = FlexBox::AlignContent::flexEnd;
+            fb.alignItems = FlexBox::AlignItems::flexEnd;
             fb.justifyContent = FlexBox::JustifyContent::flexEnd;
 //            fb.justifyContent = FlexBox::JustifyContent::spaceBetween;
 
@@ -243,8 +245,9 @@ private:
 //            FlexItem gain_knob (gain_knob_width, getHeight(), *mSliders[0]);
 //            FlexItem vu_meter (getWidth() - gain_knob_width, getHeight(), *new Component());
             
-            FlexItem gain_knob (getWidth(), getHeight(), *mSliders[0]);
-            
+            FlexItem gain_knob (getHeight(), getHeight(), *mSliders[0]);
+//            FlexItem gain_knob (getWidth(), getHeight(), *mSliders[0]);
+
 //            fb.items.addArray ( { gain_knob, vu_meter } );
             fb.items.addArray ( { gain_knob } );
             fb.performLayout (getLocalBounds().toFloat());

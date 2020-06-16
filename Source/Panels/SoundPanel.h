@@ -84,7 +84,7 @@ public:
 //                    Justification::centred, true);   // draw some placeholder text
         
         // Draw borders
-        GUI::Paint::drawBorders(g, getLocalBounds());
+        GUI::Paint::drawBorders (g, getLocalBounds());
     }
 
     void resized() override
@@ -196,6 +196,14 @@ public:
         {
             g.setColour (Colours::white.withAlpha(0.75f));
             g.drawRect (getLocalBounds(), 2);
+        }
+        
+        if ( i_sound_num == 2 or i_sound_num == 3 )
+        {
+            g.setColour (Colours::white);
+            g.drawText ("Disabled", getLocalBounds(), Justification::centred, false);
+            
+            GUI::Paint::drawDisabled (g, getLocalBounds());
         }
     }
 

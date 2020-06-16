@@ -63,7 +63,7 @@ namespace Morphex
     static IndexedParameters<T> PARAMETERS =
     {
     //  index                   parameter_ID            parameter_label             min_value   max_value   default_value
-        {OutputGain,            {"OutputGain",          "Master",                   0.0f,       1.0f,       0.85f}  },
+        {OutputGain,            {"OutputGain",          "Master",                   0.0f,       1.0f,       0.5f}  },
         {ReverbDryWet,          {"ReverbDryWet",        "Dry/Wet",                  0.0f,       1.0f,       0.15f}  },
         {freqs_interp_factor,   {"FreqsInterpFactor",   "Harmonic Frequencies",     0.0f,       1.0f,       0.5f}   },
         {mags_interp_factor,    {"MagsInterpFactor",    "Harmonic Magnitudes",      0.0f,       1.0f,       0.5f}   },

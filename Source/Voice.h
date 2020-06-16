@@ -457,8 +457,8 @@ struct Voice
                     
                     if (this->instrument->interpolation_mode == Instrument::Interpolation::None)
                     {
-                        int left_note_distance = std::abs( this->f_pressed_midi_note - morph_sounds[MorphLocation::Left]->note );
-                        int right_note_distance = std::abs( this->f_pressed_midi_note - morph_sounds[MorphLocation::Right]->note );
+                        int left_note_distance = std::abs( this->f_pressed_midi_note - this->morph_sounds[MorphLocation::Left]->note );
+                        int right_note_distance = std::abs( this->f_pressed_midi_note - this->morph_sounds[MorphLocation::Right]->note );
 //                        int left_note_distance = std::abs( this->f_current_midi_note - morph_sounds[MorphLocation::Left]->note );
 //                        int right_note_distance = std::abs( this->f_current_midi_note - morph_sounds[MorphLocation::Right]->note );
 

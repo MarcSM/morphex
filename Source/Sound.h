@@ -65,7 +65,7 @@ public:
     bool loaded;
     bool analyzed;
     bool had_file_loaded;
-    
+
     int fs;
     int note;
     int velocity;
@@ -246,6 +246,9 @@ public:
     void normalizeWaveform (std::vector<float>& waveform, float max_val, float max_db);
 
 private:
+    
+    int file_version;
+    int decimal_places;
     
 //    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sound);
 };

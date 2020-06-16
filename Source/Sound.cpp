@@ -182,128 +182,160 @@ namespace Core
         {
             try
             {
-                // Sound
-                XmlElement* xml_sound = xml->getChildByName("sound"); // had["sound"]
-                this->fs = xml_sound->getChildByName("fs")->getAllSubText().getIntValue();
-                // TODO - Embeded binary don't have note and velocity
-                this->note = xml_sound->getChildByName("note")->getAllSubText().getIntValue();
-                this->velocity = xml_sound->getChildByName("velocity")->getAllSubText().getIntValue();
-                this->max_harmonics = xml_sound->getChildByName("max_harmonics")->getAllSubText().getIntValue();
-                this->max_frames = xml_sound->getChildByName("max_frames")->getAllSubText().getIntValue();
-                this->loop.start = xml_sound->getChildByName("loop")->getChildByName("start")->getAllSubText().getIntValue();
-                this->loop.end = xml_sound->getChildByName("loop")->getChildByName("end")->getAllSubText().getIntValue();
-                
-                // Model
-                XmlElement* xml_synthesis = xml->getChildByName("synthesis"); // had["synthesis"]
-                this->model->harmonic   = hasChild(xml_synthesis, "h");
-                this->model->sinusoidal = hasChild(xml_synthesis, "s");
-                this->model->stochastic = hasChild(xml_synthesis, "c");
-                this->model->attack     = hasChild(xml_synthesis, "a");
-                this->model->residual   = hasChild(xml_synthesis, "r");
-                if (this->model->harmonic)
-                {
-                    XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName("h"); // had["synthesis"]["h"]
-                    this->model->setHarmonic (getMatrixOfInts (xml_synthesis_harmonic, "f"),
-                                              getMatrixOfInts (xml_synthesis_harmonic, "m"), true);
-                }
-                if (this->model->sinusoidal)
-                {
-                    XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName("s"); // had["synthesis"]["s"]
-                    this->model->setSinusoidal (getMatrixOfInts (xml_synthesis_sinusoidal, "f"),
-                                                getMatrixOfInts (xml_synthesis_sinusoidal, "m"), true);
-                }
-                if (this->model->stochastic)    this->model->setStochastic  (getMatrixOfFloats(xml_synthesis, "c"), true);
-                if (this->model->attack)        this->model->setAttack      (getVectorOfFloats(xml_synthesis, "a"), true);
-                if (this->model->residual)      this->model->setResidual    (getVectorOfFloats(xml_synthesis, "r"), true);
-                
-                // If source file is binary data, fill the missing attributes
-                if (this->name.empty()) this->name = this->file.name;
-                if (this->extension.empty()) this->extension = ".had";
-//                if (this->path.empty()) this->path = "";
-//                if (this->dirpath.empty()) this->dirpath = "";
-
-                // Analysis parameters
-                XmlElement* xml_parameters = xml->getChildByName("parameters"); // had["parameters"]
-                this->analysis.parameters.window_type = (WindowType)xml_parameters->getChildByName("window_type")->getAllSubText().getIntValue();
-                this->analysis.parameters.window_size = xml_parameters->getChildByName("window_size")->getAllSubText().getIntValue();
-                this->analysis.parameters.fft_size = xml_parameters->getChildByName("fft_size")->getAllSubText().getIntValue();
-                this->analysis.parameters.magnitude_threshold = xml_parameters->getChildByName("magnitude_threshold")->getAllSubText().getIntValue();
-                this->analysis.parameters.hearing_threshold = xml_parameters->getChildByName("hearing_threshold")->getAllSubText().getIntValue();
-                this->analysis.parameters.min_sine_dur = xml_parameters->getChildByName("min_sine_dur")->getAllSubText().getDoubleValue();
-                this->analysis.parameters.max_harm = xml_parameters->getChildByName("max_harm")->getAllSubText().getIntValue();
-                this->analysis.parameters.min_f0 = xml_parameters->getChildByName("min_f0")->getAllSubText().getIntValue();
-                this->analysis.parameters.max_f0 = xml_parameters->getChildByName("max_f0")->getAllSubText().getIntValue();
-                this->analysis.parameters.max_f0_error = xml_parameters->getChildByName("max_f0_error")->getAllSubText().getIntValue();
-                this->analysis.parameters.harm_dev_slope = xml_parameters->getChildByName("harm_dev_slope")->getAllSubText().getDoubleValue();
-                this->analysis.parameters.stoc_fact = xml_parameters->getChildByName("stoc_fact")->getAllSubText().getDoubleValue();
-                this->analysis.parameters.synthesis_fft_size = xml_parameters->getChildByName("synthesis_fft_size")->getAllSubText().getIntValue();
-                this->analysis.parameters.hop_size = xml_parameters->getChildByName("hop_size")->getAllSubText().getIntValue();
-                
-                // Fix missing data
-//                if (this->max_frames == 0)
+//                if (hasChild(xml, "file"))
 //                {
-//                    this->max_frames = (int)std::max({
-//                        this->model->values.harmonic.freqs.size(),
-//                        this->model->values.harmonic.mags.size(),
-//                        this->model->values.harmonic.phases.size(),
-//                        this->model->values.sinusoidal.freqs.size(),
-//                        this->model->values.sinusoidal.mags.size(),
-//                        this->model->values.sinusoidal.phases.size(),
-//                        this->model->values.stochastic.size(),
-//                        this->model->values.attack.size(),
-//                        this->model->values.residual.size()
-//                    });
-//                };
+//                    
+//                }
+                // File
+                XmlElement* xml_file = xml->getChildByName("file"); // had["file"]
                 
-                // TODO TOFIX - Fix max_frames on .had files (max_frames    int    22050 (attack))
-                // and add XML_DECIMAL_PLACES on the .had file too
-                this->max_frames = (int)std::max({
-                    this->model->values.harmonic.freqs.size(),
-                    this->model->values.harmonic.mags.size(),
-                    this->model->values.harmonic.phases.size(),
-                    this->model->values.sinusoidal.freqs.size(),
-                    this->model->values.sinusoidal.mags.size(),
-                    this->model->values.sinusoidal.phases.size(),
-                    this->model->values.stochastic.size(),
-                    this->model->values.attack.size(),
-                    this->model->values.residual.size()
-                });
+                if (xml_file == nullptr)
+                {
+                    throw "Sound file not compatible";
+                }
                 
-                this->sound_length = this->max_frames * this->analysis.parameters.hop_size;
-                if (this->loop.end == 0) this->loop.end = this->sound_length;
+                this->file_version = hasChild(xml_file, "v") ? xml_file->getChildByName("v")->getAllSubText().getIntValue() : 0;
                 
-                // TODO TEST - Temporal override
-                this->loop.end = (this->max_frames - 24) * this->analysis.parameters.hop_size;
+                if (this->file_version == CURRENT_FILE_VERSION and hasChild(xml_file, "dp"))
+                {
+                    this->decimal_places = xml_file->getChildByName("dp")->getAllSubText().getIntValue();
+                    
+                    // Sound
+                    XmlElement* xml_sound = xml->getChildByName("sound"); // had["sound"]
+                    this->fs = xml_sound->getChildByName("fs")->getAllSubText().getIntValue();
+                    // TODO - Embeded binary don't have note and velocity
+                    this->note = xml_sound->getChildByName("note")->getAllSubText().getIntValue();
+                    this->velocity = xml_sound->getChildByName("velocity")->getAllSubText().getIntValue();
+                    this->max_harmonics = xml_sound->getChildByName("max_harmonics")->getAllSubText().getIntValue();
+                    this->max_frames = xml_sound->getChildByName("max_frames")->getAllSubText().getIntValue();
+                    this->loop.start = xml_sound->getChildByName("loop")->getChildByName("start")->getAllSubText().getIntValue();
+                    this->loop.end = xml_sound->getChildByName("loop")->getChildByName("end")->getAllSubText().getIntValue();
+                    
+                    // Model
+                    XmlElement* xml_synthesis = xml->getChildByName("synthesis"); // had["synthesis"]
+                    this->model->harmonic   = hasChild(xml_synthesis, "h");
+                    this->model->sinusoidal = hasChild(xml_synthesis, "s");
+                    this->model->stochastic = hasChild(xml_synthesis, "c");
+                    this->model->attack     = hasChild(xml_synthesis, "a");
+                    this->model->residual   = hasChild(xml_synthesis, "r");
+                    if (this->model->harmonic)
+                    {
+                        XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName("h"); // had["synthesis"]["h"]
+                        this->model->setHarmonic (getMatrixOfInts (xml_synthesis_harmonic, "f"),
+                                                  getMatrixOfInts (xml_synthesis_harmonic, "m"), true);
+                    }
+                    if (this->model->sinusoidal)
+                    {
+                        XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName("s"); // had["synthesis"]["s"]
+                        this->model->setSinusoidal (getMatrixOfInts (xml_synthesis_sinusoidal, "f"),
+                                                    getMatrixOfInts (xml_synthesis_sinusoidal, "m"), true);
+                    }
+                    if (this->model->stochastic)    this->model->setStochastic  (getMatrixOfFloats(xml_synthesis, "c"), true);
+                    if (this->model->attack)        this->model->setAttack      (getVectorOfFloats(xml_synthesis, "a"), true);
+                    if (this->model->residual)      this->model->setResidual    (getVectorOfFloats(xml_synthesis, "r"), true);
+                    
+                    // If source file is binary data, fill the missing attributes
+                    if (this->name.empty()) this->name = this->file.name;
+                    if (this->extension.empty()) this->extension = ".had";
+                    //                if (this->path.empty()) this->path = "";
+                    //                if (this->dirpath.empty()) this->dirpath = "";
+                    
+                    // Analysis parameters
+                    XmlElement* xml_parameters = xml->getChildByName("parameters"); // had["parameters"]
+                    this->analysis.parameters.window_type = (WindowType)xml_parameters->getChildByName("window_type")->getAllSubText().getIntValue();
+                    this->analysis.parameters.window_size = xml_parameters->getChildByName("window_size")->getAllSubText().getIntValue();
+                    this->analysis.parameters.fft_size = xml_parameters->getChildByName("fft_size")->getAllSubText().getIntValue();
+                    this->analysis.parameters.magnitude_threshold = xml_parameters->getChildByName("magnitude_threshold")->getAllSubText().getIntValue();
+                    this->analysis.parameters.hearing_threshold = xml_parameters->getChildByName("hearing_threshold")->getAllSubText().getIntValue();
+                    this->analysis.parameters.min_sine_dur = xml_parameters->getChildByName("min_sine_dur")->getAllSubText().getDoubleValue();
+                    this->analysis.parameters.max_harm = xml_parameters->getChildByName("max_harm")->getAllSubText().getIntValue();
+                    this->analysis.parameters.min_f0 = xml_parameters->getChildByName("min_f0")->getAllSubText().getIntValue();
+                    this->analysis.parameters.max_f0 = xml_parameters->getChildByName("max_f0")->getAllSubText().getIntValue();
+                    this->analysis.parameters.max_f0_error = xml_parameters->getChildByName("max_f0_error")->getAllSubText().getIntValue();
+                    this->analysis.parameters.harm_dev_slope = xml_parameters->getChildByName("harm_dev_slope")->getAllSubText().getDoubleValue();
+                    this->analysis.parameters.stoc_fact = xml_parameters->getChildByName("stoc_fact")->getAllSubText().getDoubleValue();
+                    this->analysis.parameters.synthesis_fft_size = xml_parameters->getChildByName("synthesis_fft_size")->getAllSubText().getIntValue();
+                    this->analysis.parameters.hop_size = xml_parameters->getChildByName("hop_size")->getAllSubText().getIntValue();
+                    
+                    // Fix missing data
+                    //                if (this->max_frames == 0)
+                    //                {
+                    //                    this->max_frames = (int)std::max({
+                    //                        this->model->values.harmonic.freqs.size(),
+                    //                        this->model->values.harmonic.mags.size(),
+                    //                        this->model->values.harmonic.phases.size(),
+                    //                        this->model->values.sinusoidal.freqs.size(),
+                    //                        this->model->values.sinusoidal.mags.size(),
+                    //                        this->model->values.sinusoidal.phases.size(),
+                    //                        this->model->values.stochastic.size(),
+                    //                        this->model->values.attack.size(),
+                    //                        this->model->values.residual.size()
+                    //                    });
+                    //                };
+                    
+                    // TODO TOFIX - Fix max_frames on .had files (max_frames    int    22050 (attack))
+                    // and add XML_DECIMAL_PLACES on the .had file too
+                    this->max_frames = (int)std::max({
+                        this->model->values.harmonic.freqs.size(),
+                        this->model->values.harmonic.mags.size(),
+                        this->model->values.harmonic.phases.size(),
+                        this->model->values.sinusoidal.freqs.size(),
+                        this->model->values.sinusoidal.mags.size(),
+                        this->model->values.sinusoidal.phases.size(),
+                        this->model->values.stochastic.size(),
+                        this->model->values.attack.size(),
+                        this->model->values.residual.size()
+                    });
+                    
+                    this->sound_length = this->max_frames * this->analysis.parameters.hop_size;
+                    if (this->loop.end == 0) this->loop.end = this->sound_length;
+                    
+                    // TODO TEST - Temporal override
+                    this->loop.end = (this->max_frames - 24) * this->analysis.parameters.hop_size;
+                    
+                    //                // Original sound synthesis
+                    //                this->synthesize();
+                    //
+                    // Extract Additional Features
+                    this->extractFeatures();
+                    
+                    // Save Original Values
+                    //                this->saveOriginalValues();
+                    
+                    /** Normalize magnitudes on load by default */
+                    // TODO - Fix this method
+                    //                this->normalizeMagnitudes();
+                    
+                    /** Updating flags */
+                    this->had_file_loaded = true;
+                    
+                    // TODO - Test
+                    this->loaded = true;
+                    
+                    /* TODO? - Refreshing the UI (waveform visualization) */
+                }
+                else
+                {
+                    // TODO - Raise and catch exception
+                    std::cout << "Error while loading the sound\n";
+                    jassertfalse;
+                    
+                    this->reset();
+                }
                 
-//                // Original sound synthesis
-//                this->synthesize();
-//                
-                // Extract Additional Features
-                this->extractFeatures();
-
-                // Save Original Values
-//                this->saveOriginalValues();
-                
-                /** Normalize magnitudes on load by default */
-                // TODO - Fix this method
-//                this->normalizeMagnitudes();
-                
-                /** Updating flags */
-                this->had_file_loaded = true;
-                
-                // TODO - Test
-                this->loaded = true;
-                
-                /* TODO? - Refreshing the UI (waveform visualization) */
             }
-            catch (std::exception& e)
+//            catch (std::exception& e)
+            catch (const char* msg)
             {
-                std::cout << "Error while loading the sound: '" << e.what() << "'\n";
+//                std::cout << "Error while loading the sound: '" << e.what() << "'\n";
+                std::cout << "Error while loading the sound: '" << msg << "'\n";
+//                jassertfalse;
             }
         }
         else
         {
             std::cout << "Error while loading the sound\n";
+            jassertfalse;
         }
     };
     

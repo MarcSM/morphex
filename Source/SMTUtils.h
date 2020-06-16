@@ -17,6 +17,12 @@
 #include "JuceHeader.h"
 
 /** Check if an xml element has any child with a given name */
+inline bool hasChild(std::unique_ptr<XmlElement> parent, String child_name)
+{
+    return parent->getChildByName(child_name) != nullptr;
+}
+
+/** Check if an xml element has any child with a given name */
 inline bool hasChild(XmlElement* parent, String child_name)
 {
     return parent->getChildByName(child_name) != nullptr;

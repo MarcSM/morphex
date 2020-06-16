@@ -101,6 +101,11 @@ namespace GUI
             
             //g.drawRect (componentBounds, 1);   // draw an outline around the component
         }
+        
+        inline void drawDisabled (Graphics& g, Rectangle<int> componentBounds)
+        {
+            g.fillAll (Colours::black.withAlpha (0.25f));
+        }
     }
 }
 
