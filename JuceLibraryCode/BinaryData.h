@@ -8,18 +8,6 @@
 
 namespace BinaryData
 {
-    extern const char*   oboeA4_had;
-    const int            oboeA4_hadSize = 3243453;
-
-    extern const char*   saxphraseshort_had;
-    const int            saxphraseshort_hadSize = 2907553;
-
-    extern const char*   sopranoE4_had;
-    const int            sopranoE4_hadSize = 1252589;
-
-    extern const char*   violinB3_had;
-    const int            violinB3_hadSize = 2453224;
-
     extern const char*   morphex_long_logo_png;
     const int            morphex_long_logo_pngSize = 86623;
 
@@ -39,7 +27,7 @@ namespace BinaryData
     const int            github_logo_pngSize = 36571;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 10;
+    const int namedResourceListSize = 6;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

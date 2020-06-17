@@ -12,9 +12,9 @@
 
 #include "JuceHeader.h"
 
-#include "../MorphexSynth.h"
+#include "../Entities/MorphexSynth.h"
 
-#include "../Sound.h"
+#include "../Core/Sound.h"
 
 #define PRESET_FILE_EXTENSION ".mpf"
 

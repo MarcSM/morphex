@@ -42,10 +42,10 @@ static const String PLUGIN_DATA_COLLECTIONS_FACTORY_DIRECTORY = PLUGIN_DATA_DIRE
 static const String PLUGIN_DATA_PRESETS_DIRECTORY = PLUGIN_DATA_DIRECTORY + directorySeparator + "Presets";
 
 // Sound files
-const static std::string DEFAULT_SOUND_FILE_1 = BinaryData::violinB3_had;
-const static std::string DEFAULT_SOUND_FILE_1_COLLECTION_PATH = PLUGIN_DATA_COLLECTIONS_DIRECTORY.toStdString() + "/Factory/violin-B3.had";
-const static std::string DEFAULT_SOUND_FILE_2 = BinaryData::sopranoE4_had;
-const static std::string DEFAULT_SOUND_FILE_2_COLLECTION_PATH = PLUGIN_DATA_COLLECTIONS_DIRECTORY.toStdString() + "/Factory/soprano-E4.had";
+//const static std::string DEFAULT_SOUND_FILE_1 = BinaryData::violinB3_had;
+//const static std::string DEFAULT_SOUND_FILE_1_COLLECTION_PATH = PLUGIN_DATA_COLLECTIONS_DIRECTORY.toStdString() + "/Factory/violin-B3.had";
+//const static std::string DEFAULT_SOUND_FILE_2 = BinaryData::sopranoE4_had;
+//const static std::string DEFAULT_SOUND_FILE_2_COLLECTION_PATH = PLUGIN_DATA_COLLECTIONS_DIRECTORY.toStdString() + "/Factory/soprano-E4.had";
 
 // Sound parameters ID
 const static String SOUND_FILE_PATH_PARAMETER_ID = "MorphSoundFilePath";

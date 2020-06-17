@@ -12,7 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-#include "MorphexSynth.h"
+#include "Entities/MorphexSynth.h"
 #include "Managers/PresetManager.h"
 
 #include "SMTParameters.h"
