@@ -86,7 +86,7 @@ namespace Core::Tools
         
         inline void applyFadeOut(std::vector<float>& given_vector, int fade_out_length = 0)
         {
-            int given_vector_length = (int)given_vector.size();
+            int given_vector_length = (int)given_vector.size() - 1;
             
             if (fade_out_length == 0) fade_out_length = given_vector_length;
             

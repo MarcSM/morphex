@@ -11,8 +11,8 @@
 #include "Tools.h"
 #include "Sound.h"
 
-#include "../SMTHelperFunctions.h"
-#include "../SMTAudioHelpers.h"
+#include "../Helpers/SMTHelperFunctions.h"
+#include "../Helpers/SMTAudioHelpers.h"
 
 namespace Core
 {
@@ -417,7 +417,8 @@ namespace Core
         
         return sound_frame;
     }
-
+    
+    // TODO - TOOPT- Optimize CPU
     std::vector<float> Sound::getComponentFrame(Frame::Component component_name, int i_num_frame, int i_frame_length)
     {
         // Output
@@ -449,34 +450,34 @@ namespace Core
             case Frame::Component::Attack:
             case Frame::Component::Residual:
             {
-                std::vector<float> vector_component = this->model->values.attack;
-                
-                if (component_name == Frame::Component::Residual)
-                {
-                    vector_component = this->model->values.residual;
-                }
-
-                int i_start_sample = i_num_frame * i_frame_length;
-                int i_end_sample = i_start_sample + i_frame_length;
-                int i_vec_size = (int)vector_component.size();
-
-                if (i_vec_size < i_end_sample)
-                {
-                    i_end_sample = i_vec_size;
-                }
-
-                if (i_vec_size < i_start_sample)
-                {
-                    i_start_sample = i_vec_size;
-                }
-
-                std::vector<float> residual_frame = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
-
-                for (int i = 0; i < residual_frame.size(); i++)
-                {
-//                    component_frame[i] = residual_frame[i];
-                    component_frame.push_back( residual_frame[i] );
-                }
+//                std::vector<float> vector_component = this->model->values.attack;
+//                
+//                if (component_name == Frame::Component::Residual)
+//                {
+//                    vector_component = this->model->values.residual;
+//                }
+//
+//                int i_start_sample = i_num_frame * i_frame_length;
+//                int i_end_sample = i_start_sample + i_frame_length;
+//                int i_vec_size = (int)vector_component.size();
+//
+//                if (i_vec_size < i_end_sample)
+//                {
+//                    i_end_sample = i_vec_size;
+//                }
+//
+//                if (i_vec_size < i_start_sample)
+//                {
+//                    i_start_sample = i_vec_size;
+//                }
+//
+//                std::vector<float> residual_frame = Tools::Get::valuesInRange(vector_component, i_start_sample, i_end_sample);
+//
+//                for (int i = 0; i < residual_frame.size(); i++)
+//                {
+////                    component_frame[i] = residual_frame[i];
+//                    component_frame.push_back( residual_frame[i] );
+//                }
 
                 break;
             }

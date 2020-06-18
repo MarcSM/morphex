@@ -124,7 +124,8 @@ private:
             
             Slider* output_gain_slider = new Slider (output_gain_parameter.parameter_label);
             
-            new AudioProcessorValueTreeState::SliderAttachment (inProcessor->parameters, output_gain_parameter.parameter_ID, *output_gain_slider);
+            attachment_output_gain_slider = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>
+                                            (inProcessor->parameters, output_gain_parameter.parameter_ID, *output_gain_slider);
             
             // TODO - USe custom slider class
             // Add ADSR attack slider
@@ -168,6 +169,9 @@ private:
         }
         
         OwnedArray<Slider> mSliders;
+        
+        // TODO - Put the attachment inside a custom slider class
+        std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment_output_gain_slider;
     };
     
     LeftSidePanel leftPanel;

@@ -51,6 +51,6 @@ void SpectralMorphingToolAudioProcessorEditor::paint (Graphics& g)
 
 void SpectralMorphingToolAudioProcessorEditor::resized()
 {
-    morphexPanel.setBounds(0, 0, getWidth(), getHeight());
+    morphexPanel.setBounds (0, 0, getWidth(), getHeight());
     resizeCorner->setBounds (getWidth()-20, getHeight()-20, 20, 20);
 }

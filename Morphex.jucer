@@ -19,12 +19,6 @@
       <FILE id="ENTQtM" name="Synthesis.h" compile="0" resource="0" file="Source/Core/Synthesis.h"/>
       <FILE id="r37OOs" name="Voice.h" compile="0" resource="0" file="Source/Core/Voice.h"/>
     </GROUP>
-    <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="DSP">
-      <FILE id="DXmxJ0" name="Delay.h" compile="0" resource="0" file="Source/DSP/Delay.h"/>
-      <FILE id="kvmGy3" name="Distortion.h" compile="0" resource="0" file="Source/DSP/Distortion.h"/>
-      <FILE id="OvuOxk" name="Gain.h" compile="0" resource="0" file="Source/DSP/Gain.h"/>
-      <FILE id="jPF0Wj" name="Reverb.h" compile="0" resource="0" file="Source/DSP/Reverb.h"/>
-    </GROUP>
     <GROUP id="{4E5E0A46-E03E-E82E-84AF-6D34C82A5934}" name="Entities">
       <FILE id="XJsfVy" name="MorphSound.h" compile="0" resource="0" file="Source/Entities/MorphSound.h"/>
       <FILE id="Hioc5C" name="MorphexSynth.h" compile="0" resource="0" file="Source/Entities/MorphexSynth.h"/>
@@ -56,17 +50,22 @@
             file="Source/Panels/PresetManagerPanel.h"/>
       <FILE id="G4WCVM" name="BottomPanel.h" compile="0" resource="0" file="Source/Panels/BottomPanel.h"/>
     </GROUP>
-    <GROUP id="{840CB2F3-43B0-8278-25EF-7C5DA7E183FC}" name="Parameters"/>
+    <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="DSP">
+      <FILE id="DXmxJ0" name="Delay.h" compile="0" resource="0" file="Source/DSP/Delay.h"/>
+      <FILE id="kvmGy3" name="Distortion.h" compile="0" resource="0" file="Source/DSP/Distortion.h"/>
+      <FILE id="OvuOxk" name="Gain.h" compile="0" resource="0" file="Source/DSP/Gain.h"/>
+      <FILE id="jPF0Wj" name="Reverb.h" compile="0" resource="0" file="Source/DSP/Reverb.h"/>
+    </GROUP>
     <GROUP id="{2FE0720A-2404-2915-1953-7D2767C6275A}" name="Helpers">
-      <FILE id="KLndN4" name="InterfaceDefines.h" compile="0" resource="0"
-            file="Source/InterfaceDefines.h"/>
-      <FILE id="qwMgI1" name="SMTAudioHelpers.h" compile="0" resource="0"
-            file="Source/SMTAudioHelpers.h"/>
-      <FILE id="KgAGd0" name="SMTConstants.h" compile="0" resource="0" file="Source/SMTConstants.h"/>
-      <FILE id="f7ahY1" name="SMTHelperFunctions.h" compile="0" resource="0"
-            file="Source/SMTHelperFunctions.h"/>
-      <FILE id="GhMR7a" name="SMTParameters.h" compile="0" resource="0" file="Source/SMTParameters.h"/>
-      <FILE id="PBKW3B" name="SMTUtils.h" compile="0" resource="0" file="Source/SMTUtils.h"/>
+      <FILE id="AjiFPN" name="InterfaceDefines.h" compile="0" resource="0"
+            file="Source/Helpers/InterfaceDefines.h"/>
+      <FILE id="DGsm73" name="SMTAudioHelpers.h" compile="0" resource="0"
+            file="Source/Helpers/SMTAudioHelpers.h"/>
+      <FILE id="tM9Uey" name="SMTConstants.h" compile="0" resource="0" file="Source/Helpers/SMTConstants.h"/>
+      <FILE id="Wli5cb" name="SMTHelperFunctions.h" compile="0" resource="0"
+            file="Source/Helpers/SMTHelperFunctions.h"/>
+      <FILE id="KpnAB6" name="SMTParameters.h" compile="0" resource="0" file="Source/Helpers/SMTParameters.h"/>
+      <FILE id="WNkw0V" name="SMTUtils.h" compile="0" resource="0" file="Source/Helpers/SMTUtils.h"/>
     </GROUP>
     <GROUP id="{50819E26-3EF6-F93E-380B-A567157B7389}" name="Source">
       <FILE id="Zbg3ub" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -118,7 +117,7 @@
         <MODULEPATH id="juce_gui_extra" path="../../SDKs/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../SDKs/JUCE/modules"/>
         <MODULEPATH id="juce_dsp" path="../../SDKs/JUCE/modules"/>
-        <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/modules/danlin_fontawesome"/>
+        <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/custom_modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_IPHONE targetFolder="Builds/iOS">
@@ -142,12 +141,12 @@
         <MODULEPATH id="juce_audio_formats"/>
         <MODULEPATH id="juce_audio_devices"/>
         <MODULEPATH id="juce_audio_basics"/>
-        <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/modules/"/>
+        <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/custom_modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="danlin_fontawesome" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
+    <MODULE id="danlin_fontawesome" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

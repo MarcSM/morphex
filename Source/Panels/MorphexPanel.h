@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "../InterfaceDefines.h"
+#include "../Helpers/InterfaceDefines.h"
 #include "MorphexLookAndFeel.h"
 #include "MainPanel.h"
 #include "TopPanel.h"

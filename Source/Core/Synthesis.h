@@ -16,7 +16,7 @@
 #include "Instrument.h"
 #include "Sound.h"
 
-#include "../SMTConstants.h"
+#include "../Helpers/SMTConstants.h"
 
 #include <math.h>
 #include <vector>

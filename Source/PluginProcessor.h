@@ -15,7 +15,7 @@
 #include "Entities/MorphexSynth.h"
 #include "Managers/PresetManager.h"
 
-#include "SMTParameters.h"
+#include "Helpers/SMTParameters.h"
 
 //==============================================================================
 /**

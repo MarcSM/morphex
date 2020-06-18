@@ -11,8 +11,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include "SMTConstants.h"
-#include "SMTUtils.h"
+#include "Helpers/SMTConstants.h"
+#include "Helpers/SMTUtils.h"
 
 
 //==============================================================================
@@ -241,60 +241,6 @@ void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, 
     
     if (xmlState != nullptr) {
         forEachXmlChildElement(*xmlState, subChild) {
-            
-//            // Get morph sound's file path
-//            MorphSounds morph_sounds = this->mMorphexSynth.instrument.getMorphSounds();
-//            
-//            // Error vars
-//            bool error_loading_sounds = false;
-//            String error_message = "The preset couldn't be loaded, the following sounds are not in your library:\n";
-//            
-//            for (int i = 0; i < morph_sounds.size(); i++)
-//            {
-//                // Generate sound ID
-//                String sound_file_path_id = SOUND_FILE_PATH_PARAMETER_ID + String (i + 1);
-//                
-//                // Retrieve the sound file path
-//                std::string sound_file_path = subChild->getStringAttribute (sound_file_path_id).toStdString();
-//                
-//                // If it's not empty
-//                if (!sound_file_path.empty())
-//                {
-//                    // Prepend the user's plugin data directory
-//                    sound_file_path = (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString() + sound_file_path;
-//                    
-//                    // Check if sound file path is valid
-//                    File sound_file_path_check (sound_file_path);
-//                    
-//                    if (!sound_file_path_check.existsAsFile())
-//                    {
-//                        error_loading_sounds = true;
-//                        error_message += String ("\n" + sound_file_path);
-//                    }
-//                    else
-//                    {
-//                        this->mMorphexSynth.instrument.loadSound (sound_file_path, (MorphLocation) i);
-//                    }
-//                }
-//                
-//                // Remove the sound file path element from the xml
-//                subChild->removeAttribute ( String(sound_file_path_id) );
-//            }
-//            
-//            if (error_loading_sounds)
-//            {
-//                AlertWindow aux ("Sounds not found", "", AlertWindow::NoIcon);
-//                aux.showMessageBox (AlertWindow::WarningIcon, "Sounds not found", error_message, "Accept");
-//            }
-//            else
-//            {
-//                // Load the sounds
-//                //                sound[1]->load(sound_1_file_path);
-//                //                sound[2]->load(sound_2_file_path);
-//                
-////                // Load the preset parameters
-////                mPresetManager->loadPresetForXml(subChild);
-//            }
             
             // Load the preset parameters
             mPresetManager->loadPresetForXml (subChild);

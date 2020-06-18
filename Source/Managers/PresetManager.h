@@ -22,19 +22,20 @@ class PresetManager
 {
 public:
     
-    PresetManager(AudioProcessor* inProcessor, MorphexSynth* inMorphexSynth);
+    PresetManager (AudioProcessor* inProcessor, MorphexSynth* inMorphexSynth);
     ~PresetManager();
     
-    void getXmlForPreset(XmlElement* inElement);
-    void loadPresetForXml(XmlElement* inElement);
+    void getXmlForPreset (XmlElement* inElement);
+    void loadPresetForXml (XmlElement* inElement);
     
     int getNumberOfPresets();
-    String getPresetName(int inPresetIndex);
+    String getPresetName (int inPresetIndex);
     
     void createNewPreset();
     void savePreset();
-    void saveAsPreset(String inPresetName);
-    void loadPreset(int inPresetIndex);
+    void saveAsPreset (String inPresetName);
+    void loadPreset (int inPresetIndex);
+    void setSoundInformation (const void* data, int sizeInBytes);
     
     bool getIsCurrentPresetSaved();
     String getCurrentPresetName();

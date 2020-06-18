@@ -10,7 +10,7 @@
 
 #include "MorphexSynth.h"
 
-#include "../SMTConstants.h"
+#include "../Helpers/SMTConstants.h"
 
 MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 :   mParameters (parameters)

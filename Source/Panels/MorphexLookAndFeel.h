@@ -12,7 +12,7 @@
 
 #include "JuceHeader.h"
 
-#include "../InterfaceDefines.h"
+#include "../Helpers/InterfaceDefines.h"
 
 class MorphexLookAndFeel
 :   public LookAndFeel_V4

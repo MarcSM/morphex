@@ -578,19 +578,24 @@ namespace Core
                 {
                     interpolated_frame[i] = DEFAULT_VALUE;
                 }
-                else if (frame_type == FrameType::Magnitudes and
-                         (abs (frame_1[i]) == 0.0 or
-                          abs (frame_2[i]) == 0.0))
-                {
-                    interpolated_frame[i] = DEFAULT_VALUE;
-                }
                 else
                 {
-                    if (i < frame_1.size()) aux_value_1 = frame_1[i];
-                    else aux_value_1 = DEFAULT_VALUE;
-                    
-                    if (i < frame_2.size()) aux_value_2 = frame_2[i];
-                    else aux_value_2 = DEFAULT_VALUE;
+                    if (frame_type == FrameType::Magnitudes)
+                    {
+                        if (i < frame_1.size() and abs (frame_1[i]) != 0.0) aux_value_1 = frame_1[i];
+                        else aux_value_1 = DEFAULT_VALUE;
+                        
+                        if (i < frame_2.size() and abs (frame_2[i]) != 0.0) aux_value_2 = frame_2[i];
+                        else aux_value_2 = DEFAULT_VALUE;
+                    }
+                    else
+                    {
+                        if (i < frame_1.size()) aux_value_1 = frame_1[i];
+                        else aux_value_1 = DEFAULT_VALUE;
+                        
+                        if (i < frame_2.size()) aux_value_2 = frame_2[i];
+                        else aux_value_2 = DEFAULT_VALUE;
+                    }
                     
                     interpolated_frame[i] = interp_factor * aux_value_2 + (1-interp_factor) * aux_value_1;
                 }

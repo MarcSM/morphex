@@ -14,12 +14,12 @@
 #include "Synthesis.h"
 
 #include "../Entities/MorphSound.h"
-#include "../SMTAudioHelpers.h"
-#include "../SMTHelperFunctions.h"
+#include "../Helpers/SMTAudioHelpers.h"
+#include "../Helpers/SMTHelperFunctions.h"
 
 //#include "SynthesisEngine.h"
 
-#include "../SMTParameters.h"
+#include "../Helpers/SMTParameters.h"
 
 using namespace Core;
 

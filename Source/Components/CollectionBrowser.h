@@ -12,7 +12,7 @@
 
 #include <JuceHeader.h>
 
-#include "../SMTConstants.h"
+#include "../Helpers/SMTConstants.h"
 
 //==============================================================================
 /*
