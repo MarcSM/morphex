@@ -18,10 +18,10 @@
 class PadXY : public Component, public Timer
 {
 public:
-    PadXY(SpectralMorphingToolAudioProcessor* inProcessor,
-          AudioProcessorValueTreeState& stateToControl,
-          Morphex::Parameter<float> freqs_interp_factor_parameter,
-          Morphex::Parameter<float> mags_interp_factor_parameter)
+    PadXY (SpectralMorphingToolAudioProcessor* inProcessor,
+           AudioProcessorValueTreeState& stateToControl,
+           Morphex::Parameter<float> freqs_interp_factor_parameter,
+           Morphex::Parameter<float> mags_interp_factor_parameter)
     : circle(), mProcessor (inProcessor)
     {
         // In your constructor, you should add any child components, and
@@ -45,19 +45,19 @@ public:
         // Add the circle
         circle.setColour (GUI::Color::Accent.overlaidWith (Colour(255, 255, 255).withAlpha(0.15f)) );
         circle.setInterceptsMouseClicks (false, false);
-        addAndMakeVisible(circle);
+        addAndMakeVisible (circle);
         
         // Initialize the sliders
-        x_axis_slider = new Slider(x_parameterLabel);
-        y_axis_slider = new Slider(y_parameterLabel);
+        x_axis_slider = new Slider (x_parameterLabel);
+        y_axis_slider = new Slider (y_parameterLabel);
         
         // Attach the sliders to the AudioProcessorValueTreeState
         x_axis_slider_attachment =
         new AudioProcessorValueTreeState::
-        SliderAttachment(stateToControl, x_parameterID, *x_axis_slider);
+        SliderAttachment (stateToControl, x_parameterID, *x_axis_slider);
         y_axis_slider_attachment =
         new AudioProcessorValueTreeState::
-        SliderAttachment(stateToControl, y_parameterID, *y_axis_slider);
+        SliderAttachment (stateToControl, y_parameterID, *y_axis_slider);
         
         // Define the range for the sliders
         x_axis_slider->setRange (x_min, x_max);
@@ -66,7 +66,7 @@ public:
         y_axis_slider->setName (getName() + "_y");
         
         // Start the timer callback
-        startTimer(XYPAD_UI_REFRESH_TIMER_CALLBACK); // 0.5 seconds
+        startTimer (XYPAD_UI_REFRESH_TIMER_CALLBACK); // 0.5 seconds
     }
 
     ~PadXY()

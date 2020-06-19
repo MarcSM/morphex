@@ -112,7 +112,7 @@ namespace Core
         this->note[sound.note]->velocity[sound.velocity]->sound = sound;
         this->note[sound.note]->velocity[sound.velocity]->loaded = true;
         
-        if (morph_location != NUM_MORPH_LOCATIONS)
+        if (morph_location < NUM_MORPH_LOCATIONS)
         {
             this->setMorphNote (this->note[sound.note], morph_location, sound.velocity);
         }
@@ -129,17 +129,17 @@ namespace Core
             
             if ( note->hasAnyVelocity() )
             {
-                loaded_notes.push_back( note );
+                loaded_notes.push_back (note);
             }
         }
         
         return loaded_notes;
     }
     
-    MorphNotes Instrument::getCloserNotes(float f_target_note)
+    MorphNotes Instrument::getCloserNotes (float f_target_note)
     {
-        int l_i_target_note = round(f_target_note);
-        int h_i_target_note = ceil(f_target_note);
+        int l_i_target_note = round (f_target_note);
+        int h_i_target_note = ceil (f_target_note);
         
         MorphNotes closer_notes {};
         
@@ -164,7 +164,7 @@ namespace Core
         {
 //            closer_notes = getMorphNotes();
             
-            int i_notes_to_load = std::min( (int)loaded_notes.size(), (int)MorphLocation::NUM_MORPH_LOCATIONS );
+            int i_notes_to_load = std::min ((int) loaded_notes.size(), (int) MorphLocation::NUM_MORPH_LOCATIONS);
 
             for (int i = 0; i < i_notes_to_load; i++)
             {
@@ -203,9 +203,9 @@ namespace Core
         return closer_notes;
     }
     
-    MorphSounds Instrument::getCloserSounds(float f_target_note, float f_velocity)
+    MorphSounds Instrument::getCloserSounds (float f_target_note, float f_velocity)
     {
-        MorphNotes closer_notes = getCloserNotes(f_target_note);
+        MorphNotes closer_notes = getCloserNotes (f_target_note);
         
         // TODO - Select the closest velocity for range
         // NOTE: or interpolate velocities, if so, target also current
@@ -228,7 +228,7 @@ namespace Core
 //        }
         
         // Transform velocity range from 0-1 to 0-127
-        float f_velocity_midi_range = jmap(f_velocity, 0.0f, 1.0f, 1.0f, 127.0f);
+        float f_velocity_midi_range = jmap (f_velocity, 0.0f, 1.0f, 1.0f, 127.0f);
         
         // Getting closer velocities
         for (int i = 0; i < closer_notes.size(); i++)
@@ -243,7 +243,7 @@ namespace Core
                 
                 for (int j = 0; j < loaded_velocities.size(); j++)
                 {
-                    float f_velocity_distance = std::abs( loaded_velocities[j]->value - f_velocity_midi_range );
+                    float f_velocity_distance = std::abs (loaded_velocities[j]->value - f_velocity_midi_range);
                     
                     // Priority to lower velocities ("<=" for upper velocities)
                     if (f_velocity_distance < f_shortest_velocity_distance)

@@ -36,7 +36,7 @@ public:
         else if (i_sound_num == 4) morph_location = MorphLocation::Right;
         else morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
         
-        if (morph_location != MorphLocation::NUM_MORPH_LOCATIONS) this->sound = instrument->getMorphSounds()[morph_location];
+        if (morph_location != MorphLocation::NUM_MORPH_LOCATIONS) this->updateCurrentSound();
         else this->sound = new Sound();
         
 //        soundNamePanel = new SoundNamePanel (sound)
@@ -173,8 +173,7 @@ public:
         {
             instrument->loadSound (sound_file_path, morph_location);
             
-            this->sound = instrument->getMorphSound (morph_location);
-            this->current_sound_path = this->sound->path;
+            this->updateCurrentSound();
             
             // TODO - Improve load / destroy sounds method
 //            std::string sound_file_name = dragSourceDetails.description.toString();
@@ -282,11 +281,19 @@ private:
     void timerCallback() override
     {
 //        if (this->current_sound_path != this->sound->path)
-        if (this->current_sound_path != this->sound->path)
+        if (morph_location < MorphLocation::NUM_MORPH_LOCATIONS and
+            this->current_sound_path != instrument->getMorphSound (morph_location)->path)
         {
-            this->current_sound_path = this->sound->path;
+//            this->current_sound_path = this->sound->path;
+            this->updateCurrentSound();
             repaint();
         }
+    }
+    
+    void updateCurrentSound()
+    {
+        this->sound = instrument->getMorphSound (morph_location);
+        this->current_sound_path = this->sound->path;
     }
     
     std::string current_sound_path;

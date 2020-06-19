@@ -155,7 +155,7 @@ private:
     
     void buttonClicked (Button* b) override
     {
-        if (b == (TextButton*) &mSavePreset) mPresetManager->savePreset();
+        if (b == &mSavePreset) mPresetManager->savePreset();
 
 //        if (b == mNewPreset) {
 //            presetManager->createNewPreset();
@@ -174,9 +174,20 @@ private:
         if (comboBoxThatHasChanged == &mPresetDisplay)
         {
 //            PresetManager* presetManager = mProcessor->getPresetManager();
-//
+            
             const int index = mPresetDisplay.getSelectedItemIndex();
-            mPresetManager->loadPreset (index);
+            
+            if (index > -1)
+            {
+                if (mPresetManager->loadPreset (index))
+                {
+                    this->currentPresetIndex = index;
+                }
+                else
+                {
+                    mPresetDisplay.setSelectedItemIndex (this->currentPresetIndex, NotificationType::dontSendNotification);
+                }
+            }
         }
 
         if (comboBoxThatHasChanged == &mMenu)
@@ -227,6 +238,8 @@ private:
     
     void updatePresetComboBox()
     {
+        this->currentPresetIndex = mPresetDisplay.getSelectedItemIndex();
+        
         String presetName = mPresetManager->getCurrentPresetName();
 
         mPresetDisplay.clear (dontSendNotification);
@@ -235,10 +248,10 @@ private:
 
         for (int i=0; i < numPresets; i++)
         {
-            mPresetDisplay.addItem(mPresetManager->getPresetName(i), (i+1));
+            mPresetDisplay.addItem (mPresetManager->getPresetName(i), (i+1));
         }
 
-        mPresetDisplay.setText(mPresetManager->getCurrentPresetName());
+        mPresetDisplay.setText (mPresetManager->getCurrentPresetName());
     }
     
     PresetManager* mPresetManager;
@@ -248,6 +261,8 @@ private:
     Morphex::Button mSavePreset;
     ComboBox mPresetDisplay;
     ComboBox mMenu;
+    
+    int currentPresetIndex = 0;
 
     SpectralMorphingToolAudioProcessor* mProcessor;
     

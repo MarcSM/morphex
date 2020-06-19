@@ -23,9 +23,10 @@ const static int CURRENT_FILE_VERSION = 1;
 const static int MAX_VOICES = 10;
 
 // Timers
+const static int GUI_REFRESH_TIMER = 100; // 0.1 seconds
 const static int WAVEFORM_PREVIEW_UI_REFRESH_TIMER_CALLBACK = 1000; // 1 second
-const static int XYPAD_UI_REFRESH_TIMER_CALLBACK = 5000; // 1 second
-const static int GUI_REFRESH_TIMER_CALLBACK_SOUND = 100; // 0.1 seconds
+const static int XYPAD_UI_REFRESH_TIMER_CALLBACK = GUI_REFRESH_TIMER;
+const static int GUI_REFRESH_TIMER_CALLBACK_SOUND = GUI_REFRESH_TIMER;
 
 // Paths
 # if JUCE_WINDOWS

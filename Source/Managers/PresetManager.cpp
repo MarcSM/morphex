@@ -148,23 +148,51 @@ void PresetManager::saveAsPreset(String inPresetName)
     storeLocalPreset();
 }
 
-void PresetManager::loadPreset(int inPresetIndex)
+// TODO
+void PresetManager::getSoundInformation (MemoryBlock& destData)
 {
+    // Save morph sound's file path
+    MorphSounds morph_sounds = this->mMorphexSynth->instrument.getMorphSounds();
+
+    for (int i = 0; i < morph_sounds.size(); i++)
+    {
+        std::string sound_file_path = morph_sounds[i]->path;
+        removeSubStr (sound_file_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString());
+        String sound_file_path_id = SOUND_FILE_PATH_PARAMETER_ID + String (i + 1);
+        
+        XmlElement* presetBody = new XmlElement("MPF_Preset");
+//        presetBody->setAttribute (sound_file_path_id, sound_file_path);
+    }
+}
+
+bool PresetManager::loadPreset (int inPresetIndex)
+{
+    bool present_was_loaded = false;
+    
     mCurrentlyLoadedPreset = mLocalPresets[inPresetIndex];
     
     MemoryBlock presetBinary;
     
     if (mCurrentlyLoadedPreset.loadFileAsData (presetBinary))
     {
-        mCurrentPresetIsSaved = true;
-        mCurrentPresetName = getPresetName (inPresetIndex);
-        this->setSoundInformation (presetBinary.getData(), (int) presetBinary.getSize());
-        mProcessor->setStateInformation(presetBinary.getData(), (int) presetBinary.getSize());
+        bool sounds_can_be_loaded = this->setSoundInformation (presetBinary.getData(), (int) presetBinary.getSize());
+        
+        if (sounds_can_be_loaded)
+        {
+            mCurrentPresetIsSaved = true;
+            mCurrentPresetName = getPresetName (inPresetIndex);
+            mProcessor->setStateInformation (presetBinary.getData(), (int) presetBinary.getSize());
+            present_was_loaded = true;
+        }
     }
+    
+    return present_was_loaded;
 }
 
-void PresetManager::setSoundInformation (const void* data, int sizeInBytes)
+bool PresetManager::setSoundInformation (const void* data, int sizeInBytes)
 {
+    bool sounds_can_be_loaded = true;
+    
     std::unique_ptr<XmlElement> xmlState;
     xmlState = juce::AudioPluginInstance::getXmlFromBinary (data, sizeInBytes);
     
@@ -174,11 +202,12 @@ void PresetManager::setSoundInformation (const void* data, int sizeInBytes)
         {
             // Get morph sound's file path
             MorphSounds morph_sounds = this->mMorphexSynth->instrument.getMorphSounds();
+            std::vector<std::string> sound_file_paths_to_load;
             
             // Error vars
-            bool error_loading_sounds = false;
             String error_message = "The preset couldn't be loaded, the following sounds are not in your library:\n";
             
+            // Checking of the sounds exist
             for (int i = 0; i < morph_sounds.size(); i++)
             {
                 // Generate sound ID
@@ -198,39 +227,44 @@ void PresetManager::setSoundInformation (const void* data, int sizeInBytes)
                     
                     if (!sound_file_path_check.existsAsFile())
                     {
-                        error_loading_sounds = true;
+                        sounds_can_be_loaded = false;
                         error_message += String ("\n" + sound_file_path);
                     }
                     else
                     {
-                        this->mMorphexSynth->instrument.loadSound (sound_file_path, (MorphLocation) i);
+                        sound_file_paths_to_load.push_back (sound_file_path);
+                        
+//                        // Remove the sound file path element from the xml
+//                        subChild->removeAttribute ( String(sound_file_path_id) );
                     }
                 }
-                
-                //            // Remove the sound file path element from the xml
-                //            subChild->removeAttribute ( String(sound_file_path_id) );
             }
             
-            if (error_loading_sounds)
+            if (sounds_can_be_loaded)
             {
-                AlertWindow aux ("Sounds not found", "", AlertWindow::NoIcon);
-                aux.showMessageBox (AlertWindow::WarningIcon, "Sounds not found", error_message, "Accept");
+                // Reset the plugin
+                this->mMorphexSynth->reset();
+                
+                // Load the sounds
+                for (int i = 0; i < sound_file_paths_to_load.size(); i++)
+                {
+                    this->mMorphexSynth->instrument.loadSound (sound_file_paths_to_load[i], (MorphLocation) i);
+                }
             }
             else
             {
-                // Load the sounds
-                //                sound[1]->load(sound_1_file_path);
-                //                sound[2]->load(sound_2_file_path);
-                
-                //                // Load the preset parameters
-                //                mPresetManager->loadPresetForXml(subChild);
+                AlertWindow aux ("Sounds not found", "", AlertWindow::NoIcon);
+                aux.showMessageBox (AlertWindow::WarningIcon, "Sounds not found", error_message, "Accept");
             }
         }
     }
     else
     {
         jassertfalse;
+        sounds_can_be_loaded = false;
     }
+    
+    return sounds_can_be_loaded;
 }
 
 bool PresetManager::getIsCurrentPresetSaved()

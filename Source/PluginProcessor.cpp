@@ -152,8 +152,9 @@ bool SpectralMorphingToolAudioProcessor::isBusesLayoutSupported (const BusesLayo
     return true;
 #else
     // This is the place where you check if the layout is supported.
-    // In this template code we only support stereo.
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+    // In this template code we only support mono or stereo.
+    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
+        && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
         return false;
     
     // This checks if the input layout matches the output layout
@@ -166,6 +167,27 @@ bool SpectralMorphingToolAudioProcessor::isBusesLayoutSupported (const BusesLayo
 #endif
 }
 #endif
+//bool SpectralMorphingToolAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+//{
+//#if JucePlugin_IsMidiEffect
+//    ignoreUnused (layouts);
+//    return true;
+//#else
+//    // This is the place where you check if the layout is supported.
+//    // In this template code we only support stereo.
+//    if (layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+//        return false;
+//
+//    // This checks if the input layout matches the output layout
+//#if ! JucePlugin_IsSynth
+//    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+//        return false;
+//#endif
+//
+//    return true;
+//#endif
+//}
+//#endif
 
 void SpectralMorphingToolAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
@@ -198,9 +220,9 @@ void SpectralMorphingToolAudioProcessor::getStateInformation (MemoryBlock& destD
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
     
-    XmlElement preset("MPF_StateInfo");
+    XmlElement preset ("MPF_StateInfo");
     
-    XmlElement* presetBody = new XmlElement("MPF_Preset");
+    XmlElement* presetBody = new XmlElement ("MPF_Preset");
     
 //    // Save morph sound's file path
 //    MorphSounds morph_sounds = this->mMorphexSynth.instrument.getMorphSounds();
@@ -213,10 +235,10 @@ void SpectralMorphingToolAudioProcessor::getStateInformation (MemoryBlock& destD
 //        presetBody->setAttribute (sound_file_path_id, sound_file_path);
 //    }
     
-    mPresetManager->getXmlForPreset(presetBody);
+    mPresetManager->getXmlForPreset (presetBody);
     
-    preset.addChildElement(presetBody);
-    copyXmlToBinary(preset, destData);
+    preset.addChildElement (presetBody);
+    copyXmlToBinary (preset, destData);
 }
 
 void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
