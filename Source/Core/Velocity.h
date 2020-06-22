@@ -23,11 +23,6 @@ public:
 //    bool loaded_metadata;
     
     Sound sound;
-    
-
-    
-//    Sound* sound;
-//    std::unique_ptr<Sound> sound;
 
     // Midi values
     int value;
@@ -37,9 +32,7 @@ public:
     {
         // Flags
         this->loaded = false;
-        //        this->loaded_metadata = false;
-        
-//        this->sound.addChild (_sound, -1, nullptr);
+//        this->loaded_metadata = false;
     }
     
     void reset()
@@ -51,7 +44,7 @@ public:
         this->sound.reset();
     }
     
-    Velocity(int midi_note_value, int value)
+    Velocity (int midi_note_value, int value)
     {
         // Midi values
         this->value = value;
@@ -61,41 +54,20 @@ public:
         this->init();
     }
     
-    void setSound(Sound sound)
+    void setSound (Sound sound)
     {
         // TODO - Find a better approach to do this (try to avoid using copy constructor)
         this->sound = sound;
         this->loaded = true;
-        
-        //        if (this->loaded_metadata)
-        //        {
-        ////            this->sound->loop.start = this->loopstart;
-        ////            this->sound->loop.end = this->loopend;
-        //            this->loaded =true;
-        //        }
     }
     
-//    void loadSound(std::unique_ptr<Sound> sound)
-    void loadSound(std::string file_path)
+    void loadSound (std::string file_path)
     {
+        // Maybe turn "this->sound" into a pointer and create a new
+        // method to load the sound in the proper note and velocity
         this->sound = *new Sound(file_path, midi_note_value, value);
-//        this->sound = sound;
         this->loaded = true;
-        
-//        if (this->loaded_metadata)
-//        {
-////            this->sound->loop.start = this->loopstart;
-////            this->sound->loop.end = this->loopend;
-//            this->loaded =true;
-//        }
     }
-    
-//    void loadSoundFromPath(std::string had_file_path)
-//    {
-//        this->sound = new Sound(had_file_path);
-//        this->sound->loadHadFile();
-//        this->loaded = true;
-//    }
     
 private:
 };

@@ -16,9 +16,6 @@
 #include "../Entities/MorphSound.h"
 #include "../Helpers/SMTAudioHelpers.h"
 #include "../Helpers/SMTHelperFunctions.h"
-
-//#include "SynthesisEngine.h"
-
 #include "../Helpers/SMTParameters.h"
 
 using namespace Core;
@@ -32,23 +29,14 @@ struct Voice
         Decay,
         Sustain,
         Release
-    } adsr;
+    };
+    StateADSR adsr;
     
-//    // Note playback
-//    bool playing_note;
-//    bool loop_mode;
-    
-//    Voice(Instrument instrument, AudioProcessorValueTreeState* parameters)
-    Voice(Instrument* instrument, AudioProcessorValueTreeState* parameters)
+    Voice (Instrument* instrument, AudioProcessorValueTreeState* parameters)
     :   mParameters (parameters),
         instrument (instrument),
         synthesis (instrument)
     {
-//        DBG(String(voice_ID) + " - VOICE INIT");
-        
-//        // Initialize the synthesis engine
-//        this->synthesis = Synthesis (instrument);
-        
         this->reset();
     }
     
@@ -59,17 +47,12 @@ struct Voice
         this->playing_note = false;
         this->loop_mode = true;
         this->hold_note = false;
-        this->track_velocity = false; // High CPU usage
+        this->track_velocity = false; // NOTE - High CPU usage if true
         this->allow_pitch_wheel = true;
         
         // Default values
         this->f_pressed_midi_note = 0;
         this->f_current_midi_note = 0;
-        //        this->f_current_midi_pitch_wheel.reset(10);
-        //        this->f_current_midi_pitch_wheel = new SmoothedValue(8192.0);
-        //        this->f_current_midi_pitch_wheel.setCurrentAndTargetValue(8192.0);
-        //        this->f_current_midi_pitch_wheel = 8192.0;
-        //        this->f_current_midi_pitch_wheel_smoothed = 8192.0;
         this->f_current_velocity = 0;
         this->f_last_midi_note = 0;
         
@@ -81,52 +64,23 @@ struct Voice
     
     bool canPlaySound (SynthesiserSound* synthSound) override
     {
-//        DBG(String(voice_ID) + " - canPlaySound");
-//        return true;
         return dynamic_cast<MorphSound*> (synthSound) != nullptr;
     }
     
-    void startNote( int midiNoteNumber, float velocity,
-                   SynthesiserSound*, int currentPitchWheelPosition) override
+    void startNote (int midiNoteNumber, float velocity, SynthesiserSound*, int currentPitchWheelPosition) override
     {
-//        DBG(String(voice_ID) + " - startNote");
-//        // Reset synthesis engine
-//        this->synthesis.reset();
-        
-//        if (velocity != 0.0 and velocity != 1.0)
-//        {
-//            DBG("NOW START");
-//        }
-        
-//        this->reset();
-        
 //        // Note playback
 //        this->adsr = StateADSR::Attack;
-        
         this->playing_note = true;
         
-        this->f_pressed_midi_note = (float)midiNoteNumber;
-        this->f_current_midi_note = (float)midiNoteNumber;
-        this->f_last_midi_note = (float)midiNoteNumber;
+        this->f_pressed_midi_note = (float) midiNoteNumber;
+        this->f_current_midi_note = (float) midiNoteNumber;
+        this->f_last_midi_note = (float) midiNoteNumber;
         this->f_current_velocity = velocity;
         
         this->updateMorphSounds (this->f_pressed_midi_note, this->f_current_velocity);
         
-        this->updateMidiNoteWithPitchWheel(currentPitchWheelPosition, true);
-        
-//        // Sounds
-//        morph_sounds = this->instrument.getCloserSounds( this->f_current_midi_note, this->f_current_velocity );
-//
-//        // Compute common looping regions
-//        this->max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
-//                                        morph_sounds[MorphLocation::Right]->loop.start);
-//
-//        this->min_loop_end = std::min(morph_sounds[MorphLocation::Left]->loop.end,
-//                                      morph_sounds[MorphLocation::Right]->loop.end);
-//
-//        // Get the minimum length of both notes
-//        this->min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
-//                                      morph_sounds[MorphLocation::Right]->max_frames);
+        this->updateMidiNoteWithPitchWheel (currentPitchWheelPosition, true);
         
         // Velocity affects the gain
         this->level = velocity * 0.15;
@@ -135,11 +89,8 @@ struct Voice
         this->tailOff = 1.0;
     }
     
-    void stopNote(float velocity, bool allowTailOff) override
+    void stopNote (float velocity, bool allowTailOff) override
     {
-//        DBG(String(voice_ID) + " - stopNote");
-//        allowTailOff = false;
-        
         if (allowTailOff)
         {
             if (this->tailOff == 1.0) this->tailOff *= 0.999;
@@ -153,83 +104,62 @@ struct Voice
     
     void pitchWheelMoved (int newValue) override
     {
-        //        float semitones_range = 12.0;
-        this->updateMidiNoteWithPitchWheel(newValue);
+        this->updateMidiNoteWithPitchWheel (newValue);
     }
     
-    void updateMidiNoteWithPitchWheel(int newValue, bool set_current = false)
+    void updateMidiNoteWithPitchWheel (int newValue, bool set_current = false)
     {
         // Map range 0-16383 to -12:12 semitones
         //        this->f_current_midi_pitch_wheel = jmap((float)newValue, 0.0f, 16383.0f,
         
+        // TODO - Custom "semitones_range"
+        //        float semitones_range = 12.0;
+        
         if (this->allow_pitch_wheel)
         {
-            float f_new_midi_pitch_wheel = jmap((float)newValue, 0.0f, 16383.0f,
-                                                -this->f_pitch_wheel_range_semitones,
-                                                this->f_pitch_wheel_range_semitones);
+            float f_new_midi_pitch_wheel = jmap ((float) newValue, 0.0f, 16383.0f,
+                                                 -this->f_pitch_wheel_range_semitones,
+                                                 this->f_pitch_wheel_range_semitones);
             
             if (set_current)
             {
-                this->f_current_midi_pitch_wheel.setCurrentAndTargetValue( f_new_midi_pitch_wheel );
+                this->f_current_midi_pitch_wheel.setCurrentAndTargetValue (f_new_midi_pitch_wheel);
             }
             else
             {
-                this->f_current_midi_pitch_wheel.setTargetValue( f_new_midi_pitch_wheel );
+                this->f_current_midi_pitch_wheel.setTargetValue (f_new_midi_pitch_wheel);
             }
         }
-        
-//        this->f_current_midi_pitch_wheel += 0.04 * f_new_midi_pitch_wheel;
-//        this->f_current_midi_pitch_wheel_smoothed = this->f_current_midi_pitch_wheel_smoothed - 0.004 *
-        
-//        SmoothedValue< FloatType, SmoothingType >::SmoothedValue    (    FloatType     initialValue    )
-        
-//        this->f_current_midi_note = this->f_pressed_midi_note + this->f_current_midi_pitch_wheel.getNextValue();
-//        this->f_current_midi_note = this->f_pressed_midi_note + this->f_current_midi_pitch_wheel.getCurrentValue();
-        //        this->f_current_midi_note = this->f_pressed_midi_note + this->f_current_midi_pitch_wheel;
     }
     
-    void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override    {}
+    void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override {}
     
-    void setADSRSampleRate(double sampleRate)
+    // TODO
+    void setADSRSampleRate (double sampleRate)
     {
-        //        adsr.setSampleRate(sampleRate);
+//        adsr.setSampleRate(sampleRate);
     }
     
-    void updateAdsrParams(float attack, float decay, float sustain, float release)
+    // TODO
+    void updateAdsrParams (float attack, float decay, float sustain, float release)
     {
-        //        adsrParams.attack = attack;
-        //        adsrParams.decay = decay;
-        //        adsrParams.sustain = sustain;
-        //        adsrParams.release = release;
-        
-        // Update ADSR parameters
-        //        adsr.setParameters(adsrParams);
+//        adsrParams.attack = attack;
+//        adsrParams.decay = decay;
+//        adsrParams.sustain = sustain;
+//        adsrParams.release = release;
+//
+//        // Update ADSR parameters
+//        adsr.setParameters(adsrParams);
     }
-    
-    //    void reset()
-    //    {
-    //        // Clean the buffers
-    //        zeromem(mCircularBufferLeft, sizeof(float) * MORPH_CIRCULAR_BUFFER_LENGTH);
-    //        zeromem(mCircularBufferRight, sizeof(float) * MORPH_CIRCULAR_BUFFER_LENGTH);
-    //    }
     
     void clearAndResetCurrentNote()
     {
-//        SynthesiserVoice::clearCurrentNote();
         this->clearCurrentNote();
         this->synthesis.reset();
         this->reset();
-
-//        // TODO - Just in case but not needed
-//        this->f_pressed_midi_note = 0;
-//        this->f_current_midi_note = 0;
-//        this->f_current_midi_pitch_wheel = 0;
-//        this->f_current_velocity = 0;
-//        this->f_last_midi_note = 0;
-//        this->playing_note = false;
     }
     
-    void updateMorphSounds(float f_note, float f_velocity)
+    void updateMorphSounds (float f_note, float f_velocity)
     {
         // Instrument::Mode::Morphing
         if (this->instrument->mode == Instrument::Mode::Morphing)
@@ -239,7 +169,7 @@ struct Voice
         // Instrument::Mode::FullRange
         else
         {
-            this->morph_sounds = this->instrument->getCloserSounds( f_note, f_velocity );
+            this->morph_sounds = this->instrument->getCloserSounds (f_note, f_velocity);
         }
         
         bool first_iter = true;
@@ -269,19 +199,6 @@ struct Voice
         }
         
         this->f_last_midi_note = f_note;
-        
-//        // Compute common looping regions
-//        this->max_loop_start = std::max(morph_sounds[MorphLocation::Left]->loop.start,
-//                                        morph_sounds[MorphLocation::Right]->loop.start);
-//
-//        this->min_loop_end = std::min(morph_sounds[MorphLocation::Left]->loop.end,
-//                                      morph_sounds[MorphLocation::Right]->loop.end);
-//
-//        // Get the minimum length of both notes
-//        this->min_note_end = std::min(morph_sounds[MorphLocation::Left]->max_frames,
-//                                      morph_sounds[MorphLocation::Right]->max_frames);
-//
-//        this->f_last_midi_note = f_note;
     }
     
     void renderNextBlock (AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override
@@ -290,21 +207,17 @@ struct Voice
         {
             if (this->allow_pitch_wheel) this->f_current_midi_note = this->f_pressed_midi_note + this->f_current_midi_pitch_wheel.getNextValue();
             
-//            if (numSamples != 512)
-//            {
-//                DBG("numSamples = " + String(numSamples));
-//                DBG("CHECK THIS!");
-//            }
-            
             std::vector<float> frame = getNextFrame (this->f_current_midi_note, this->f_current_velocity, numSamples);
             
             for (int i_sample = 0; i_sample < numSamples; i_sample++)
             {
                 auto currentSample = (float) (frame[i_sample] * this->level * this->tailOff);
-                //                    auto currentSample = (float) (std::sin (this->currentAngle) * this->level * this->tailOff);
+//                auto currentSample = (float) (std::sin (this->currentAngle) * this->level * this->tailOff);
                 
                 for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
+                {
                     outputBuffer.addSample (i, startSample, currentSample);
+                }
                 
                 ++startSample;
                 
@@ -326,7 +239,7 @@ struct Voice
         }
     }
     
-    std::vector<float> getNextFrame(float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
+    std::vector<float> getNextFrame (float f_note, float f_velocity, int i_frame_length, float f_interpolation_factor = -1)
     {
         // Synthesis parameters shortcuts
         const int i_hop_size = this->synthesis.parameters.hop_size;
@@ -338,20 +251,16 @@ struct Voice
             // If current note has changed
             if (this->f_current_midi_note != this->f_last_midi_note)
             {
-                this->updateMorphSounds(this->f_current_midi_note, this->f_current_velocity);
+                this->updateMorphSounds (this->f_current_midi_note, this->f_current_velocity);
             }
         }
-        
-        
-//        if (this->synthesis.live_values.i_samples_ready >= i_frame_length)
-//        {
-//            DBG("It happens");
-//        }
         
         Sound::Frame sound_frame;
         
         while (this->synthesis.live_values.i_samples_ready < i_frame_length)
         {
+            // TODO - Implement ADSR
+            
 //                float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
 //                float adsr_decay = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_decay]);
 //                float adsr_sustain = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_sustain]);
@@ -405,51 +314,28 @@ struct Voice
 //                    *i_current_frame = int( this->min_loop_end / i_hop_size );
 //                }
 //            }
-//
+            
             // If we are on the last frame of the shortest note
-            if ( *i_current_frame == this->min_note_end-1)
+            if (*i_current_frame == this->min_note_end-1)
             {
                 // End note playback
-//                this->playing_note = false;
                 this->synthesis.live_values.last_frame = true;
             }
             
             // Instrument::Mode::Morphing
             if (this->instrument->mode == Instrument::Mode::Morphing)
             {
-//                this->synthesis.parameters.generate_harmonic = true;
-//                this->synthesis.parameters.generate_sinusoidal = false;
-//                this->synthesis.parameters.generate_attack = false;
-//                this->synthesis.parameters.generate_residual = false;
-
-                // TODO - Get morph_sounds from instrument, the 4 sounds
-                // marked to be used on morhping mode
-//                morph_sounds = this->instrument->getMorphSounds();
-                
-//                float adsr_attack = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_attack]);
-//                float adsr_decay = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_decay]);
-//                float adsr_sustain = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_sustain]);
-//                float adsr_release = *mParameters->getRawParameterValue(SMTParameterID[kParameter_asdr_release]);
-
-//                float freqs_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_freqs_interp_factor]);
-//                float mags_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_mags_interp_factor]);
-                
                 float freqs_interp_factor = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::freqs_interp_factor].ID);
                 float mags_interp_factor = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::mags_interp_factor].ID);
                 
                 // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
-//                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
-                sound_frame = this->instrument->morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
-                                                                freqs_interp_factor, mags_interp_factor);
+                sound_frame = this->instrument->morphSoundFrames (this->f_current_midi_note, morph_sounds,
+                                                                  *i_current_frame, i_hop_size,
+                                                                  freqs_interp_factor, mags_interp_factor);
             }
             // Instrument::Mode::FullRange
             else
             {
-//                this->synthesis.parameters.generate_harmonic = true;
-//                this->synthesis.parameters.generate_sinusoidal = true;
-//                this->synthesis.parameters.generate_attack = true;
-//                this->synthesis.parameters.generate_residual = true;
-
                 if (this->instrument->interpolation_mode == Instrument::Interpolation::None or
                     this->morph_sounds[MorphLocation::Left] == this->morph_sounds[MorphLocation::Right])
                 {
@@ -457,10 +343,8 @@ struct Voice
                     
                     if (this->instrument->interpolation_mode == Instrument::Interpolation::None)
                     {
-                        int left_note_distance = std::abs( this->f_pressed_midi_note - this->morph_sounds[MorphLocation::Left]->note );
-                        int right_note_distance = std::abs( this->f_pressed_midi_note - this->morph_sounds[MorphLocation::Right]->note );
-//                        int left_note_distance = std::abs( this->f_current_midi_note - morph_sounds[MorphLocation::Left]->note );
-//                        int right_note_distance = std::abs( this->f_current_midi_note - morph_sounds[MorphLocation::Right]->note );
+                        int left_note_distance = std::abs (this->f_pressed_midi_note - this->morph_sounds[MorphLocation::Left]->note);
+                        int right_note_distance = std::abs (this->f_pressed_midi_note - this->morph_sounds[MorphLocation::Right]->note);
 
                         if (left_note_distance < right_note_distance)
                         {
@@ -476,11 +360,11 @@ struct Voice
                         selected_sound = morph_sounds[MorphLocation::Left];
                     }   
                     
-                    sound_frame = selected_sound->getFrame(*i_current_frame, i_hop_size);
+                    sound_frame = selected_sound->getFrame (*i_current_frame, i_hop_size);
                     
                     // Get target frequency
-                    float f_target_frequency = Tools::Midi::toFreq(this->f_current_midi_note);
-                    float f_note_frequency = Tools::Midi::toFreq(selected_sound->note);
+                    float f_target_frequency = Tools::Midi::toFreq (this->f_current_midi_note);
+                    float f_note_frequency = Tools::Midi::toFreq (selected_sound->note);
                     
                     if (sound_frame.hasHarmonic())
                     {
@@ -499,22 +383,22 @@ struct Voice
                             sound_frame.sinusoidal.freqs[i] = (sound_frame.sinusoidal.freqs[i] / f_note_frequency) * f_target_frequency;
                         }
                     }
-                    
-                    //                    // Transpose left note frequencies to the target frequency
-                    //                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
-                    //                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
-                    //                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
+//
+//                    // Transpose left note frequencies to the target frequency
+//                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
+//                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
+//                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
                 }
                 else
                 {
                     // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
-                    sound_frame = this->instrument->morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
+                    sound_frame = this->instrument->morphSoundFrames (this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
                 }
             }
 
             // NOTE - "frame" will have "i_hop_size" more samples ready to be played after each call
             // TODO - This function needs to be optimized
-            this->synthesis.generateSoundFrame(sound_frame, i_frame_length);
+            this->synthesis.generateSoundFrame (sound_frame, i_frame_length);
 
             *i_current_frame += 1;
             
@@ -522,15 +406,14 @@ struct Voice
             {
                 // End note playback
                 this->playing_note = false;
-//                this->synthesis.live_values.last_frame = true;
             }
         }
         
         // Selecting the processed samples
-        std::vector<float> frame = this->synthesis.getBuffer(Synthesis::BufferSection::Play, Channel::Mono, i_frame_length);
+        std::vector<float> frame = this->synthesis.getBuffer (Synthesis::BufferSection::Play, Channel::Mono, i_frame_length);
         
         // Update play pointer position
-        this->synthesis.updatePlayPointer(i_frame_length);
+        this->synthesis.updatePlayPointer (i_frame_length);
 
         // Update samples ready to be played
         this->synthesis.live_values.i_samples_ready -= i_frame_length;
@@ -540,10 +423,8 @@ struct Voice
     
 private:
     
-    // TODO TEST
-//    const int voice_ID;
-    
     AudioProcessorValueTreeState* mParameters;
+    
     Instrument* instrument;
     Synthesis synthesis;
         
@@ -551,9 +432,6 @@ private:
     float f_pressed_midi_note;
     float f_current_midi_note;
     SmoothedValue<float, ValueSmoothingTypes::Linear> f_current_midi_pitch_wheel;
-//    SmoothedValue<float> f_current_midi_pitch_wheel(8192.0, ValueSmoothingTypes::Linear);
-//    float f_current_midi_pitch_wheel;
-//    float f_current_midi_pitch_wheel_smoothed;
     float f_current_velocity;
     float f_last_midi_note;
     float f_pitch_wheel_range_semitones = 3.0f;

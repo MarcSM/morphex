@@ -30,12 +30,6 @@ public:
     {
         struct FMP
         {
-//            enum Type
-//            {
-//                Harmonic = 0,
-//                Sinusoidal
-//            };
-            
             std::vector<std::vector<float>> freqs;
             std::vector<std::vector<float>> mags;
             std::vector<std::vector<float>> phases;
@@ -50,20 +44,6 @@ public:
     const Values &values;
     
     Model() : values (_values) {}
-
-//    Model (const Model& obj) : values (obj.values) {};
-    
-//    Model (const Model& obj) : values (_values)
-//    Model (const Model& obj) : values (obj._values)
-    
-//    Model (const Model& obj) : values (obj._values) {}
-    
-    //        this->_values = obj.values;
-    
-//    Model (const Model& obj) : values (_values) {};
-//    {
-//        this->_values = obj.values;
-//    }
     
     void reset()
     {
@@ -123,7 +103,7 @@ public:
         // Matrix decoding
         if (decode) Codec::decodeMatrix (this->_values.harmonic.freqs);
 
-        // TODO - Sanity check, don't trsut the "had", check if there are any anomalies and,
+        // TODO - Sanity check, don't trust the "had", check if there are any anomalies and,
         // in such case, abort loading the sound, rise and exeption, and display a message to the user.
     }
 

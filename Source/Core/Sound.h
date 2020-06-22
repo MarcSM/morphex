@@ -33,15 +33,6 @@
     mapped_type & _second() { return (*this)->second;}; \
 }
 
-//#include "SMTUtils.h"
-//#include "SMTConstants.h"
-
-//#include "SMTAudioHelpers.h"
-
-//#include <unordered_map>
-//#include <list>
-//#include <boost/filesystem.hpp>
-
 namespace Core { class Sound; }
 
 class Core::Sound
@@ -145,16 +136,7 @@ public:
     };
     SoundFeatures features;
     
-    /** Original Sound Values */
-//    struct OriginalValues {
-//        /** Analysis output readen from the ".had" file */
-//        std::vector<std::vector<float>> harmonics_freqs;
-//        std::vector<std::vector<float>> harmonics_mags;
-//        std::vector<std::vector<float>> harmonics_phases;
-//        std::vector<std::vector<float>> sinusoidal;
-//        std::vector<std::vector<float>> stochastic;
-//        std::vector<float> residual;
-//    };
+    // Original sound values
     Model::Values original;
     
     // TODO - Improve the Frame structure/class and maybe embedded it in Sound->Model
@@ -221,7 +203,6 @@ public:
     };
     
     Sound();
-//    Sound (const Sound& obj);
     Sound (std::string file_path);
     Sound (std::string file_path, int note, int velocity = 1);
     Sound (String file_data, std::string filepath);
@@ -249,6 +230,4 @@ private:
     
     int file_version;
     int decimal_places;
-    
-//    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sound);
 };

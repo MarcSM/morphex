@@ -12,11 +12,11 @@
       <FILE id="xAtxaC" name="Instrument.cpp" compile="1" resource="0" file="Source/Core/Instrument.cpp"/>
       <FILE id="JdpZT5" name="Note.h" compile="0" resource="0" file="Source/Core/Note.h"/>
       <FILE id="icqyDE" name="Velocity.h" compile="0" resource="0" file="Source/Core/Velocity.h"/>
-      <FILE id="Ylhobz" name="Sound.cpp" compile="1" resource="0" file="Source/Core/Sound.cpp"/>
       <FILE id="d9dn7g" name="Sound.h" compile="0" resource="0" file="Source/Core/Sound.h"/>
+      <FILE id="Ylhobz" name="Sound.cpp" compile="1" resource="0" file="Source/Core/Sound.cpp"/>
       <FILE id="SV7bdh" name="Model.h" compile="0" resource="0" file="Source/Core/Model.h"/>
-      <FILE id="UZKnB3" name="Synthesis.cpp" compile="1" resource="0" file="Source/Core/Synthesis.cpp"/>
       <FILE id="ENTQtM" name="Synthesis.h" compile="0" resource="0" file="Source/Core/Synthesis.h"/>
+      <FILE id="UZKnB3" name="Synthesis.cpp" compile="1" resource="0" file="Source/Core/Synthesis.cpp"/>
       <FILE id="r37OOs" name="Voice.h" compile="0" resource="0" file="Source/Core/Voice.h"/>
     </GROUP>
     <GROUP id="{4E5E0A46-E03E-E82E-84AF-6D34C82A5934}" name="Entities">
@@ -69,13 +69,13 @@
       <FILE id="WNkw0V" name="SMTUtils.h" compile="0" resource="0" file="Source/Helpers/SMTUtils.h"/>
     </GROUP>
     <GROUP id="{50819E26-3EF6-F93E-380B-A567157B7389}" name="Source">
-      <FILE id="Zbg3ub" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
       <FILE id="bskq50" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
+      <FILE id="Zbg3ub" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="A5d8x0" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="ED1KcU" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="A5d8x0" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
     <GROUP id="{AE3F5129-A357-44A3-5200-C0035B16DD0C}" name="Assets">
       <GROUP id="{5D9C3E8A-AF11-EC02-719E-C4792FC59B6E}" name="Sounds"/>

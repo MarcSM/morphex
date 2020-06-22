@@ -12,20 +12,14 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-#include "Tools.h"
 #include "Instrument.h"
 #include "Sound.h"
+#include "Tools.h"
 
 #include "../Helpers/SMTConstants.h"
 
 #include <math.h>
 #include <vector>
-
-//static double MidiMessage::getMidiNoteInHertz(int     noteNumber,
-//                                              double     frequencyOfA = 440.0)
-
-//static double MidiMessage::getMidiNoteInHertz    (    int     noteNumber,
-//                                                  double     frequencyOfA = 440.0)
 
 enum Channel
 {
@@ -45,7 +39,7 @@ public:
     const static int MAX_SINUSOIDS = 100;
     const static int FS = 44100;
     const static int FFT_SIZE = 512; // 512
-    const static int HOP_SIZE = int( FFT_SIZE / 4 ); // 128
+    const static int HOP_SIZE = int (FFT_SIZE / 4); // 128
     const static int NUM_FRAMES_IN_BUFFER = 8; // 512 * 8 = 4096
     
     enum BufferSection
@@ -67,15 +61,6 @@ public:
         int fs;
         int fft_size;
         int hop_size;
-        
-//        struct Generate
-//        {
-//            bool harmonic = true;
-//            bool sinusoidal = true;
-//            bool attack = true;
-//            bool residual = true;
-//        }
-//        Generate generate;
     };
     Parameters parameters;
 
@@ -89,10 +74,6 @@ public:
         
         FP harmonic;
         FP sinusoidal;
-//        std::vector<float> harmonic_last_freqs;
-//        std::vector<float> harmonic_phases;
-//        std::vector<float> sinusoidal_last_freqs;
-//        std::vector<float> sinusoidal_phases;
         int i_samples_ready;
         int i_current_frame;
         bool first_frame;
@@ -108,7 +89,8 @@ public:
         std::vector<float> harmonics_phases;
         std::vector<float> stochastic;
         std::vector<float> residual;
-    } generated;
+    };
+    SynthesisGenerated generated;
 
     struct Buffer
     {
@@ -118,22 +100,16 @@ public:
         
         struct Pointers
         {
-//            Synthesis& parent;
-//            Pointers(Synthesis& parent_) : parent(parent_) {}
-            
-//            Synthesis* parent;
-//            Synthesis& parent;
-
             int write;
             // Try to use lambdas if possible
-            int clean(Synthesis* parent, int i_move_position = 0) { return parent->getPointerInLimits( write + parent->parameters.fft_size + i_move_position ); };
+            int clean (Synthesis* parent, int i_move_position = 0) { return parent->getPointerInLimits (write + parent->parameters.fft_size + i_move_position); };
             int play;
 //            int play(Synthesis* parent, int i_move_position = 0) { return parent->getPointerInLimits( write - parent->parameters.fft_size + i_move_position ); };
-        } pointers;
-//        SynthesisBufferPointers(parent) pointers;
+        };
+        Pointers pointers;
         
-    } buffer;
-//    SynthesisBuffer(this) buffer;
+    };
+    Buffer buffer;
     
     struct SynthesisWindow
     {
@@ -144,39 +120,37 @@ public:
     
     dsp::FFT* fft;
 
-    Synthesis(Instrument* instrument);
+    Synthesis (Instrument* instrument);
     ~Synthesis();
 
     void reset();
     
-    std::vector<float> getBuffer(BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = 0);
-    void generateSoundFrame(Sound::Frame sound_frame, bool append_to_generated = false);
+    std::vector<float> getBuffer (BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = 0);
     
-    void updatePlayPointer(int i_pointer_increment);
-    void updatePhases(SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs, int hop_size, bool append_to_generated = false);
-    void updateLastFreqs(SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs);
+    void generateSoundFrame (Sound::Frame sound_frame, bool append_to_generated = false);
+    
+    void updatePlayPointer (int i_pointer_increment);
+    void updatePhases (SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs, int hop_size, bool append_to_generated = false);
+    void updateLastFreqs (SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs);
     
 private:
-    
-//    std::vector<int> idx_harmonics;
-//    std::vector<float> windowed_audio_frame;
     
     Instrument* instrument;
 
     void getWindow();
     
-    int getPointerInLimits(int i_pointer_position);
-    std::vector<int> getBufferIndexes(int i_head, int i_tail);
-    std::vector<int> getBufferSectionIndexes(BufferSection buffer_section, int i_frame_length = 0);
+    int getPointerInLimits (int i_pointer_position);
+    std::vector<int> getBufferIndexes (int i_head, int i_tail);
+    std::vector<int> getBufferSectionIndexes (BufferSection buffer_section, int i_frame_length = 0);
     
-    void updateWritePointer(int i_pointer_increment);
-    void updateBuffer(BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame = std::vector<float>(), Channel selected_channel = Channel::Mono);
-//    void updatePhases(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
-//    void updateLastFreqs(std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
+    void updateWritePointer (int i_pointer_increment);
+    void updateBuffer (BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame = std::vector<float>(), Channel selected_channel = Channel::Mono);
+//    void updatePhases (std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
+//    void updateLastFreqs (std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
     
-    std::vector<float> synthesizeSoundFrame(Sound::Frame sound_frame);
-    std::vector<float> generateSines(std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs);
-    std::vector<float> generateStocs(std::vector<float> stocs_morph, int H, int NS);
+    std::vector<float> synthesizeSoundFrame (Sound::Frame sound_frame);
+    std::vector<float> generateSines (std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs);
+    std::vector<float> generateStocs (std::vector<float> stocs_morph, int H, int NS);
     
-    void genspecsines_C(float *iploc, float *ipmag, float *ipphase, int n_peaks, float *real, float*imag, int size_spec);
+    void genspecsines_C (float *iploc, float *ipmag, float *ipphase, int n_peaks, float *real, float*imag, int size_spec);
 };
