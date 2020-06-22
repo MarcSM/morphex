@@ -117,6 +117,7 @@ void PresetManager::savePreset()
 {
     MemoryBlock destinationData;
     mProcessor->getStateInformation(destinationData);
+    this->getSoundInformation (destinationData);
     
     mCurrentlyLoadedPreset.deleteFile();
     
@@ -137,10 +138,11 @@ void PresetManager::saveAsPreset(String inPresetName)
     }
     
     MemoryBlock destinationData;
-    mProcessor->getStateInformation(destinationData);
+    mProcessor->getStateInformation (destinationData);
+    this->getSoundInformation (destinationData);
     
-    presetFile.appendData(destinationData.getData(),
-                          destinationData.getSize());
+    presetFile.appendData (destinationData.getData(),
+                           destinationData.getSize());
     
     mCurrentPresetIsSaved = true;
     mCurrentPresetName = inPresetName;
@@ -151,6 +153,10 @@ void PresetManager::saveAsPreset(String inPresetName)
 // TODO
 void PresetManager::getSoundInformation (MemoryBlock& destData)
 {
+    std::unique_ptr<XmlElement> preset = AudioPluginInstance::getXmlFromBinary (destData.getData(), (int) destData.getSize());
+    
+    XmlElement* presetBody = preset->getChildByName("MPF_Preset");
+    
     // Save morph sound's file path
     MorphSounds morph_sounds = this->mMorphexSynth->instrument.getMorphSounds();
 
@@ -160,9 +166,10 @@ void PresetManager::getSoundInformation (MemoryBlock& destData)
         removeSubStr (sound_file_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString());
         String sound_file_path_id = SOUND_FILE_PATH_PARAMETER_ID + String (i + 1);
         
-        XmlElement* presetBody = new XmlElement("MPF_Preset");
-//        presetBody->setAttribute (sound_file_path_id, sound_file_path);
+        presetBody->setAttribute (sound_file_path_id, sound_file_path);
     }
+    
+    juce::AudioPluginInstance::copyXmlToBinary (*preset, destData);
 }
 
 bool PresetManager::loadPreset (int inPresetIndex)

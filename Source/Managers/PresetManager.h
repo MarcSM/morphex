@@ -34,7 +34,7 @@ public:
     void createNewPreset();
     void savePreset();
     void saveAsPreset (String inPresetName);
-    void PresetManager::getSoundInformation (MemoryBlock& destData)
+    void getSoundInformation (MemoryBlock& destData);
     bool loadPreset (int inPresetIndex);
     bool setSoundInformation (const void* data, int sizeInBytes);
     
