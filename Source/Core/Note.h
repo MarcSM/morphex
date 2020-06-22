@@ -36,10 +36,10 @@ public:
         this->value = value;
         
         // Velocities
-        this->velocity = std::vector<Velocity*>(NUM_MIDI_VELOCITIES);
+        this->velocity = std::vector<Velocity*> (NUM_MIDI_VELOCITIES);
         for (int i = 0; i < this->velocity.size(); i++)
         {
-            this->velocity[i] = new Velocity(value, i);
+            this->velocity[i] = new Velocity (value, i);
         }
     }
     
@@ -56,15 +56,13 @@ public:
     {
         std::vector<Velocity*> loaded_velocities;
         
-//        for (Velocity* & velocity : this->velocity)
-        
         for (int i = 0; i < this->velocity.size(); i++)
         {
             Velocity* velocity = this->velocity[i];
             
             if (velocity->loaded)
             {
-                loaded_velocities.push_back( velocity );
+                loaded_velocities.push_back (velocity);
             }
         }
         

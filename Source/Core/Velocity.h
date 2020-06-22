@@ -22,13 +22,6 @@ public:
     bool loaded;
 //    bool loaded_metadata;
     
-    // Initializing the harmonic analysis data structure for the .had file
-    
-//    Sound _sound;
-//    ValueTree sound (Sound);
-//    ValueTree sound (_sound);
-//    ValueTree sound (Sound);
-//    myNode.addChild (childNode, -1, nullptr);
     Sound sound;
     
 
