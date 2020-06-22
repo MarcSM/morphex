@@ -26,7 +26,7 @@ public:
     ~PresetManager();
     
     void getXmlForPreset (XmlElement* inElement);
-    void loadPresetForXml (XmlElement* inElement);
+    bool loadPresetFromXml (XmlElement* inElement);
     
     int getNumberOfPresets();
     String getPresetName (int inPresetIndex);
@@ -34,10 +34,12 @@ public:
     void createNewPreset();
     void savePreset();
     void saveAsPreset (String inPresetName);
-    void getSoundInformation (MemoryBlock& destData);
+    void getSoundInformation (XmlElement* inElement);
+//    void getSoundInformation (MemoryBlock& destData);
     bool loadPreset (int inPresetIndex);
-    bool setSoundInformation (const void* data, int sizeInBytes);
-    
+    bool setSoundInformation (XmlElement* presetBody);
+//    bool setSoundInformation (const void* data, int sizeInBytes);
+
     bool getIsCurrentPresetSaved();
     String getCurrentPresetName();
     

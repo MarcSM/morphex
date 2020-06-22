@@ -49,6 +49,7 @@ static const String PLUGIN_DATA_PRESETS_DIRECTORY = PLUGIN_DATA_DIRECTORY + dire
 //const static std::string DEFAULT_SOUND_FILE_2_COLLECTION_PATH = PLUGIN_DATA_COLLECTIONS_DIRECTORY.toStdString() + "/Factory/soprano-E4.had";
 
 // Sound parameters ID
+const static String PRESET_NAME_PARAMETER_ID = "PresetName";
 const static String SOUND_FILE_PATH_PARAMETER_ID = "MorphSoundFilePath";
 //const static String SOUND_1_FILE_PATH_PARAMETER_ID = "Sound1Path";
 //const static String SOUND_2_FILE_PATH_PARAMETER_ID = "Sound2Path";

@@ -36,7 +36,13 @@ public:
         // Reverb FX - Dry / Wet
         Morphex::Parameter reverb_drywet_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::ReverbDryWet];
         Slider* reverb_drywet_slider = new Slider (reverb_drywet_parameter.parameter_label);
-        new AudioProcessorValueTreeState::SliderAttachment (inProcessor->parameters, reverb_drywet_parameter.parameter_ID, *reverb_drywet_slider);
+//
+//
+//        new AudioProcessorValueTreeState::SliderAttachment (inProcessor->parameters, reverb_drywet_parameter.parameter_ID, *reverb_drywet_slider);
+        
+        reverb_panel->attachment_reverb_drywet_slider = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>
+                                          (inProcessor->parameters, reverb_drywet_parameter.parameter_ID, *reverb_drywet_slider);
+        
         reverb_drywet_slider->setSliderStyle (Slider::SliderStyle::RotaryHorizontalVerticalDrag);
         reverb_drywet_slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 //            reverb_drywet_slider->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 100, 10);
@@ -152,16 +158,16 @@ private:
             fb.justifyContent = FlexBox::JustifyContent::flexEnd;
             //            fb.justifyContent = FlexBox::JustifyContent::spaceBetween;
             
-            //            float gain_knob_width = ( getWidth() / 3.0f ) * 2.0f;
+            //            float drywet_knob_width = ( getWidth() / 3.0f ) * 2.0f;
             //
-            //            FlexItem gain_knob (gain_knob_width, getHeight(), *mSliders[0]);
-            //            FlexItem vu_meter (getWidth() - gain_knob_width, getHeight(), *new Component());
+            //            FlexItem drywet_knob (drywet_knob_width, getHeight(), *mSliders[0]);
+            //            FlexItem vu_meter (getWidth() - drywet_knob_width, getHeight(), *new Component());
             
-//            FlexItem gain_knob (getWidth(), row_height, *mSliders[0]);
-            FlexItem gain_knob (getWidth(), getHeight(), *mSliders[0]);
+//            FlexItem drywet_knob (getWidth(), row_height, *mSliders[0]);
+            FlexItem drywet_knob (getWidth(), getHeight(), *mSliders[0]);
 
-            //            fb.items.addArray ( { gain_knob, vu_meter } );
-            fb.items.addArray ( { gain_knob } );
+            //            fb.items.addArray ( { drywet_knob, vu_meter } );
+            fb.items.addArray ( { drywet_knob } );
             fb.performLayout (getLocalBounds().toFloat());
             
             //            Grid grid;
@@ -201,6 +207,9 @@ private:
         String name;
         
         OwnedArray<Slider> mSliders;
+        
+        // TODO - Put the attachment inside a custom slider class
+        std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment_reverb_drywet_slider;
     };
     
     OwnedArray<FxRow> mFxRows;

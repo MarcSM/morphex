@@ -169,6 +169,7 @@ private:
 //        }
     }
     
+    // TODO - this is called when the GUI is closed in the DAW! fix it
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
     {
         if (comboBoxThatHasChanged == &mPresetDisplay)
@@ -251,7 +252,7 @@ private:
             mPresetDisplay.addItem (mPresetManager->getPresetName(i), (i+1));
         }
 
-        mPresetDisplay.setText (mPresetManager->getCurrentPresetName());
+        mPresetDisplay.setText (mPresetManager->getCurrentPresetName(), dontSendNotification);
     }
     
     PresetManager* mPresetManager;

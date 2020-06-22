@@ -15,23 +15,10 @@
 MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
 :   mParameters (parameters)
 {
-//    mSound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
-//    mSound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
-    
-    initializeDSP();
+    this->initializeDSP();
     
     // Initialize the instrument
     this->instrument = Instrument();
-    
-//    // Initialize the instrument
-//    this->instrument = Instrument();
-
-    //    JUCE::DirectoryIterator()
-//    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Morph";
-//    std::string instrument_folder = "/Users/Marc/Research/Repos/morphex-research/data/instruments/Suitcase Dry Test";
-//    std::string instrument_folder = "/Users/Marc/Documents/Audio Plugins/Morphex/Instruments/Suitcase Dry Full Velocity Test";
-    //    std::string instrument_folder = "/Users/Marc/Documents/Audio Plugins/Morphex/Instruments/Suitcase Dry Full";
-    
     
 //    std::string instrument_folder = "Suitcase Dry Full Velocity Test";
 //    std::string instrument_folder = "Suitcase Dry Full";
@@ -50,101 +37,56 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     this->instrument.generate.attack = false;
     this->instrument.generate.residual = false;
     
-    std::string full_path = PLUGIN_DATA_COLLECTIONS_FACTORY_DIRECTORY.toStdString();
+    // For testing teh full range instrument case
+    bool load_default_sounds = false;
     
-    if (this->instrument.mode == Instrument::Mode::FullRange)
+    if (load_default_sounds)
     {
-        //    std::string instrument_folder = "Suitcase Dry 20200615";
-        std::string instrument_folder = "Suitcase Dry Test";
-        //    std::string instrument_folder = "Suitcase Dry Full";
-        //    std::string instrument_folder = "Morphing Test Optimized";
-        full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
-    }
-
-    
-    DirectoryIterator iter (File (full_path), true, "*.had");
-//    DirectoryIterator iter (File (full_path), true, "*.had");
-    
-//    static const String PLUGIN_DATA_DIRECTORY = (File::getSpecialLocation(File::userDesktopDirectory)).getFullPathName() + directorySeparator + PLUGIN_NAME;
-    
-    while (iter.next())
-    {
-        File sound_file (iter.getFile());
-        std::string sound_file_path = sound_file.getFullPathName().toStdString();
-
+        std::string full_path = PLUGIN_DATA_COLLECTIONS_FACTORY_DIRECTORY.toStdString();
         
-        
-//        Core::Sound sound = Core::Sound( sound_file_path );
-        
-//        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound = sound;
-//        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loaded = true;
-        
-        MorphLocation morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
-        
-        if (this->instrument.mode == Instrument::Mode::Morphing)
+        if (this->instrument.mode == Instrument::Mode::FullRange)
         {
-            if (this->instrument.num_samples_loaded < MorphLocation::NUM_MORPH_LOCATIONS)
+            //    std::string instrument_folder = "Suitcase Dry 20200615";
+            std::string instrument_folder = "Suitcase Dry Test";
+            //    std::string instrument_folder = "Suitcase Dry Full";
+            //    std::string instrument_folder = "Morphing Test Optimized";
+            full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
+        }
+        
+        DirectoryIterator iter (File (full_path), true, "*.had");
+        //    DirectoryIterator iter (File (full_path), true, "*.had");
+        //    static const String PLUGIN_DATA_DIRECTORY = (File::getSpecialLocation(File::userDesktopDirectory)).getFullPathName() + directorySeparator + PLUGIN_NAME;
+        
+        while (iter.next())
+        {
+            File sound_file (iter.getFile());
+            std::string sound_file_path = sound_file.getFullPathName().toStdString();
+            
+            MorphLocation morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
+            
+            if (this->instrument.mode == Instrument::Mode::Morphing)
             {
-                morph_location = (MorphLocation) this->instrument.num_samples_loaded;
+                if (this->instrument.num_samples_loaded < MorphLocation::NUM_MORPH_LOCATIONS)
+                {
+                    morph_location = (MorphLocation) this->instrument.num_samples_loaded;
+                    this->instrument.loadSound (sound_file_path, morph_location);
+                    this->instrument.num_samples_loaded++;
+                }
+            }
+            else
+            {
                 this->instrument.loadSound (sound_file_path, morph_location);
                 this->instrument.num_samples_loaded++;
             }
         }
-        else
-        {
-            this->instrument.loadSound (sound_file_path, morph_location);
-            this->instrument.num_samples_loaded++;
-        }
         
-        
-
-//        if (this->instrument.mode == Instrument::Mode::Morphing)
-//        {
-//            if (this->instrument.num_samples_loaded == 0)
-//            {
-//                this->instrument.setMorphSound (&this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound, MorphLocation::Left);
-//            }
-//            else if (this->instrument.num_samples_loaded == 1)
-//            {
-//                this->instrument.setMorphSound (&this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->sound, MorphLocation::Right);
-//            }
-//        }
-        
-        
-    //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->setSound( sound );
-    //        this->instrument.note[ sound.note ]->velocity[ sound.velocity ]->loadSound( sound_file_path );
+        DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
     }
-    
-    DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
-
-
-    /*
-    AlertWindow aux ("Sound files loaded", "Sound files loaded: " + String(this->instrument.num_samples_loaded), AlertWindow::InfoIcon);
-    aux.showMessageBox (AlertWindow::NoIcon,
-                        "Sound files loaded",
-                        "Instrument path: " + String(full_path) +
-                        "\nNumber of sound files loaded: " + String(this->instrument.num_samples_loaded),
-                        "Accept");
-    
-    if ( this->instrument.num_samples_loaded == 0)
-    {
-        JUCEApplication::getInstance()->systemRequestedQuit();
-    }
-    */
-    
-    //                AlertWindow aux ("Sound not found", "The sound '" + sound_2_file_path + "' is not in your collection", AlertWindow::NoIcon);
-    //                aux.showMessageBox (AlertWindow::WarningIcon,
-    //                                    "Sound not found",
-    //                                    "The preset couldn't be loaded, the sound '" + sound_2_file_path + "' is not in your library",
-    //                                    "Accept");
     
     // Add some voices to our synth, to play the sounds..
     for (int i = 0; i < MAX_VOICES; i++)
     {
-        // Add the voice to the synth
-//        this->addVoice( new Voice(this->instrument, parameters) );
         this->addVoice( new Voice (&this->instrument, parameters) );
-//        this->addVoice( new Voice(mSound, parameters) );
     }
     
     // TODO - NOTE: If we enter on release stated, there is no way back, the

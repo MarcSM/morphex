@@ -246,28 +246,18 @@ void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, 
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
     
-    std::unique_ptr<XmlElement> xmlState;
+    std::unique_ptr<XmlElement> xmlState = getXmlFromBinary (data, sizeInBytes);
     
-//    pluginStateInfoXML = parameters.state.createXml();
-//    and
-//    pluginStateInfoXML = getXmlFromBinary(data, sizeInBytes);
-    
-    xmlState = getXmlFromBinary(data, sizeInBytes);
-//    xmlState.reset();
-//    xmlState.reset(getXmlFromBinary(data, sizeInBytes));
-    
-//    std::unique_ptr<XmlElement> model;
-//    model = AudioProcessor::getXmlFromBinary(data, sizeInBytes);
-//    model = XmlDocument::parse(f);
-//    model = std::make_unique<XmlElement>("Test");
-    
-    if (xmlState != nullptr) {
-        forEachXmlChildElement(*xmlState, subChild) {
-            
+    if (xmlState != nullptr)
+    {
+        forEachXmlChildElement (*xmlState, subChild)
+        {
             // Load the preset parameters
-            mPresetManager->loadPresetForXml (subChild);
+            mPresetManager->loadPresetFromXml (subChild);
         }
-    } else {
+    }
+    else
+    {
         jassertfalse;
     }
 }
