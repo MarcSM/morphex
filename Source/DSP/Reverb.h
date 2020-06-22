@@ -67,7 +67,7 @@ public:
     
     void updateParameters()
     {
-        reverbParameters.wetLevel = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::ReverbDryWet].parameter_ID);
+        reverbParameters.wetLevel = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::ReverbDryWet].ID);
         reverbParameters.dryLevel = 1 - reverbParameters.wetLevel;
         reverbParameters.roomSize = 0.8;
         reverbParameters.damping = 0.1;

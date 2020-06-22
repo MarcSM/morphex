@@ -378,10 +378,10 @@ namespace Core
         //        return w
     }
     
-    int Synthesis::getPointerInLimits(int i_pointer_position)
+    // TODO - Check limits of "i_pointer_position" when it's "i_frame_length"
+    int Synthesis::getPointerInLimits (int i_pointer_position)
     {
-        return Tools::Calculate::modulo(i_pointer_position, this->buffer.length);
-//        return i_pointer_position % this->buffer.length;
+        return Tools::Calculate::modulo (i_pointer_position, this->buffer.length);
     }
     
     

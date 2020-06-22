@@ -46,7 +46,7 @@ public:
     const static int FS = 44100;
     const static int FFT_SIZE = 512; // 512
     const static int HOP_SIZE = int( FFT_SIZE / 4 ); // 128
-    const static int NUM_FRAMES_IN_BUFFER = 4;
+    const static int NUM_FRAMES_IN_BUFFER = 8; // 512 * 8 = 4096
     
     enum BufferSection
     {

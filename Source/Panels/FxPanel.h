@@ -12,6 +12,8 @@
 
 #include <JuceHeader.h>
 
+#include "../Components/Slider.h"
+
 //==============================================================================
 /*
 */
@@ -34,21 +36,21 @@ public:
         addAndMakeVisible (mFxRows.add (reverb_panel));
         
         // Reverb FX - Dry / Wet
-        Morphex::Parameter reverb_drywet_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::ReverbDryWet];
-        Slider* reverb_drywet_slider = new Slider (reverb_drywet_parameter.parameter_label);
-//
-//
-//        new AudioProcessorValueTreeState::SliderAttachment (inProcessor->parameters, reverb_drywet_parameter.parameter_ID, *reverb_drywet_slider);
-        
-        reverb_panel->attachment_reverb_drywet_slider = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>
-                                          (inProcessor->parameters, reverb_drywet_parameter.parameter_ID, *reverb_drywet_slider);
-        
-        reverb_drywet_slider->setSliderStyle (Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-        reverb_drywet_slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
-//            reverb_drywet_slider->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 100, 10);
-        reverb_drywet_slider->setRange(reverb_drywet_parameter.min_value, reverb_drywet_parameter.max_value, 0.001f);
-        reverb_drywet_slider->setValue(reverb_drywet_parameter.default_value);
+        Morphex::Slider* reverb_drywet_slider = new Morphex::Slider (inProcessor->parameters, Morphex::Parameters::ReverbDryWet);
         addAndMakeVisible (reverb_panel->mSliders.add (reverb_drywet_slider));
+        
+//        Morphex::Parameter reverb_drywet_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::ReverbDryWet];
+//        Slider* reverb_drywet_slider = new Slider (reverb_drywet_parameter.label);
+//
+//        reverb_panel->attachment_reverb_drywet_slider = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>
+//                                          (inProcessor->parameters, reverb_drywet_parameter.ID, *reverb_drywet_slider);
+//
+//        reverb_drywet_slider->setSliderStyle (Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+//        reverb_drywet_slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
+////            reverb_drywet_slider->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 100, 10);
+//        reverb_drywet_slider->setRange(reverb_drywet_parameter.min_value, reverb_drywet_parameter.max_value, 0.001f);
+////        reverb_drywet_slider->setValue(reverb_drywet_parameter.default_value);
+//        addAndMakeVisible (reverb_panel->mSliders.add (reverb_drywet_slider));
     }
 
     ~FxPanel()
@@ -208,8 +210,8 @@ private:
         
         OwnedArray<Slider> mSliders;
         
-        // TODO - Put the attachment inside a custom slider class
-        std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment_reverb_drywet_slider;
+//        // TODO - Put the attachment inside a custom slider class
+//        std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment_reverb_drywet_slider;
     };
     
     OwnedArray<FxRow> mFxRows;

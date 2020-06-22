@@ -296,7 +296,7 @@ struct Voice
 //                DBG("CHECK THIS!");
 //            }
             
-            std::vector<float> frame = getNextFrame(this->f_current_midi_note, this->f_current_velocity, numSamples);
+            std::vector<float> frame = getNextFrame (this->f_current_midi_note, this->f_current_velocity, numSamples);
             
             for (int i_sample = 0; i_sample < numSamples; i_sample++)
             {
@@ -434,8 +434,8 @@ struct Voice
 //                float freqs_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_freqs_interp_factor]);
 //                float mags_interp_factor = *mParameters->getRawParameterValue(SMTParameterID[kParameter_mags_interp_factor]);
                 
-                float freqs_interp_factor = *mParameters->getRawParameterValue(Morphex::PARAMETERS<float>[Morphex::Parameters::freqs_interp_factor].parameter_ID);
-                float mags_interp_factor = *mParameters->getRawParameterValue(Morphex::PARAMETERS<float>[Morphex::Parameters::mags_interp_factor].parameter_ID);
+                float freqs_interp_factor = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::freqs_interp_factor].ID);
+                float mags_interp_factor = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::mags_interp_factor].ID);
                 
                 // TODO - Apply fade out if *i_current_frame > this->min_note_end - 4 (4 = fade_out_frames)
 //                sound_frame = this->instrument.morphSoundFrames(this->f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size,
@@ -534,7 +534,7 @@ struct Voice
 
         // Update samples ready to be played
         this->synthesis.live_values.i_samples_ready -= i_frame_length;
-
+        
         return frame;
     }
     

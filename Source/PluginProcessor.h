@@ -87,14 +87,12 @@ private:
             
             Morphex::Parameter<float> smt_parameter = Morphex::PARAMETERS<float>[i];
             
-            params.push_back(std::make_unique<AudioParameterFloat>(smt_parameter.parameter_ID,
-                                                                   smt_parameter.parameter_ID,
-                                                                   NormalisableRange<float>(
-                                                                                            smt_parameter.min_value,
-                                                                                            smt_parameter.max_value
-                                                                                            ),
-                                                                   smt_parameter.default_value,
-                                                                   smt_parameter.parameter_label)  );
+            params.push_back
+                (std::make_unique<AudioParameterFloat>
+                    (smt_parameter.ID, smt_parameter.ID,
+                     NormalisableRange<float> (smt_parameter.min_value, smt_parameter.max_value),
+                     smt_parameter.default_value, smt_parameter.label)
+                 );
         }
         
         return { params.begin(), params.end() };

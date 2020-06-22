@@ -17,8 +17,8 @@ namespace Morphex
     template<typename T>
     struct Parameter
     {
-        String parameter_ID;
-        String parameter_label;
+        String ID;
+        String label;
         T min_value;
         T max_value;
         T default_value;
@@ -62,7 +62,7 @@ namespace Morphex
     template <typename T>
     static IndexedParameters<T> PARAMETERS =
     {
-    //  index                   parameter_ID            parameter_label             min_value   max_value   default_value
+    //  index                   ID                      label                       min_value   max_value   default_value
         {OutputGain,            {"OutputGain",          "Master",                   0.0f,       1.0f,       0.5f}  },
         {ReverbDryWet,          {"ReverbDryWet",        "Dry/Wet",                  0.0f,       1.0f,       0.15f}  },
         {freqs_interp_factor,   {"FreqsInterpFactor",   "Harmonic Frequencies",     0.0f,       1.0f,       0.5f}   },
@@ -82,7 +82,8 @@ namespace Morphex
         
         auto result = std::find_if( PARAMETERS<T>.begin(), PARAMETERS<T>.end(), [parameter_ID](const auto& mo)
         {
-            return mo.second.parameter_ID == parameter_ID;
+//            return mo.second.parameter_ID == parameter_ID;
+            return mo.second.ID == parameter_ID;
         });
         
         // Return variable if found

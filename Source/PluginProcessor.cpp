@@ -59,6 +59,9 @@ parameters(*this,                   /** reference to processor */
     
     // Initialize the preset manager
     mPresetManager = std::make_unique<PresetManager>(this, &mMorphexSynth);
+    
+    // Create an initial new preset
+    mPresetManager->createNewPreset();
 }
 
 SpectralMorphingToolAudioProcessor::~SpectralMorphingToolAudioProcessor()

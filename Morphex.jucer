@@ -31,6 +31,7 @@
             file="Source/Managers/PresetManager.cpp"/>
     </GROUP>
     <GROUP id="{A8DC72F7-DA5B-6243-1C16-AFA2E4D75948}" name="Components">
+      <FILE id="vBB9P0" name="Slider.h" compile="0" resource="0" file="Source/Components/Slider.h"/>
       <FILE id="ui5uR3" name="Button.h" compile="0" resource="0" file="Source/Components/Button.h"/>
       <FILE id="VCzmwz" name="PadXY.h" compile="0" resource="0" file="Source/Components/PadXY.h"/>
       <FILE id="NcLsvP" name="CollectionBrowser.h" compile="0" resource="0"

@@ -155,7 +155,7 @@ void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
         auto* buffer = outputAudio.getWritePointer (channel);
         
         // Output gain
-        float output_gain = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::OutputGain].parameter_ID);
+        float output_gain = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::OutputGain].ID);
         mOutputGain[channel]->process (buffer, output_gain, outputAudio.getNumSamples());
     }
 }

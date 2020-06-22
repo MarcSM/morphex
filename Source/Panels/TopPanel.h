@@ -12,6 +12,8 @@
 
 #include <JuceHeader.h>
 
+#include "../Components/Slider.h"
+
 #include "PresetManagerPanel.h"
 
 //==============================================================================
@@ -120,31 +122,9 @@ private:
         {
             mSliders.clear();
             
-            Morphex::Parameter output_gain_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::OutputGain];
-            
-            Slider* output_gain_slider = new Slider (output_gain_parameter.parameter_label);
-            
-            attachment_output_gain_slider = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>
-                                            (inProcessor->parameters, output_gain_parameter.parameter_ID, *output_gain_slider);
-            
-            // TODO - USe custom slider class
-            // Add ADSR attack slider
-//            asdr_attack = new SMTParameterSlider(mProcessor->parameters,
-//                                                 SMTParameterID[SMTParameter::kParameter_asdr_attack],
-//                                                 SMTParameterLabel[SMTParameter::kParameter_asdr_attack]);
-//            output_gain_slider->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 200, 20);
-//            output_gain_slider->setSliderStyle(Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-//            output_gain_slider->setBounds(slider_x, slider_y, slider_w, slider_h);
-            
-            output_gain_slider->setSliderStyle (Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-            output_gain_slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
-//            output_gain_slider->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 100, 10);
-            output_gain_slider->setRange (output_gain_parameter.min_value, output_gain_parameter.max_value, 0.001f);
-            output_gain_slider->setValue (output_gain_parameter.default_value);
-            
-            mSliders.add (output_gain_slider);
-            
+            output_gain_slider = new Morphex::Slider (inProcessor->parameters, Morphex::Parameters::OutputGain);
             addAndMakeVisible (output_gain_slider);
+            mSliders.add (output_gain_slider);
         }
         
         void paint (Graphics& g) override
@@ -168,10 +148,10 @@ private:
             fb.performLayout (getLocalBounds().toFloat());
         }
         
-        OwnedArray<Slider> mSliders;
+        Morphex::Slider* output_gain_slider;
+//        std::unique_ptr<Morphex::Slider> output_gain_slider;
         
-        // TODO - Put the attachment inside a custom slider class
-        std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment_output_gain_slider;
+        OwnedArray<Morphex::Slider> mSliders;
     };
     
     LeftSidePanel leftPanel;

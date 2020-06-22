@@ -45,6 +45,7 @@ public:
 
         // Preset Display Combobox
         mPresetDisplay.addListener (this);
+        mPresetDisplay.setTextWhenNothingSelected ("Untitled");
         updatePresetComboBox();
         addAndMakeVisible (mPresetDisplay);
         
@@ -169,13 +170,10 @@ private:
 //        }
     }
     
-    // TODO - this is called when the GUI is closed in the DAW! fix it
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
     {
         if (comboBoxThatHasChanged == &mPresetDisplay)
         {
-//            PresetManager* presetManager = mProcessor->getPresetManager();
-            
             const int index = mPresetDisplay.getSelectedItemIndex();
             
             if (index > -1)
@@ -251,8 +249,6 @@ private:
         {
             mPresetDisplay.addItem (mPresetManager->getPresetName(i), (i+1));
         }
-
-        mPresetDisplay.setText (mPresetManager->getCurrentPresetName(), dontSendNotification);
     }
     
     PresetManager* mPresetManager;
