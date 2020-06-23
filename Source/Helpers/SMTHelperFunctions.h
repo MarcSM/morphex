@@ -93,8 +93,8 @@ inline float findClosest(float arr[], int n, float target)
             return arr[mid];
         
         // If target is less than array element, then search in left
-        if (target < arr[mid]) {
-            
+        if (target < arr[mid])
+        {
             // If target is greater than previous to mid, return closest of two
             if (mid > 0 && target > arr[mid - 1])
                 return getClosest(arr[mid - 1], arr[mid], target);
@@ -104,7 +104,8 @@ inline float findClosest(float arr[], int n, float target)
         }
         
         // If target is greater than mid
-        else {
+        else
+        {
             if (mid < n - 1 && target < arr[mid + 1])
                 return getClosest(arr[mid], arr[mid + 1], target);
             // update i
@@ -125,9 +126,7 @@ inline std::vector<T> getRange(T start, T end) {
     return vec;
 }
 
-/*
- * Remove First Occurrence of given  substring from main string.
- */
+// Remove First Occurrence of given  substring from main string.
 inline void removeSubStr(std::string & mainStr, const std::string & toRemove)
 {
     // Search for the substring in string

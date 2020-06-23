@@ -18,9 +18,6 @@
 
 #include "../Components/CollectionBrowser.h"
 
-//==============================================================================
-/*
- */
 class MorphingPanel :   public Component
 {
 public:
@@ -29,107 +26,45 @@ public:
         rightPanel (inProcessor),
         centerPanel (inProcessor)
     {
-        // In your constructor, you should add any child components, and
-        // initialise any special settings that your component needs.
-        
-        //        for (int i = 0; i < 4; i++)
-        //        {
-        //            soundPanel[i] = new SoundPanel(i);
-        //        }
-        
-        //leftPanel = new LeftSidePanel ();
-        //rightPanel = new RightSidePanel ();
-        
-        //        leftPanel = new LeftSidePanel (*soundPanel);
-        //        rightPanel = new RightSidePanel (*soundPanel);
-        
         addAndMakeVisible (leftPanel);
         addAndMakeVisible (rightPanel);
         addAndMakeVisible (centerPanel);
     }
     
-    ~MorphingPanel()
-    {
-    }
+    ~MorphingPanel() {}
     
-    void paint (Graphics& g) override
-    {
-        /* This demo code just fills the component's background and
-         draws some placeholder text to get you started.
-         
-         You should replace everything in this method with your own
-         drawing code..
-         */
-        
-        //g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
-        
-        /*
-        g.setColour (Colours::grey);
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-        
-        g.setColour (Colours::white);
-        g.setFont (14.0f);
-        g.drawText ("MorphingPanel", getLocalBounds(),
-                    Justification::centred, true);   // draw some placeholder text
-        */
-    }
+    void paint (Graphics& g) override {}
     
     void resized() override
     {
-        // This method is where you should set the bounds of any child
-        // components that your component contains..
-        
         FlexBox fb;
         
-        // TODO - It's possible to keep all the widths and heights
-        // in a class and access them via pointers?
+        // TODO - Keep all the widths and heights
+        // in a class and access them via pointers
         float centerPanelWidth = getWidth() * 0.75f * 0.45f;
-        float soundPanelWidth = ( getWidth() - centerPanelWidth ) / 2.0f;
-        //float soundPanelHeight = getHeight() / 6.0f;
+        float soundPanelWidth = (getWidth() - centerPanelWidth) / 2.0f;
         
-        FlexItem left  (soundPanelWidth, getHeight(), leftPanel);
-        FlexItem center  (centerPanelWidth, getHeight(), centerPanel);
+        FlexItem left (soundPanelWidth, getHeight(), leftPanel);
+        FlexItem center (centerPanelWidth, getHeight(), centerPanel);
         FlexItem right (soundPanelWidth, getHeight(), rightPanel);
         
-        fb.items.addArray ( { left, center, right } );
+        fb.items.addArray ({left, center, right});
         fb.performLayout (getLocalBounds().toFloat());
     }
     
 private:
     
-    //==============================================================================
-    struct LeftSidePanel    : public Component
+    struct LeftSidePanel : public Component
     {
-        //        LeftSidePanel (SoundPanel* soundPanel) : soundPanel (soundPanel)
         LeftSidePanel (SpectralMorphingToolAudioProcessor* inProcessor)
         :   sound1Panel(inProcessor, 1),
-//            sound1Panel(inProcessor, MorphLocation::Left)
             sound3Panel(inProcessor, 3)
         {
             addAndMakeVisible (sound1Panel);
             addAndMakeVisible (sound3Panel);
-//            sound1Panel = std::make_unique<SoundPanel>(1);
-//            addAndMakeVisible (sound1Panel.get());
-//
-//            sound3Panel = std::make_unique<SoundPanel>(3);
-//            addAndMakeVisible (sound3Panel.get());
-            
-            /*
-             for (int i = 0; i < 6; ++i)
-             {
-             auto* slider = new Slider();
-             slider->setSliderStyle (Slider::SliderStyle::Rotary);
-             slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
-             
-             addAndMakeVisible (knobs.add (slider));
-             }
-             */
         }
         
-        void paint (Graphics& g) override
-        {
-            //g.fillAll (backgroundColour);
-        }
+        void paint (Graphics& g) override {}
         
         void resized() override
         {
@@ -141,62 +76,28 @@ private:
             FlexItem sound1 (getWidth(), soundPanelHeight, sound1Panel);
             FlexItem sound3 (getWidth(), soundPanelHeight, sound3Panel);
             
-            fb.items.addArray ( { sound1, sound3 } );
+            fb.items.addArray ({sound1, sound3});
             fb.performLayout (getLocalBounds().toFloat());
-            
-            /*
-             //==============================================================================
-             FlexBox knobBox;
-             knobBox.flexWrap = FlexBox::Wrap::wrap;
-             knobBox.justifyContent = FlexBox::JustifyContent::spaceBetween;
-             
-             for (auto* k : knobs)
-             knobBox.items.add (FlexItem (*k).withMinHeight (50.0f).withMinWidth (50.0f).withFlex (1));
-             
-             //==============================================================================
-             FlexBox fb;
-             fb.flexDirection = FlexBox::Direction::column;
-             
-             fb.items.add (FlexItem (knobBox).withFlex (2.5));
-             
-             fb.performLayout (getLocalBounds().toFloat());
-             */
         }
 
         SoundPanel sound1Panel;
         SoundPanel sound3Panel;
-//        std::unique_ptr<SoundPanel> sound1Panel;
-//        std::unique_ptr<SoundPanel> sound3Panel;
+        
         Colour backgroundColour;
         OwnedArray<Slider> knobs;
     };
     
     struct RightSidePanel    : public Component
     {
-        //        RightSidePanel (SoundPanel* soundPanel) : soundPanel (soundPanel)
         RightSidePanel (SpectralMorphingToolAudioProcessor* inProcessor)
-        :   sound2Panel(inProcessor, 2),
-            sound4Panel(inProcessor, 4)
+        :   sound2Panel (inProcessor, 2),
+            sound4Panel (inProcessor, 4)
         {
             addAndMakeVisible (sound2Panel);
             addAndMakeVisible (sound4Panel);
-            
-//            sound2Panel = std::make_unique<SoundPanel>(2);
-//            addAndMakeVisible (sound2Panel.get());
-//
-//            sound4Panel = std::make_unique<SoundPanel>(4);
-//            addAndMakeVisible (sound4Panel.get());
-            
-            /*
-             for (int i = 0; i < 10; ++i)
-             addAndMakeVisible (buttons.add (new TextButton (String (i))));
-             */
         }
         
-        void paint (Graphics& g) override
-        {
-            //g.fillAll (backgroundColour);
-        }
+        void paint (Graphics& g) override {}
         
         void resized() override
         {
@@ -210,34 +111,18 @@ private:
             
             fb.items.addArray ( { sound2, sound4 } );
             fb.performLayout (getLocalBounds().toFloat());
-            
-            /*
-             FlexBox fb;
-             fb.flexWrap = FlexBox::Wrap::wrap;
-             fb.justifyContent = FlexBox::JustifyContent::center;
-             fb.alignContent = FlexBox::AlignContent::center;
-             
-             for (auto* b : buttons)
-             fb.items.add (FlexItem (*b).withMinWidth (50.0f).withMinHeight (50.0f));
-             
-             fb.performLayout (getLocalBounds().toFloat());
-             */
         }
         
-        //        SoundPanel* soundPanel;
         SoundPanel sound2Panel;
         SoundPanel sound4Panel;
-//        std::unique_ptr<SoundPanel> sound2Panel;
-//        std::unique_ptr<SoundPanel> sound4Panel;
+        
         Colour backgroundColour;
         OwnedArray<TextButton> buttons;
     };
     
-    
-    
-    struct CenterPanel    : public Component
+    struct CenterPanel : public Component
     {
-        CenterPanel(SpectralMorphingToolAudioProcessor* inProcessor)
+        CenterPanel (SpectralMorphingToolAudioProcessor* inProcessor)
         {
             // Core Panel
             mCorePanel = new CorePanel (inProcessor);
@@ -252,71 +137,39 @@ private:
             const int browser_x = browser_margin;
             const int browser_y = browser_margin;
             
-            
             mBrowser = new CollectionBrowser();
 
-            mBrowser->setBounds(browser_x, browser_y,
-                                browser_width, browser_height);
+            mBrowser->setBounds (browser_x, browser_y, browser_width, browser_height);
             
             // Tabbed Component
             mTabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop);
-            
-//            mTabbedComponent->setTabBarDepth(50);
-            mTabbedComponent->setOutline(0);
-            mTabbedComponent->addTab(TRANS("CORE"), GUI::Color::Transparent, mCorePanel, true);
-            mTabbedComponent->addTab(TRANS("FX"), GUI::Color::Transparent, mFxPanel, true);
-            mTabbedComponent->addTab(TRANS("SOUNDS"), GUI::Color::Transparent, mBrowser, true);
-//            mTabbedComponent->addTab(TRANS("OPTIONS"), GUI::Color::Transparent, new Component(), true);
-            mTabbedComponent->setCurrentTabIndex(0);
-            
+            mTabbedComponent->setOutline (0);
+            mTabbedComponent->addTab (TRANS ("CORE"), GUI::Color::Transparent, mCorePanel, true);
+            mTabbedComponent->addTab (TRANS ("FX"), GUI::Color::Transparent, mFxPanel, true);
+            mTabbedComponent->addTab (TRANS ("SOUNDS"), GUI::Color::Transparent, mBrowser, true);
+            mTabbedComponent->setCurrentTabIndex (0);
             mTabbedComponent->setBounds (0, 0, getWidth(), getHeight());
-            
-            addAndMakeVisible(mTabbedComponent);
+            addAndMakeVisible (mTabbedComponent);
         }
         
         void paint (Graphics& g) override
         {
             auto area = getLocalBounds();
-            mTabbedComponent->setBounds(area);
-            
-//            // Draw borders
-//            GUI::Paint::drawBorders(g, mTabbedComponent->getLocalBounds());
-            
-            //g.fillAll (Colours::hotpink);
+            mTabbedComponent->setBounds (area);
         }
         
         void resized() override
         {
-            mTabbedComponent->setTabBarDepth( getHeight() / 8.0f );
-            
-            /*
-             auto isPortrait = getLocalBounds().getHeight() > getLocalBounds().getWidth();
-             
-             FlexBox fb;
-             fb.flexDirection = isPortrait ? FlexBox::Direction::column
-             : FlexBox::Direction::row;
-             
-             for (auto* s : sliders)
-             {
-             s->setSliderStyle (isPortrait ? Slider::SliderStyle::LinearHorizontal
-             : Slider::SliderStyle::LinearVertical);
-             
-             fb.items.add (FlexItem (*s).withFlex (0, 1, isPortrait ? getHeight() / 5.0f
-             : getWidth()  / 5.0f));
-             }
-             
-             fb.performLayout (getLocalBounds().toFloat());
-             */
+            mTabbedComponent->setTabBarDepth (getHeight() / 8.0f);
         }
         
         OwnedArray<Slider> sliders;
+        
         ScopedPointer<TabbedComponent> mTabbedComponent;
         ScopedPointer<CorePanel> mCorePanel;
         ScopedPointer<FxPanel> mFxPanel;
         ScopedPointer<CollectionBrowser> mBrowser;
     };
-    
-    //    SoundPanel* soundPanel[4];
     
     LeftSidePanel leftPanel;
     RightSidePanel rightPanel;

@@ -12,9 +12,6 @@
 
 #include <JuceHeader.h>
 
-//==============================================================================
-/*
-*/
 class PadXY : public Component, public Timer
 {
 public:
@@ -24,16 +21,13 @@ public:
            Morphex::Parameter<float> mags_interp_factor_parameter)
     : circle(), mProcessor (inProcessor)
     {
-        // In your constructor, you should add any child components, and
-        // initialise any special settings that your component needs.
-        
-        const String& x_parameterID = freqs_interp_factor_parameter.ID;
+        const String& x_parameterID    = freqs_interp_factor_parameter.ID;
         const String& x_parameterLabel = freqs_interp_factor_parameter.label;
-        const String& y_parameterID = mags_interp_factor_parameter.ID;
+        const String& y_parameterID    = mags_interp_factor_parameter.ID;
         const String& y_parameterLabel = mags_interp_factor_parameter.label;
         
         // Default dimensions
-        setSize(getWidth(), getHeight());
+        setSize (getWidth(), getHeight());
         
         // Default values
         x_min = 0; x_max = 1;
@@ -43,7 +37,7 @@ public:
         invert_y = false;
         
         // Add the circle
-        circle.setColour (GUI::Color::Accent.overlaidWith (Colour(255, 255, 255).withAlpha(0.15f)) );
+        circle.setColour (GUI::Color::Accent.overlaidWith (Colour (255, 255, 255).withAlpha (0.15f)));
         circle.setInterceptsMouseClicks (false, false);
         addAndMakeVisible (circle);
         
@@ -53,11 +47,9 @@ public:
         
         // Attach the sliders to the AudioProcessorValueTreeState
         x_axis_slider_attachment =
-        new AudioProcessorValueTreeState::
-        SliderAttachment (stateToControl, x_parameterID, *x_axis_slider);
+        new AudioProcessorValueTreeState::SliderAttachment (stateToControl, x_parameterID, *x_axis_slider);
         y_axis_slider_attachment =
-        new AudioProcessorValueTreeState::
-        SliderAttachment (stateToControl, y_parameterID, *y_axis_slider);
+        new AudioProcessorValueTreeState::SliderAttachment (stateToControl, y_parameterID, *y_axis_slider);
         
         // Define the range for the sliders
         x_axis_slider->setRange (x_min, x_max);
@@ -69,9 +61,7 @@ public:
         startTimer (XYPAD_UI_REFRESH_TIMER_CALLBACK); // 0.5 seconds
     }
 
-    ~PadXY()
-    {
-    }
+    ~PadXY() {}
 
     void paint (Graphics& g) override
     {
@@ -79,41 +69,13 @@ public:
         int cornerSize = 4;
         
         // Background
-        rectangle.setPosition(borderWidth / 2, borderWidth / 2);
-        rectangle.setSize(getWidth() - borderWidth, getHeight() - borderWidth);
+        rectangle.setPosition (borderWidth / 2, borderWidth / 2);
+        rectangle.setSize (getWidth() - borderWidth, getHeight() - borderWidth);
         g.setColour (Colours::transparentBlack);
         g.fillRoundedRectangle (rectangle, cornerSize);
         
         // Draw borders
         GUI::Paint::drawBorders (g, getLocalBounds(), GUI::Paint::BorderType::Glass);
-        
-//        // Background gradient
-//        ColourGradient cg (GUI::Color::Accent.withAlpha(0.5f),
-//                           getWidth() / 2.0f, getHeight() / 2.0f,
-//                           GUI::Color::Accent.withAlpha(0.0f),
-//                           getWidth(), getHeight(), true);
-//
-//        g.setFillType (cg);
-//        g.fillRect (0, 0, getWidth(), getHeight());
-        
-//        // Circle glow
-//        float glow_radius = circle.getWidth() * 2.0f;
-//        float glow_x = circle.getX() + ( circle.getWidth() / 2.0f );
-//        float glow_y = circle.getY() + ( circle.getHeight() / 2.0f );
-//        float glow_w = glow_radius * 2.0f;
-//        float glow_h = glow_radius * 2.0f;
-//
-//        ColourGradient cg (GUI::Color::Accent.withAlpha(0.3f),
-//                           glow_x, glow_y,
-//                           GUI::Color::Accent.withAlpha(0.0f),
-//                           glow_x + (glow_radius * 0.4f),
-//                           glow_y + (glow_radius * 0.4f), true);
-//
-//        g.setFillType (cg);
-//        g.fillRect (glow_x - glow_radius, glow_y - glow_radius, glow_w, glow_h);
-        
-//        g.setFillType (cg);
-        
     }
 
     void resized() override
@@ -126,18 +88,15 @@ public:
         
         // Update the circle
         float circle_diameter = getWidth() * 0.065;
-        circle.setSize ( circle_diameter, circle_diameter);
+        circle.setSize (circle_diameter, circle_diameter);
         const Point<int> pos (getValueAsPosition (x_val, y_val));
         circle.setTopLeftPosition (pos.getX(), pos.getY());
-
-        // Update the circle glow
-        //circle_glow_bounds.setTopLeftPosition( circle );
     }
     
-    void setValues(float x, float y, bool notify = true)
+    void setValues (float x, float y, bool notify = true)
     {
-        x_axis_slider->setValue(x, sendNotification);
-        y_axis_slider->setValue(y, sendNotification);
+        x_axis_slider->setValue (x, sendNotification);
+        y_axis_slider->setValue (y, sendNotification);
     }
     
     class PadCircle : public Component
@@ -157,9 +116,6 @@ public:
         
         void paint (Graphics& g)  override
         {
-            //            g.setColour (Colours::yellow);
-            //            g.drawEllipse (getWidth() - 70, 10, 60, 60, 3);
-            
             g.fillAll (Colours::transparentBlack);
             g.setColour (colour);
             
@@ -172,47 +128,6 @@ public:
             float circle_h = cirlce_bounds.getHeight() - line_thickness;
             
             g.drawEllipse (circle_x, circle_y, circle_w, circle_h, line_thickness);
-            
-//            g.fillRect (0, 0, getWidth(), getHeight());
-//            g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-            
-//            auto inner = cirlce_bounds.withSizeKeepingCentre(3 * getWidth() / 4, 3 * getHeight() / 4);
-////            auto inner = getLocalBounds().withSizeKeepingCentre(3 * getWidth() / 4, 3 * getHeight() / 4);
-//
-//            auto innerTopleftPoint = inner.getTopLeft();
-//            auto obCenter = getLocalBounds().toFloat().getCentre();
-//
-//            Colour outerColor{0xffffffff};
-//            Colour centerColor{ static_cast<uint8>(JUCE_LIVE_CONSTANT(0x46)),
-//                static_cast<uint8>(JUCE_LIVE_CONSTANT(0xa8)),
-//                static_cast<uint8>(JUCE_LIVE_CONSTANT(0xcd))
-//            };
-//
-//            ColourGradient cg{outerColor, 0, 0, centerColor, static_cast<float>(innerTopleftPoint.getX()), 0, false};
-//            HeapBlock<juce::PixelARGB> colors;
-//            auto numColors = cg.createLookupTable(AffineTransform(), colors);
-//            DBG( "numColors: " + String(numColors)   );
-//            Path path;
-//            int i = 0;
-//            Path lastPath;
-////            for( ; i < 80 && i < numColors; )
-////            {
-////                Colour c( colors[i].getUnpremultiplied() ); //there's got to be a better way to turn PixelARGB's into Colour objects from ColourGradient lookup tables
-////                DBG( "Colour: " + c.toDisplayString(true));
-////
-////                float radius = (getWidth()* 0.5f) - i;
-////                path.addStar(obCenter, 6, 100-i, radius);
-////                PathStrokeType pst(1);
-////                g.setColour(c);
-////                g.strokePath(path, pst);
-////                lastPath = path;
-////                path.clear();
-////                i++;
-////            }
-//
-//            g.setColour( Colour(colors[i].getUnpremultiplied() ) );
-//            g.drawEllipse (circle_x, circle_y, circle_w, circle_h, line_thickness);
-//            g.fillPath(lastPath);
         }
     };
     
@@ -230,7 +145,7 @@ private:
         return Point<int> (xPos, yPos);
     }
     
-    Point<int> getValueAsPosition(float x, float y)
+    Point<int> getValueAsPosition (float x, float y)
     {
         if (invert_y) y = y_max - y;
         
@@ -251,9 +166,9 @@ private:
     
     void mouseDown (const MouseEvent& e) override
     {
-        circle.setTopLeftPosition(constrainPosition (e.getPosition().getX(), e.getPosition().getY()));
-        mouseDownXY.setXY(circle.getPosition().getX() + circle.getWidth()*.5f, circle.getPosition().getY() + circle.getHeight()*.5f);
-        setPositionAsValue(circle.getPosition().toFloat());
+        circle.setTopLeftPosition (constrainPosition (e.getPosition().getX(), e.getPosition().getY()));
+        mouseDownXY.setXY (circle.getPosition().getX() + circle.getWidth()*.5f, circle.getPosition().getY() + circle.getHeight()*.5f);
+        setPositionAsValue (circle.getPosition().toFloat());
         repaint();
     }
     
@@ -275,16 +190,12 @@ private:
         if (mCurrentPresetName != mProcessor->getPresetManager()->getCurrentPresetName())
         {
             // Update the labels
-            setValues(x_axis_slider->getValue(), y_axis_slider->getValue());
+            setValues (x_axis_slider->getValue(), y_axis_slider->getValue());
             
-            Point<int> new_position (
-                                     getValueAsPosition (
-                                                         x_axis_slider->getValue(),
-                                                         y_axis_slider->getValue()
-                                                         )
-                                     );
+            Point<int> new_position (getValueAsPosition (x_axis_slider->getValue(),
+                                                         y_axis_slider->getValue()));
             
-            circle.setTopLeftPosition(new_position.getX(), new_position.getY());
+            circle.setTopLeftPosition (new_position.getX(), new_position.getY());
             
             // Repaint the component
             repaint();
@@ -299,7 +210,6 @@ private:
     
     PadCircle circle;
     Rectangle<float> rectangle;
-    Rectangle<float> circle_glow_bounds;
 
     float x_min, x_max, y_min, y_max, x_val, y_val;
     bool invert_y;

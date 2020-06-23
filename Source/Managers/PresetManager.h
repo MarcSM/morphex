@@ -34,11 +34,10 @@ public:
     void createNewPreset();
     void savePreset();
     void saveAsPreset (String inPresetName);
-    void getSoundInformation (XmlElement* inElement);
-//    void getSoundInformation (MemoryBlock& destData);
     bool loadPreset (int inPresetIndex);
+    
+    void getSoundInformation (XmlElement* inElement);
     bool setSoundInformation (XmlElement* presetBody);
-//    bool setSoundInformation (const void* data, int sizeInBytes);
 
     bool getIsCurrentPresetSaved();
     String getCurrentPresetName();
@@ -58,7 +57,6 @@ private:
     
     XmlElement* mCurrentPresetXml;
     
-//    AudioProcessor* mProcessor;
     AudioProcessor* mProcessor;
     MorphexSynth* mMorphexSynth;
 };

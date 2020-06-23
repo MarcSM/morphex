@@ -30,9 +30,6 @@ public:
 //        setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
         setTextBoxStyle (Slider::TextEntryBoxPosition::TextBoxBelow, false, 0, 0);
         setRange (morphex_parameter.min_value, morphex_parameter.max_value, 0.001f);
-        
-//        mAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>
-//                      (state_to_control, parameter_ID, this);
 
         mAttachment = new AudioProcessorValueTreeState::SliderAttachment
                       (state_to_control, morphex_parameter.ID, *this);
@@ -42,6 +39,7 @@ public:
     
 private:
     
+    // TODO
 //    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> mAttachment;
     ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> mAttachment;
 

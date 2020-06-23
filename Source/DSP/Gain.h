@@ -30,7 +30,8 @@ public:
         float gainMapped = jmap (inGain, 0.0f, 1.0f, -24.0f, 24.0f);
         gainMapped = Decibels::decibelsToGain (gainMapped, -24.0f);
         
-        for (int i = 0; i < inNumSamplesToRender; i++) {
+        for (int i = 0; i < inNumSamplesToRender; i++)
+        {
             buffer[i] = buffer[i] * gainMapped;
         }
         

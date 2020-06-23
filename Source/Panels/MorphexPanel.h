@@ -10,21 +10,19 @@
 
 #pragma once
 
-#include "../Helpers/InterfaceDefines.h"
-#include "MorphexLookAndFeel.h"
 #include "MainPanel.h"
 #include "TopPanel.h"
 #include "BottomPanel.h"
 
-//==============================================================================
-/*
-*/
-class MorphexPanel :    public Component,
-                        public DragAndDropContainer
+#include "MorphexLookAndFeel.h"
+#include "../Helpers/InterfaceDefines.h"
+
+class MorphexPanel : public Component,
+                     public DragAndDropContainer
 {
 public:
-    //==============================================================================
-    MorphexPanel(SpectralMorphingToolAudioProcessor* inProcessor)
+    
+    MorphexPanel (SpectralMorphingToolAudioProcessor* inProcessor)
         : topPanel (inProcessor),
           mainPanel (inProcessor),
           bottomPanel (inProcessor)
@@ -63,18 +61,20 @@ public:
         FlexItem main (getWidth(), getHeight() - topPanelHeight - bottomPanelHeight, mainPanel);
         FlexItem bottom (getWidth(), bottomPanelHeight, bottomPanel);
 
-        fb.items.addArray ( { top, main, bottom } );
+        fb.items.addArray ({top, main, bottom});
         fb.performLayout (getLocalBounds().toFloat());
     }
 
 private:
     
-    struct RightSidePanel    : public Component
+    struct RightSidePanel : public Component
     {
         RightSidePanel (Colour c) : backgroundColour (c)
         {
             for (int i = 0; i < 9; ++i)
+            {
                 addAndMakeVisible (buttons.add (new TextButton (String (i))));
+            }
         }
 
         void paint (Graphics& g) override
@@ -100,7 +100,7 @@ private:
         OwnedArray<TextButton> buttons;
     };
 
-    struct LeftSidePanel    : public Component
+    struct LeftSidePanel : public Component
     {
         LeftSidePanel (Colour c) : backgroundColour (c)
         {

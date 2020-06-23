@@ -42,27 +42,9 @@ static const String PLUGIN_DATA_COLLECTIONS_DIRECTORY = PLUGIN_DATA_DIRECTORY + 
 static const String PLUGIN_DATA_COLLECTIONS_FACTORY_DIRECTORY = PLUGIN_DATA_DIRECTORY + directorySeparator + "Collections" + directorySeparator + "Factory";
 static const String PLUGIN_DATA_PRESETS_DIRECTORY = PLUGIN_DATA_DIRECTORY + directorySeparator + "Presets";
 
-// Sound files
-//const static std::string DEFAULT_SOUND_FILE_1 = BinaryData::violinB3_had;
-//const static std::string DEFAULT_SOUND_FILE_1_COLLECTION_PATH = PLUGIN_DATA_COLLECTIONS_DIRECTORY.toStdString() + "/Factory/violin-B3.had";
-//const static std::string DEFAULT_SOUND_FILE_2 = BinaryData::sopranoE4_had;
-//const static std::string DEFAULT_SOUND_FILE_2_COLLECTION_PATH = PLUGIN_DATA_COLLECTIONS_DIRECTORY.toStdString() + "/Factory/soprano-E4.had";
-
 // Sound parameters ID
 const static String PRESET_NAME_PARAMETER_ID = "PresetName";
 const static String SOUND_FILE_PATH_PARAMETER_ID = "MorphSoundFilePath";
-//const static String SOUND_1_FILE_PATH_PARAMETER_ID = "Sound1Path";
-//const static String SOUND_2_FILE_PATH_PARAMETER_ID = "Sound2Path";
-//const static String SOUND_3_FILE_PATH_PARAMETER_ID = "Sound3Path";
-//const static String SOUND_4_FILE_PATH_PARAMETER_ID = "Sound4Path";
-
-// Audio parameters
-//const static int NUM_CHANNELS = 2; // Left and Right
-//const static int MAX_BUFFER_SIZE = 192000;
-//const static int NS = 512; // Size of fft used in synthesis
-//const static int H = (int)NS/4; // Hop size (it has to be 1/4 of NS) - 128
-//const static int NUMBER_OF_FFT_SYNTH_FRAMES = 4; // Number of FFT synth frames
-//const static int MORPH_CIRCULAR_BUFFER_LENGTH = NS * NUMBER_OF_FFT_SYNTH_FRAMES;
 
 // Sine synthesis
 const static int BH_SIZE = 1001;

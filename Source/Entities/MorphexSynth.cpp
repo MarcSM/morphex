@@ -12,19 +12,13 @@
 
 #include "../Helpers/SMTConstants.h"
 
-MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
+MorphexSynth::MorphexSynth (AudioProcessorValueTreeState* parameters)
 :   mParameters (parameters)
 {
     this->initializeDSP();
     
     // Initialize the instrument
     this->instrument = Instrument();
-    
-//    std::string instrument_folder = "Suitcase Dry Full Velocity Test";
-//    std::string instrument_folder = "Suitcase Dry Full";
-//    std::string instrument_folder = "Morphing Test";
-//    std::string instrument_folder = "Suitcase Dry Test 20200520";
-//    std::string instrument_folder = "Morphex Test";
     
     this->instrument.mode = Instrument::Mode::Morphing;
     this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
@@ -80,13 +74,13 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
             }
         }
         
-        DBG("Sound files loaded: " + String(this->instrument.num_samples_loaded));
+        DBG("Sound files loaded: " + String (this->instrument.num_samples_loaded));
     }
     
     // Add some voices to our synth, to play the sounds..
     for (int i = 0; i < MAX_VOICES; i++)
     {
-        this->addVoice( new Voice (&this->instrument, parameters) );
+        this->addVoice (new Voice (&this->instrument, parameters));
     }
     
     // TODO - NOTE: If we enter on release stated, there is no way back, the
@@ -99,11 +93,8 @@ MorphexSynth::MorphexSynth(AudioProcessorValueTreeState* parameters)
     
     // Add a sound for them to play
     this->clearSounds();
-    this->addSound( new MorphSound() );
-    
-    // TODO TEST
+    this->addSound (new MorphSound());
     this->setNoteStealingEnabled (true);
-//    this->setNoteStealingEnabled (false);
 }
 
 MorphexSynth::~MorphexSynth() {}
@@ -117,14 +108,14 @@ void MorphexSynth::setCurrentPlaybackSampleRate (double sampleRate)
     // Set new sample rate to ADSR for each voice instance
     for (int i=0; i < this->getNumVoices();i++)
     {
-        if( ( morph_voice = dynamic_cast<Voice*>( this->getVoice(i) ) ) )
+        if ((morph_voice = dynamic_cast<Voice*> (this->getVoice(i))))
         {
-            morph_voice->setADSRSampleRate(sampleRate);
+            morph_voice->setADSRSampleRate (sampleRate);
         }
     }
     
     // Call base class method
-    Synthesiser::setCurrentPlaybackSampleRate(sampleRate);
+    Synthesiser::setCurrentPlaybackSampleRate (sampleRate);
 }
 
 void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
@@ -134,22 +125,10 @@ void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
     // Call base class method
     Synthesiser::renderNextBlock (outputAudio, inputMidi, startSample, numSamples);
     
-//    int total_num_input_channels  = getTotalNumInputChannels();
-//    int total_num_output_channels = getTotalNumOutputChannels();
-    
-//    for (int i_sample = 0; i_sample < numSamples; i_sample++)
-//    {
-//        auto currentSample = (float) (frame[i_sample] * this->level * this->tailOff);
-//        //                    auto currentSample = (float) (std::sin (this->currentAngle) * this->level * this->tailOff);
-//
-//        for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-//            outputBuffer.addSample (i, startSample, currentSample);
-//
-//        ++startSample;
-//    }
-    
+    // Reverb
     mReverb->process (outputAudio, outputAudio.getNumSamples());
     
+    // Output gain
     for (int channel = 0; channel < outputAudio.getNumChannels(); ++channel)
     {
         auto* buffer = outputAudio.getWritePointer (channel);
@@ -170,7 +149,8 @@ void MorphexSynth::initializeDSP()
 {
     mReverb = std::make_unique <DSP::Reverb> (mParameters);
     
-    for (int i = 0; i < NUM_CHANNELS; i++) {
+    for (int i = 0; i < NUM_CHANNELS; i++)
+    {
         mOutputGain[i] = std::make_unique <DSP::Gain>();
     }
 }

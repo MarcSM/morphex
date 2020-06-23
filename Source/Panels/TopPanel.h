@@ -16,48 +16,41 @@
 
 #include "PresetManagerPanel.h"
 
-//==============================================================================
-/*
- */
-class TopPanel    : public Component
+class TopPanel : public Component
 {
 public:
-    TopPanel(SpectralMorphingToolAudioProcessor* inProcessor)
-    :   rightPanel (inProcessor),
-        centerPanel (inProcessor)
+    
+    TopPanel (SpectralMorphingToolAudioProcessor* inProcessor)
+    :   centerPanel (inProcessor),
+        rightPanel (inProcessor)
     {
-        addAndMakeVisible (rightPanel);
-        addAndMakeVisible (centerPanel);
         addAndMakeVisible (leftPanel);
+        addAndMakeVisible (centerPanel);
+        addAndMakeVisible (rightPanel);
     }
     
-    ~TopPanel()
-    {
-    }
+    ~TopPanel() {}
     
-    void paint (Graphics& g) override
-    {
-        
-    }
+    void paint (Graphics& g) override {}
     
     void resized() override
     {
         FlexBox fb;
         
         float centerPanelWidth = getWidth() * 0.75f * 0.45f;
-        float soundPanelWidth = ( getWidth() - centerPanelWidth ) / 2.0f;
+        float soundPanelWidth = (getWidth() - centerPanelWidth) / 2.0f;
         
-        FlexItem left  (soundPanelWidth, getHeight(), leftPanel);
-        FlexItem center  (centerPanelWidth, getHeight(), centerPanel);
+        FlexItem left (soundPanelWidth, getHeight(), leftPanel);
+        FlexItem center (centerPanelWidth, getHeight(), centerPanel);
         FlexItem right (soundPanelWidth, getHeight(), rightPanel);
         
-        fb.items.addArray ( { left, center, right } );
+        fb.items.addArray ({left, center, right});
         fb.performLayout (getLocalBounds().toFloat());
     }
     
 private:
     
-    struct LeftSidePanel    : public Component
+    struct LeftSidePanel : public Component
     {
         LeftSidePanel ()
         {
@@ -93,12 +86,11 @@ private:
         float morphex_long_logo_margin;
     };
     
-    struct CenterPanel    : public Component
+    struct CenterPanel : public Component
     {
         CenterPanel (SpectralMorphingToolAudioProcessor* inProcessor)
         :   preset_manager_panel (inProcessor)
         {
-            //            preset_manager_panel.setBounds (0, 0, getWidth(), getHeight());
             addAndMakeVisible (preset_manager_panel);
         }
         
@@ -149,7 +141,6 @@ private:
         }
         
         Morphex::Slider* output_gain_slider;
-//        std::unique_ptr<Morphex::Slider> output_gain_slider;
         
         OwnedArray<Morphex::Slider> mSliders;
     };

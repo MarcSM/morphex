@@ -14,14 +14,10 @@
 
 #include "../Components/Button.h"
 
-//==============================================================================
-/*
-*/
 class PresetManagerPanel
 :   public Component,
     public Button::Listener,
     public ComboBox::Listener
-//    public AsyncUpdater
 {
 public:
     
@@ -59,14 +55,9 @@ public:
         addAndMakeVisible (informationPanel);
     }
 
-    ~PresetManagerPanel()
-    {
-    }
+    ~PresetManagerPanel() {}
 
-    void paint (Graphics& g) override
-    {
-        
-    }
+    void paint (Graphics& g) override {}
 
     void resized() override
     {
@@ -79,7 +70,8 @@ public:
         
         using Track = Grid::TrackInfo;
         
-        grid.templateRows = {Track (1_fr), Track (1_fr)};
+        grid.templateRows = {Track (1_fr),
+                             Track (1_fr)};
         grid.templateColumns = {Track (1_fr), Track (6_fr), Track (2_fr)};
         grid.templateAreas = {
             "save preset menu",
@@ -111,10 +103,7 @@ private:
     
     struct InformationPanel : public Component
     {
-        InformationPanel ()
-        {
-            
-        }
+        InformationPanel () {}
         
         void paint (Graphics& g) override
         {
@@ -122,10 +111,7 @@ private:
             GUI::Paint::drawBorders (g, getLocalBounds(), GUI::Paint::BorderType::Glass);
         }
         
-        void resized() override
-        {
-            
-        }
+        void resized() override {}
     };
     
     void updateMenuOptions()
@@ -158,6 +144,7 @@ private:
     {
         if (b == &mSavePreset) mPresetManager->savePreset();
 
+        // TODO
 //        if (b == mNewPreset) {
 //            presetManager->createNewPreset();
 //            updatePresetComboBox();
@@ -191,9 +178,7 @@ private:
 
         if (comboBoxThatHasChanged == &mMenu)
         {
-            DBG ("TODO");
-//            PresetManager* presetManager = mProcessor->getPresetManager();
-//
+            // TODO
 //            const int index = mPresetDisplay->getSelectedItemIndex();
 //            presetManager->loadPreset(index);
         }
@@ -230,7 +215,7 @@ private:
         if (window.runModalLoop())
         {
             String presetName = window.getTextEditor ("presetName")->getText();
-            mPresetManager->saveAsPreset(presetName);
+            mPresetManager->saveAsPreset (presetName);
             updatePresetComboBox();
         }
     }

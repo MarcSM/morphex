@@ -58,8 +58,6 @@ namespace GUI
         {
             int line_thickness = 3;
             
-//            border_type = BorderType::Normal;
-            
             // Get borders points
             Point<int> topLeft = componentBounds.getTopLeft();
             Point<int> topRight = componentBounds.getTopRight();
@@ -108,9 +106,6 @@ namespace GUI
         }
     }
 }
-
-
-
 
 const Colour SMTColour_bg = Colour(34, 34, 34);
 

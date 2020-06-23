@@ -26,7 +26,7 @@ class MorphexSynth
 {
 public:
     
-    MorphexSynth(AudioProcessorValueTreeState* parameters);
+    MorphexSynth (AudioProcessorValueTreeState* parameters);
     ~MorphexSynth();
     
     void setCurrentPlaybackSampleRate (double sampleRate) override;

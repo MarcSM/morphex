@@ -24,15 +24,6 @@ namespace Morphex
         T default_value;
     };
 
-    //struct Parameter
-    //{
-    //    String parameter_ID;
-    //    String parameter_label;
-    //    float min_value;
-    //    float max_value;
-    //    float default_value;
-    //};
-
     // Rename them and call them like: SMTParameter::FreqsInterpFactor
     enum Parameters
     {
@@ -49,8 +40,7 @@ namespace Morphex
         TotalNumParameters
     };
 
-    //typedef std::map<int, Parameter> IndexedParameters;
-
+    //typedef std::map<int, Parameter> IndexedParameters;ç
     
 //    params.push_back(std::make_unique<AudioParameterFloat>(things));
 //    params.push_back(std::make_unique<AudioParameterBool>(things));
@@ -92,28 +82,4 @@ namespace Morphex
         
         return found_parameter;
     }
-
-//    static String SMTParameterID [Parameters::TotalNumParameters] =
-//    {
-//        "FreqsInterpFactor",
-//        "MagsInterpFactor",
-//        "StocsInterpFactor",
-//        "StocsGain",
-//        "ADSRAttack",
-//        "ADSRDecay",
-//        "ADSRSustain",
-//        "ADSRRelease",
-//    };
-//
-//    static String SMTParameterLabel [Parameters::TotalNumParameters] =
-//    {
-//        "Harmonic Frequencies",
-//        "Harmonic Magnitudes",
-//        "Stochastic Component",
-//        "Stochastic Gain",
-//        "Attack",
-//        "Decay",
-//        "Sustain",
-//        "Release"
-//    };
 } // namespace Morphex
