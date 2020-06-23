@@ -36,18 +36,10 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
 #endif
 }
 
-SpectralMorphingToolAudioProcessorEditor::~SpectralMorphingToolAudioProcessorEditor()
-{
-//    SMTLookAndFeel::setDefaultLookAndFeel(nullptr);
-//    setLookAndFeel(nullptr);
-//    LookAndFeel::setDefaultLookAndFeel(nullptr);
-}
+SpectralMorphingToolAudioProcessorEditor::~SpectralMorphingToolAudioProcessorEditor() {}
 
 //==============================================================================
-void SpectralMorphingToolAudioProcessorEditor::paint (Graphics& g)
-{
-    
-}
+void SpectralMorphingToolAudioProcessorEditor::paint (Graphics& g) {}
 
 void SpectralMorphingToolAudioProcessorEditor::resized()
 {

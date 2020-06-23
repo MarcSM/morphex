@@ -14,8 +14,6 @@
 #include "PluginProcessor.h"
 
 #include "Panels/MorphexPanel.h"
-//#include "MainPanel.h"
-//#include "SMTLookAndFeel.h"
 
 //==============================================================================
 /**
@@ -39,10 +37,6 @@ private:
 
     ScopedPointer<ResizableCornerComponent> resizeCorner;
     ScopedPointer<ComponentBoundsConstrainer> resizeConstrainer;
-    
-//    ScopedPointer<MainPanel> mMainPanel;
-
-//    ScopedPointer<SMTLookAndFeel> mLookAndFeel;
     
     Image mBackgroundImage;
 

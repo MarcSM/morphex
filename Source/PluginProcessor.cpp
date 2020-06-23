@@ -28,37 +28,12 @@ SpectralMorphingToolAudioProcessor::SpectralMorphingToolAudioProcessor()
                   ),
 parameters(*this,                   /** reference to processor */
            nullptr,                 /** null pointer to undoManager (optional) */
-           juce::Identifier("SMT"), /** valueTree identifier */
+           juce::Identifier ("SMT"), /** valueTree identifier */
            createParameterLayout()) /** initialize parameters */
 #endif
 {
-//    sound[1] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_1, DEFAULT_SOUND_FILE_1_COLLECTION_PATH);
-//    sound[2] = std::make_unique<Core::Sound>(DEFAULT_SOUND_FILE_2, DEFAULT_SOUND_FILE_2_COLLECTION_PATH);
-    
-//    int max_len, max_harmonics;
-    
-//    // Get the maximum overall shape (length, number of harmonics)
-//    std::tie(max_len, max_harmonics) = getMaxShape(sound[1]->model->values.harmonics_freqs,
-//                                                   sound[2]->model->values.harmonics_freqs);
-    
-//    // Zero padding the "harmonic_frequencies" vectors to have the same size
-//    sound[1]->model->values.harmonics_freqs.resize(max_len, std::vector<float>(max_harmonics));
-//    sound[2]->model->values.harmonics_freqs.resize(max_len, std::vector<float>(max_harmonics));
-//
-//    // Zero padding the "harmonic_magnitudes" vectors to have the same size
-//    sound[1]->model->values.harmonics_mags.resize(max_len, std::vector<float>(max_harmonics));
-//    sound[2]->model->values.harmonics_mags.resize(max_len, std::vector<float>(max_harmonics));
-//
-//    // Zero padding the "harmonic_phases" vectors to have the same size
-//    sound[1]->model->values.harmonics_phases.resize(max_len, std::vector<float>(max_harmonics));
-//    sound[2]->model->values.harmonics_phases.resize(max_len, std::vector<float>(max_harmonics));
-    
-    // Zero padding the "stochastic_residual" vectors to have the same size
-//    sound[1]->stochastic_residual.resize(max_len, std::vector<float>(max_harmonics));
-//    sound[2]->stochastic_residual.resize(max_len, std::vector<float>(max_harmonics));
-    
     // Initialize the preset manager
-    mPresetManager = std::make_unique<PresetManager>(this, &mMorphexSynth);
+    mPresetManager = std::make_unique<PresetManager> (this, &mMorphexSynth);
     
     // Create an initial new preset
     mPresetManager->createNewPreset();
@@ -133,12 +108,12 @@ void SpectralMorphingToolAudioProcessor::changeProgramName (int index, const Str
 //==============================================================================
 void SpectralMorphingToolAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    ignoreUnused(samplesPerBlock);
+    ignoreUnused (samplesPerBlock);
 //    lastSampleRate = sampleRate
     
     // Pre-playback initializations
-    midiCollector.reset(sampleRate);
-    mMorphexSynth.setCurrentPlaybackSampleRate(sampleRate);
+    midiCollector.reset (sampleRate);
+    mMorphexSynth.setCurrentPlaybackSampleRate (sampleRate);
 }
 
 void SpectralMorphingToolAudioProcessor::releaseResources()
@@ -170,39 +145,18 @@ bool SpectralMorphingToolAudioProcessor::isBusesLayoutSupported (const BusesLayo
 #endif
 }
 #endif
-//bool SpectralMorphingToolAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
-//{
-//#if JucePlugin_IsMidiEffect
-//    ignoreUnused (layouts);
-//    return true;
-//#else
-//    // This is the place where you check if the layout is supported.
-//    // In this template code we only support stereo.
-//    if (layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
-//        return false;
-//
-//    // This checks if the input layout matches the output layout
-//#if ! JucePlugin_IsSynth
-//    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-//        return false;
-//#endif
-//
-//    return true;
-//#endif
-//}
-//#endif
 
 void SpectralMorphingToolAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     buffer.clear();
     
     // Get next midi events
-    midiState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
+    midiState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
     
-    // TODO CHECK - (buffer, midiMessages, -> 0 <- , buffer.getNumSamples());
+    // TODO - CHECK (buffer, midiMessages, -> 0 <- , buffer.getNumSamples());
     
     // Get the synth to process the midi events and generate its output
-    mMorphexSynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+    mMorphexSynth.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -227,17 +181,6 @@ void SpectralMorphingToolAudioProcessor::getStateInformation (MemoryBlock& destD
     
     XmlElement* presetBody = new XmlElement ("MPF_Preset");
     
-//    // Save morph sound's file path
-//    MorphSounds morph_sounds = this->mMorphexSynth.instrument.getMorphSounds();
-//
-//    for (int i = 0; i < morph_sounds.size(); i++)
-//    {
-//        std::string sound_file_path = morph_sounds[i]->path;
-//        removeSubStr (sound_file_path, (PLUGIN_DATA_COLLECTIONS_DIRECTORY + directorySeparator).toStdString());
-//        String sound_file_path_id = SOUND_FILE_PATH_PARAMETER_ID + String (i + 1);
-//        presetBody->setAttribute (sound_file_path_id, sound_file_path);
-//    }
-    
     mPresetManager->getXmlForPreset (presetBody);
     
     preset.addChildElement (presetBody);
@@ -246,9 +189,6 @@ void SpectralMorphingToolAudioProcessor::getStateInformation (MemoryBlock& destD
 
 void SpectralMorphingToolAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-    
     std::unique_ptr<XmlElement> xmlState = getXmlFromBinary (data, sizeInBytes);
     
     if (xmlState != nullptr)
