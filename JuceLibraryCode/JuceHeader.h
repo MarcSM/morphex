@@ -53,7 +53,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "Morphex";
     const char* const  companyName    = "Morphex";
-    const char* const  versionString  = "0.3.0";
+    const char* const  versionString  = "0.3.0-beta";
     const int          versionNumber  = 0x300;
 }
 #endif

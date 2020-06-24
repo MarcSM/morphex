@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="AFG8tp" name="Morphex" projectType="audioplug" jucerVersion="5.4.7"
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              cppLanguageStandard="17" version="0.3.0" companyName="Morphex"
+              cppLanguageStandard="17" version="0.3.0-beta" companyName="Morphex"
               pluginManufacturer="Morphex" pluginAUMainType="'aumu'">
   <MAINGROUP id="BTCZAR" name="Morphex">
     <GROUP id="{AFEC479D-5C67-2E7A-1D34-7E1570EAC1CB}" name="Core">

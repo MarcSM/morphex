@@ -66,7 +66,7 @@ private:
             // Plugin Version
             g.setColour (Colours::white);
             g.setFont (14.0f);
-            g.drawText ("v" + PLUGIN_VERSION + "-beta", -morphex_long_logo_margin, morphex_long_logo_margin, getWidth(), getHeight(), Justification::right);
+            g.drawText ("v" + PLUGIN_VERSION, -morphex_long_logo_margin, morphex_long_logo_margin, getWidth(), getHeight(), Justification::right);
             
             // Draw borders
             GUI::Paint::drawBorders (g, getLocalBounds());
