@@ -13,8 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 
-#include "SMTMainPanel.h"
-#include "SMTLookAndFeel.h"
+#include "Panels/MorphexPanel.h"
 
 //==============================================================================
 /**
@@ -34,9 +33,10 @@ private:
     // access the processor object that created it.
     SpectralMorphingToolAudioProcessor& processor;
     
-    ScopedPointer<SMTMainPanel> mMainPanel;
-    
-    ScopedPointer<SMTLookAndFeel> mLookAndFeel;
+    MorphexPanel morphexPanel;
+
+    ScopedPointer<ResizableCornerComponent> resizeCorner;
+    ScopedPointer<ComponentBoundsConstrainer> resizeConstrainer;
     
     Image mBackgroundImage;
 

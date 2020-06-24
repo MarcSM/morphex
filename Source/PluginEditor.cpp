@@ -13,35 +13,36 @@
 
 //==============================================================================
 SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEditor (SpectralMorphingToolAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+    : AudioProcessorEditor (&p), processor (p), morphexPanel(&p)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize(MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT);
+    addAndMakeVisible (morphexPanel);
+
+#if JUCE_ANDROID || JUCE_IOS
+    setFullScreen (true);
+#else
+//    setUsingNativeTitleBar (true);
+    this->resizeCorner = new ResizableCornerComponent(this, getConstrainer());
+    addAndMakeVisible(this->resizeCorner);
+    this->resizeCorner->setBounds (getWidth()-20, getHeight()-20, 20, 20);
+
+    setResizable (true, false);
+    setResizeLimits (MORPHEX_PANEL_WIDTH,
+                     MORPHEX_PANEL_HEIGHT,
+                     MORPHEX_PANEL_WIDTH * 4,
+                     MORPHEX_PANEL_HEIGHT * 4);
     
-    mMainPanel = new SMTMainPanel(&processor);
-    addAndMakeVisible(mMainPanel);
-    
-    mLookAndFeel = new SMTLookAndFeel();
-    setLookAndFeel(mLookAndFeel);
-    LookAndFeel::setDefaultLookAndFeel(mLookAndFeel);
+    getConstrainer()->setFixedAspectRatio(MORPHEX_RATIO);
+
+#endif
 }
 
-SpectralMorphingToolAudioProcessorEditor::~SpectralMorphingToolAudioProcessorEditor()
-{
-    SMTLookAndFeel::setDefaultLookAndFeel(nullptr);
-    setLookAndFeel(nullptr);
-    LookAndFeel::setDefaultLookAndFeel(nullptr);
-}
+SpectralMorphingToolAudioProcessorEditor::~SpectralMorphingToolAudioProcessorEditor() {}
 
 //==============================================================================
-void SpectralMorphingToolAudioProcessorEditor::paint (Graphics& g)
-{
-    g.fillAll (SMTColour_bg);
-}
+void SpectralMorphingToolAudioProcessorEditor::paint (Graphics& g) {}
 
 void SpectralMorphingToolAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    morphexPanel.setBounds (0, 0, getWidth(), getHeight());
+    resizeCorner->setBounds (getWidth()-20, getHeight()-20, 20, 20);
 }

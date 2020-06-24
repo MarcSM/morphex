@@ -1,116 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="AFG8tp" name="Morphex" projectType="audioplug" jucerVersion="5.4.3"
+<JUCERPROJECT id="AFG8tp" name="Morphex" projectType="audioplug" jucerVersion="5.4.7"
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              cppLanguageStandard="17" version="0.2.0" companyName="Morphex"
+              cppLanguageStandard="17" version="0.3.0-beta" companyName="Morphex"
               pluginManufacturer="Morphex" pluginAUMainType="'aumu'">
   <MAINGROUP id="BTCZAR" name="Morphex">
+    <GROUP id="{AFEC479D-5C67-2E7A-1D34-7E1570EAC1CB}" name="Core">
+      <FILE id="gKEM2f" name="Codec.h" compile="0" resource="0" file="Source/Core/Codec.h"/>
+      <FILE id="MCEVjp" name="Tools.h" compile="0" resource="0" file="Source/Core/Tools.h"/>
+      <FILE id="DIC1Xs" name="Instrument.h" compile="0" resource="0" file="Source/Core/Instrument.h"/>
+      <FILE id="xAtxaC" name="Instrument.cpp" compile="1" resource="0" file="Source/Core/Instrument.cpp"/>
+      <FILE id="JdpZT5" name="Note.h" compile="0" resource="0" file="Source/Core/Note.h"/>
+      <FILE id="icqyDE" name="Velocity.h" compile="0" resource="0" file="Source/Core/Velocity.h"/>
+      <FILE id="d9dn7g" name="Sound.h" compile="0" resource="0" file="Source/Core/Sound.h"/>
+      <FILE id="Ylhobz" name="Sound.cpp" compile="1" resource="0" file="Source/Core/Sound.cpp"/>
+      <FILE id="SV7bdh" name="Model.h" compile="0" resource="0" file="Source/Core/Model.h"/>
+      <FILE id="ENTQtM" name="Synthesis.h" compile="0" resource="0" file="Source/Core/Synthesis.h"/>
+      <FILE id="UZKnB3" name="Synthesis.cpp" compile="1" resource="0" file="Source/Core/Synthesis.cpp"/>
+      <FILE id="r37OOs" name="Voice.h" compile="0" resource="0" file="Source/Core/Voice.h"/>
+    </GROUP>
     <GROUP id="{4E5E0A46-E03E-E82E-84AF-6D34C82A5934}" name="Entities">
-      <FILE id="i5U6Ym" name="MorphSound.h" compile="0" resource="0" file="Source/MorphSound.h"/>
-      <FILE id="EgfQde" name="MorphVoice.h" compile="0" resource="0" file="Source/MorphVoice.h"/>
-      <FILE id="czN4sx" name="Sound.cpp" compile="1" resource="0" file="Source/Sound.cpp"/>
-      <FILE id="KjFQMd" name="Sound.h" compile="0" resource="0" file="Source/Sound.h"/>
-      <FILE id="EKJdye" name="SynthesisEngine.cpp" compile="1" resource="0"
-            file="Source/SynthesisEngine.cpp"/>
-      <FILE id="sLBu9V" name="SynthesisEngine.h" compile="0" resource="0"
-            file="Source/SynthesisEngine.h"/>
-      <FILE id="tvr3eQ" name="MorphexSynth.cpp" compile="1" resource="0"
-            file="Source/MorphexSynth.cpp"/>
-      <FILE id="T1P9yV" name="MorphexSynth.h" compile="0" resource="0" file="Source/MorphexSynth.h"/>
+      <FILE id="XJsfVy" name="MorphSound.h" compile="0" resource="0" file="Source/Entities/MorphSound.h"/>
+      <FILE id="Hioc5C" name="MorphexSynth.h" compile="0" resource="0" file="Source/Entities/MorphexSynth.h"/>
+      <FILE id="XNxybP" name="MorphexSynth.cpp" compile="1" resource="0"
+            file="Source/Entities/MorphexSynth.cpp"/>
     </GROUP>
     <GROUP id="{3F9BEECA-86A6-CC88-63F8-6B2F26C9F9A4}" name="Managers">
-      <FILE id="bXUskW" name="SMTPresetManager.cpp" compile="1" resource="0"
-            file="Source/SMTPresetManager.cpp"/>
-      <FILE id="dJE4Xa" name="SMTPresetManager.h" compile="0" resource="0"
-            file="Source/SMTPresetManager.h"/>
+      <FILE id="rg8Fza" name="PresetManager.h" compile="0" resource="0" file="Source/Managers/PresetManager.h"/>
+      <FILE id="zNUnLV" name="PresetManager.cpp" compile="1" resource="0"
+            file="Source/Managers/PresetManager.cpp"/>
     </GROUP>
     <GROUP id="{A8DC72F7-DA5B-6243-1C16-AFA2E4D75948}" name="Components">
-      <FILE id="PUrNgy" name="SMTAdditionalParameters.cpp" compile="1" resource="0"
-            file="Source/SMTAdditionalParameters.cpp"/>
-      <FILE id="NS7tq8" name="SMTAdditionalParameters.h" compile="0" resource="0"
-            file="Source/SMTAdditionalParameters.h"/>
-      <FILE id="L3wMyS" name="SMTADSRParameters.cpp" compile="1" resource="0"
-            file="Source/SMTADSRParameters.cpp"/>
-      <FILE id="dW8s6u" name="SMTADSRParameters.h" compile="0" resource="0"
-            file="Source/SMTADSRParameters.h"/>
-      <FILE id="iTbU5H" name="SMTBrowser.cpp" compile="1" resource="0" file="Source/SMTBrowser.cpp"/>
-      <FILE id="q7ISk5" name="SMTBrowser.h" compile="0" resource="0" file="Source/SMTBrowser.h"/>
-      <FILE id="HDRtXj" name="SMTFileBrowser.cpp" compile="1" resource="0"
-            file="Source/SMTFileBrowser.cpp"/>
-      <FILE id="Pa7GfI" name="SMTFileBrowser.h" compile="0" resource="0"
-            file="Source/SMTFileBrowser.h"/>
-      <FILE id="ANYHq8" name="SMTMidiKeyboard.cpp" compile="1" resource="0"
-            file="Source/SMTMidiKeyboard.cpp"/>
-      <FILE id="vDOoSG" name="SMTMidiKeyboard.h" compile="0" resource="0"
-            file="Source/SMTMidiKeyboard.h"/>
-      <FILE id="j9tiMw" name="SMTTabbedComponent.cpp" compile="1" resource="0"
-            file="Source/SMTTabbedComponent.cpp"/>
-      <FILE id="nBYJ4V" name="SMTTabbedComponent.h" compile="0" resource="0"
-            file="Source/SMTTabbedComponent.h"/>
-      <FILE id="taJMOq" name="SMTWaveformPreview.cpp" compile="1" resource="0"
-            file="Source/SMTWaveformPreview.cpp"/>
-      <FILE id="vcIMoE" name="SMTWaveformPreview.h" compile="0" resource="0"
-            file="Source/SMTWaveformPreview.h"/>
-      <FILE id="sZKaGM" name="SMTXYPad.cpp" compile="1" resource="0" file="Source/SMTXYPad.cpp"/>
-      <FILE id="WdhB7i" name="SMTXYPad.h" compile="0" resource="0" file="Source/SMTXYPad.h"/>
+      <FILE id="vBB9P0" name="Slider.h" compile="0" resource="0" file="Source/Components/Slider.h"/>
+      <FILE id="ui5uR3" name="Button.h" compile="0" resource="0" file="Source/Components/Button.h"/>
+      <FILE id="VCzmwz" name="PadXY.h" compile="0" resource="0" file="Source/Components/PadXY.h"/>
+      <FILE id="NcLsvP" name="CollectionBrowser.h" compile="0" resource="0"
+            file="Source/Components/CollectionBrowser.h"/>
     </GROUP>
     <GROUP id="{97E6AD4A-6F3E-8144-D45D-39DA01D25B9D}" name="Panels">
-      <FILE id="yvqKAf" name="SMTBottomPanel.cpp" compile="1" resource="0"
-            file="Source/SMTBottomPanel.cpp"/>
-      <FILE id="mOQZYg" name="SMTBottomPanel.h" compile="0" resource="0"
-            file="Source/SMTBottomPanel.h"/>
-      <FILE id="XUsN5g" name="SMTCenterPanel.cpp" compile="1" resource="0"
-            file="Source/SMTCenterPanel.cpp"/>
-      <FILE id="ahCG4G" name="SMTCenterPanel.h" compile="0" resource="0"
-            file="Source/SMTCenterPanel.h"/>
-      <FILE id="N5JDgy" name="SMTMainPanel.cpp" compile="1" resource="0"
-            file="Source/SMTMainPanel.cpp"/>
-      <FILE id="CoS4e2" name="SMTMainPanel.h" compile="0" resource="0" file="Source/SMTMainPanel.h"/>
-      <FILE id="FK36Tj" name="SMTPanelBase.cpp" compile="1" resource="0"
-            file="Source/SMTPanelBase.cpp"/>
-      <FILE id="SIUuQ2" name="SMTPanelBase.h" compile="0" resource="0" file="Source/SMTPanelBase.h"/>
-      <FILE id="E34P3i" name="SMTSoundPanel.cpp" compile="1" resource="0"
-            file="Source/SMTSoundPanel.cpp"/>
-      <FILE id="BOOY1l" name="SMTSoundPanel.h" compile="0" resource="0" file="Source/SMTSoundPanel.h"/>
-      <FILE id="bU8zVO" name="SMTTopPanel.cpp" compile="1" resource="0" file="Source/SMTTopPanel.cpp"/>
-      <FILE id="U3A7Vi" name="SMTTopPanel.h" compile="0" resource="0" file="Source/SMTTopPanel.h"/>
+      <FILE id="yG702c" name="MorphexLookAndFeel.h" compile="0" resource="0"
+            file="Source/Panels/MorphexLookAndFeel.h"/>
+      <FILE id="mGmPPY" name="MorphexPanel.h" compile="0" resource="0" file="Source/Panels/MorphexPanel.h"/>
+      <FILE id="LAtgo9" name="MainPanel.h" compile="0" resource="0" file="Source/Panels/MainPanel.h"/>
+      <FILE id="ebnPhb" name="MorphingPanel.h" compile="0" resource="0" file="Source/Panels/MorphingPanel.h"/>
+      <FILE id="XFDGyU" name="CorePanel.h" compile="0" resource="0" file="Source/Panels/CorePanel.h"/>
+      <FILE id="qhEZQo" name="FxPanel.h" compile="0" resource="0" file="Source/Panels/FxPanel.h"/>
+      <FILE id="bZGVbu" name="SoundPanel.h" compile="0" resource="0" file="Source/Panels/SoundPanel.h"/>
+      <FILE id="OrvrnQ" name="TopPanel.h" compile="0" resource="0" file="Source/Panels/TopPanel.h"/>
+      <FILE id="RP5713" name="PresetManagerPanel.h" compile="0" resource="0"
+            file="Source/Panels/PresetManagerPanel.h"/>
+      <FILE id="G4WCVM" name="BottomPanel.h" compile="0" resource="0" file="Source/Panels/BottomPanel.h"/>
     </GROUP>
-    <GROUP id="{840CB2F3-43B0-8278-25EF-7C5DA7E183FC}" name="Parameters">
-      <FILE id="BuUx3V" name="SMTParameterSlider.cpp" compile="1" resource="0"
-            file="Source/SMTParameterSlider.cpp"/>
-      <FILE id="JDqkoL" name="SMTParameterSlider.h" compile="0" resource="0"
-            file="Source/SMTParameterSlider.h"/>
+    <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="DSP">
+      <FILE id="DXmxJ0" name="Delay.h" compile="0" resource="0" file="Source/DSP/Delay.h"/>
+      <FILE id="kvmGy3" name="Distortion.h" compile="0" resource="0" file="Source/DSP/Distortion.h"/>
+      <FILE id="OvuOxk" name="Gain.h" compile="0" resource="0" file="Source/DSP/Gain.h"/>
+      <FILE id="jPF0Wj" name="Reverb.h" compile="0" resource="0" file="Source/DSP/Reverb.h"/>
     </GROUP>
     <GROUP id="{2FE0720A-2404-2915-1953-7D2767C6275A}" name="Helpers">
-      <FILE id="qwMgI1" name="SMTAudioHelpers.h" compile="0" resource="0"
-            file="Source/SMTAudioHelpers.h"/>
-      <FILE id="KgAGd0" name="SMTConstants.h" compile="0" resource="0" file="Source/SMTConstants.h"/>
-      <FILE id="f7ahY1" name="SMTHelperFunctions.h" compile="0" resource="0"
-            file="Source/SMTHelperFunctions.h"/>
-      <FILE id="nWkdZR" name="SMTInterfaceDefines.h" compile="0" resource="0"
-            file="Source/SMTInterfaceDefines.h"/>
-      <FILE id="iBrKX3" name="SMTLookAndFeel.h" compile="0" resource="0"
-            file="Source/SMTLookAndFeel.h"/>
-      <FILE id="GhMR7a" name="SMTParameters.h" compile="0" resource="0" file="Source/SMTParameters.h"/>
-      <FILE id="PBKW3B" name="SMTUtils.h" compile="0" resource="0" file="Source/SMTUtils.h"/>
+      <FILE id="AjiFPN" name="InterfaceDefines.h" compile="0" resource="0"
+            file="Source/Helpers/InterfaceDefines.h"/>
+      <FILE id="DGsm73" name="SMTAudioHelpers.h" compile="0" resource="0"
+            file="Source/Helpers/SMTAudioHelpers.h"/>
+      <FILE id="tM9Uey" name="SMTConstants.h" compile="0" resource="0" file="Source/Helpers/SMTConstants.h"/>
+      <FILE id="Wli5cb" name="SMTHelperFunctions.h" compile="0" resource="0"
+            file="Source/Helpers/SMTHelperFunctions.h"/>
+      <FILE id="KpnAB6" name="SMTParameters.h" compile="0" resource="0" file="Source/Helpers/SMTParameters.h"/>
+      <FILE id="WNkw0V" name="SMTUtils.h" compile="0" resource="0" file="Source/Helpers/SMTUtils.h"/>
     </GROUP>
-    <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="DSP"/>
     <GROUP id="{50819E26-3EF6-F93E-380B-A567157B7389}" name="Source">
-      <FILE id="Zbg3ub" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
       <FILE id="bskq50" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
+      <FILE id="Zbg3ub" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="A5d8x0" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="ED1KcU" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="A5d8x0" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
     <GROUP id="{AE3F5129-A357-44A3-5200-C0035B16DD0C}" name="Assets">
-      <GROUP id="{5D9C3E8A-AF11-EC02-719E-C4792FC59B6E}" name="Sounds">
-        <FILE id="Nuuw82" name="soprano-E4.had" compile="0" resource="1" file="Assets/Sounds/soprano-E4.had"/>
-        <FILE id="pF5glg" name="violin-B3.had" compile="0" resource="1" file="Assets/Sounds/violin-B3.had"/>
-      </GROUP>
+      <GROUP id="{5D9C3E8A-AF11-EC02-719E-C4792FC59B6E}" name="Sounds"/>
       <GROUP id="{9FFC6437-B955-888F-5958-311B4D3E97CA}" name="Images">
         <GROUP id="{AD3D7109-2980-41D2-CF8D-6D8897780DF4}" name="Logos">
+          <FILE id="IZ0261" name="morphex_long_logo.png" compile="0" resource="1"
+                file="Assets/Images/Logos/morphex_long_logo.png"/>
+          <FILE id="qlYWS0" name="morphex_long_logo.svg" compile="0" resource="1"
+                file="Assets/Images/Logos/morphex_long_logo.svg"/>
           <FILE id="etXlaC" name="morphex_logo_small.png" compile="0" resource="1"
                 file="Assets/Images/Logos/morphex_logo_small.png"/>
           <FILE id="s5bjdA" name="morphex_logo.png" compile="0" resource="1"
@@ -144,10 +118,36 @@
         <MODULEPATH id="juce_gui_extra" path="../../SDKs/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../SDKs/JUCE/modules"/>
         <MODULEPATH id="juce_dsp" path="../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/custom_modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
+    <XCODE_IPHONE targetFolder="Builds/iOS">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_opengl"/>
+        <MODULEPATH id="juce_gui_extra"/>
+        <MODULEPATH id="juce_gui_basics"/>
+        <MODULEPATH id="juce_graphics"/>
+        <MODULEPATH id="juce_events"/>
+        <MODULEPATH id="juce_dsp"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_cryptography"/>
+        <MODULEPATH id="juce_core"/>
+        <MODULEPATH id="juce_audio_utils"/>
+        <MODULEPATH id="juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_plugin_client"/>
+        <MODULEPATH id="juce_audio_formats"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/custom_modules"/>
+      </MODULEPATHS>
+    </XCODE_IPHONE>
   </EXPORTFORMATS>
   <MODULES>
+    <MODULE id="danlin_fontawesome" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -166,7 +166,7 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <LIVE_SETTINGS>
-    <OSX/>
+    <OSX buildEnabled="0" warningsEnabled="1" continuousRebuildEnabled="0"/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
 </JUCERPROJECT>

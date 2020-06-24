@@ -8,11 +8,11 @@
 
 namespace BinaryData
 {
-    extern const char*   sopranoE4_had;
-    const int            sopranoE4_hadSize = 1277279;
+    extern const char*   morphex_long_logo_png;
+    const int            morphex_long_logo_pngSize = 86623;
 
-    extern const char*   violinB3_had;
-    const int            violinB3_hadSize = 2911776;
+    extern const char*   morphex_long_logo_svg;
+    const int            morphex_long_logo_svgSize = 12506;
 
     extern const char*   morphex_logo_small_png;
     const int            morphex_logo_small_pngSize = 1540;

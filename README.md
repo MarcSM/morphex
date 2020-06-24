@@ -1,6 +1,7 @@
-<p align="center"> <img width="110" height="110" src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/Logos/morphex_logo.png?raw=true"></p>
+<p align="center"><img width="110" height="110" src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/Logos/morphex_logo.png?raw=true"></p>
 
-<h2 align="center">Morphex</h2>
+<p align="center"><img width="248" src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/Logos/morphex_long_logo.svg?raw=true"></p>
+
 <h4 align="center">A Spectral Morphing Synthesizer</h4>
 
 <p align="center">
@@ -10,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/MarcSM/morphex"><img src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/morphex_v02.png?raw=true" alt="Morphex GUI"></a>
+  <a href="https://github.com/MarcSM/morphex"><img src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/GUI/current_version.png?raw=true" alt="Morphex GUI"></a>
 </p>
 
 Morphex is a an open source audio plugin that morphs the harmonics of two sounds while exploring the latent timbral space that emerges from the spectral analysis of musical sounds, and to craft new hybrid instruments. 
