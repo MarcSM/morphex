@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/MarcSM/morphex/releases"><img src="https://img.shields.io/github/release/MarcSM/morphex.svg" alt="Version"></a>
   <a href="https://github.com/MarcSM/morphex/releases"><img src="https://img.shields.io/github/downloads/MarcSM/morphex/total.svg" alt="Downloads"></a>
-  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg" alt="License"></a>
+  <a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License"></a>
 </p>
 
 <p align="center">
