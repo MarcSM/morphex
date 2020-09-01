@@ -28,15 +28,22 @@ MorphexSynth::MorphexSynth (AudioProcessorValueTreeState* parameters)
     // Initialize the instrument
     this->instrument = Instrument();
     
-    this->instrument.mode = Instrument::Mode::Morphing;
-    this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
-//    this->instrument.mode = Instrument::Mode::FullRange;
-//    this->instrument.interpolation_mode = Instrument::Interpolation::None;
+//    this->instrument.mode = Instrument::Mode::Morphing;
+//    this->instrument.interpolation_mode = Instrument::Interpolation::Manual;
+    
+//    this->instrument.generate.harmonic = true;
+//    this->instrument.generate.sinusoidal = false;
+//    this->instrument.generate.stochastic = false;
+//    this->instrument.generate.attack = false;
+//    this->instrument.generate.residual = false;
+    
+    this->instrument.mode = Instrument::Mode::FullRange;
+    this->instrument.interpolation_mode = Instrument::Interpolation::None;
     
     this->instrument.generate.harmonic = true;
-    this->instrument.generate.sinusoidal = false;
-    this->instrument.generate.stochastic = false;
-    this->instrument.generate.attack = false;
+    this->instrument.generate.sinusoidal = true;
+    this->instrument.generate.stochastic = true;
+    this->instrument.generate.attack = true;
     this->instrument.generate.residual = false;
     
     // For testing teh full range instrument case
@@ -55,34 +62,36 @@ MorphexSynth::MorphexSynth (AudioProcessorValueTreeState* parameters)
             full_path = PLUGIN_DATA_DIRECTORY.toStdString() + directorySeparator.toStdString() + "Instruments" + directorySeparator.toStdString() + instrument_folder;
         }
         
-        DirectoryIterator iter (File (full_path), true, "*.had");
-        //    DirectoryIterator iter (File (full_path), true, "*.had");
-        //    static const String PLUGIN_DATA_DIRECTORY = (File::getSpecialLocation(File::userDesktopDirectory)).getFullPathName() + directorySeparator + PLUGIN_NAME;
+        this->instrument.loadAllSoundsFromFolder (full_path);
         
-        while (iter.next())
-        {
-            File sound_file (iter.getFile());
-            std::string sound_file_path = sound_file.getFullPathName().toStdString();
-            
-            MorphLocation morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
-            
-            if (this->instrument.mode == Instrument::Mode::Morphing)
-            {
-                if (this->instrument.num_samples_loaded < MorphLocation::NUM_MORPH_LOCATIONS)
-                {
-                    morph_location = (MorphLocation) this->instrument.num_samples_loaded;
-                    this->instrument.loadSound (sound_file_path, morph_location);
-                    this->instrument.num_samples_loaded++;
-                }
-            }
-            else
-            {
-                this->instrument.loadSound (sound_file_path, morph_location);
-                this->instrument.num_samples_loaded++;
-            }
-        }
-        
-        DBG("Sound files loaded: " + String (this->instrument.num_samples_loaded));
+//        DirectoryIterator iter (File (full_path), true, "*.had");
+//        //    DirectoryIterator iter (File (full_path), true, "*.had");
+//        //    static const String PLUGIN_DATA_DIRECTORY = (File::getSpecialLocation(File::userDesktopDirectory)).getFullPathName() + directorySeparator + PLUGIN_NAME;
+//
+//        while (iter.next())
+//        {
+//            File sound_file (iter.getFile());
+//            std::string sound_file_path = sound_file.getFullPathName().toStdString();
+//
+//            MorphLocation morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
+//
+//            if (this->instrument.mode == Instrument::Mode::Morphing)
+//            {
+//                if (this->instrument.num_samples_loaded < MorphLocation::NUM_MORPH_LOCATIONS)
+//                {
+//                    morph_location = (MorphLocation) this->instrument.num_samples_loaded;
+//                    this->instrument.loadSound (sound_file_path, morph_location);
+//                    this->instrument.num_samples_loaded++;
+//                }
+//            }
+//            else
+//            {
+//                this->instrument.loadSound (sound_file_path, morph_location);
+//                this->instrument.num_samples_loaded++;
+//            }
+//        }
+//
+//        DBG("Sound files loaded: " + String (this->instrument.num_samples_loaded));
     }
     
     // Add some voices to our synth, to play the sounds..
@@ -114,7 +123,7 @@ void MorphexSynth::setCurrentPlaybackSampleRate (double sampleRate)
     Voice* morph_voice;
     
     // Set new sample rate to ADSR for each voice instance
-    for (int i=0; i < this->getNumVoices();i++)
+    for (int i = 0; i < this->getNumVoices(); i++)
     {
         if ((morph_voice = dynamic_cast<Voice*> (this->getVoice(i))))
         {

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Morphex. If not, see <http://www.gnu.org/licenses/>.
  *
- * Based on the XYPad by Rory Walsh
+ * Based on the XYPad by Rory Walsh.
  */
 
 #pragma once
@@ -219,6 +219,7 @@ private:
     int mParameterID;
     
     PadCircle circle;
+    
     Rectangle<float> rectangle;
 
     float x_min, x_max, y_min, y_max, x_val, y_val;

@@ -101,6 +101,31 @@ namespace Core
         }
     }
     
+    void Instrument::loadAllSoundsFromFolder (std::string folder_path)
+    {
+        int num_samples_loaded = 0;
+        
+        DirectoryIterator iter (File (folder_path), true, "*.had");
+        
+        while (iter.next())
+        {
+            File sound_file (iter.getFile());
+            std::string sound_file_path = sound_file.getFullPathName().toStdString();
+            
+            MorphLocation morph_location = MorphLocation::NUM_MORPH_LOCATIONS;
+            
+            if (num_samples_loaded < MorphLocation::NUM_MORPH_LOCATIONS)
+            {
+                morph_location = (MorphLocation) num_samples_loaded;
+            }
+            
+            this->loadSound (sound_file_path, morph_location);
+            num_samples_loaded++;
+        }
+        
+//        this->instrument.mode == Instrument::Mode::FullRange
+    }
+    
     std::vector<Note*> Instrument::getLoadedNotes()
     {
         // Output

@@ -19,18 +19,22 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "Panels/MorphexLookAndFeel.h"
+
 //==============================================================================
 SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEditor (SpectralMorphingToolAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), morphexPanel(&p)
+    : AudioProcessorEditor (&p), processor (p), morphexPanel (&p)
 {
+    setLookAndFeel (new MorphexLookAndFeel());
+
     addAndMakeVisible (morphexPanel);
 
 #if JUCE_ANDROID || JUCE_IOS
     setFullScreen (true);
 #else
 //    setUsingNativeTitleBar (true);
-    this->resizeCorner = new ResizableCornerComponent(this, getConstrainer());
-    addAndMakeVisible(this->resizeCorner);
+    this->resizeCorner = new ResizableCornerComponent (this, getConstrainer());
+    addAndMakeVisible (this->resizeCorner);
     this->resizeCorner->setBounds (getWidth()-20, getHeight()-20, 20, 20);
 
     setResizable (true, false);
@@ -39,7 +43,7 @@ SpectralMorphingToolAudioProcessorEditor::SpectralMorphingToolAudioProcessorEdit
                      MORPHEX_PANEL_WIDTH * 4,
                      MORPHEX_PANEL_HEIGHT * 4);
     
-    getConstrainer()->setFixedAspectRatio(MORPHEX_RATIO);
+    getConstrainer()->setFixedAspectRatio (MORPHEX_RATIO);
 
 #endif
 }

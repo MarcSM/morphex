@@ -44,16 +44,22 @@ public:
         stochasticButton.setToggleState (instrument->generate.stochastic, NotificationType::dontSendNotification);
         attackButton    .setToggleState (instrument->generate.attack,     NotificationType::dontSendNotification);
         residualButton  .setToggleState (instrument->generate.residual,   NotificationType::dontSendNotification);
-
+        
+        addAndMakeVisible (harmonicButton);
+        addAndMakeVisible (sinusoidalButton);
+        addAndMakeVisible (stochasticButton);
+        addAndMakeVisible (attackButton);
+        addAndMakeVisible (residualButton);
+        
         // Pad XY
         Morphex::Parameter freqs_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::freqs_interp_factor];
         Morphex::Parameter mags_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::mags_interp_factor];
 
-        mPadXY = new PadXY(inProcessor, inProcessor->parameters,
-                           freqs_interp_factor_parameter,
-                           mags_interp_factor_parameter);
+        mPadXY = new PadXY (inProcessor, inProcessor->parameters,
+                            freqs_interp_factor_parameter,
+                            mags_interp_factor_parameter);
         
-        addAndMakeVisible(mPadXY);
+        addAndMakeVisible (mPadXY);
     }
 
     ~CorePanel()
@@ -75,11 +81,6 @@ public:
         g.fillRect (0, 0, getWidth(), getHeight());
         
         // Core controls
-        addAndMakeVisible (harmonicButton);
-        addAndMakeVisible (sinusoidalButton);
-        addAndMakeVisible (stochasticButton);
-        addAndMakeVisible (attackButton);
-        addAndMakeVisible (residualButton);
         harmonicButton  .onClick = [this] { updateParameter (harmonicButton.getToggleState(),   instrument->generate.harmonic);   };
         sinusoidalButton.onClick = [this] { updateParameter (sinusoidalButton.getToggleState(), instrument->generate.sinusoidal); };
         stochasticButton.onClick = [this] { updateParameter (stochasticButton.getToggleState(), instrument->generate.stochastic); };

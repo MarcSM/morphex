@@ -145,7 +145,7 @@ private:
             const int browser_x = browser_margin;
             const int browser_y = browser_margin;
             
-            mBrowser = new CollectionBrowser();
+            mBrowser = new CollectionBrowser (inProcessor);
 
             mBrowser->setBounds (browser_x, browser_y, browser_width, browser_height);
             

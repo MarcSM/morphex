@@ -22,21 +22,34 @@
 
 #include "../Helpers/SMTConstants.h"
 
-class CollectionBrowser : public FileBrowserComponent
+#include "../Panels/MorphexLookAndFeel.h"
+
+class CollectionBrowser
+:   public FileBrowserComponent,
+    public Button::Listener
 {
 public:
     
-    CollectionBrowser (int flags = FileBrowserComponent::openMode |
+    CollectionBrowser (SpectralMorphingToolAudioProcessor* in_processor,
+                       int flags = FileBrowserComponent::openMode |
                                    FileBrowserComponent::canSelectFiles |
                                    FileBrowserComponent::useTreeView |
                                    FileBrowserComponent::filenameBoxIsReadOnly,
                        const File& initialFileOrDirectory = PLUGIN_DATA_COLLECTIONS_DIRECTORY,
                        const juce::FileFilter* fileFilter = new WildcardFileFilter ("*.had", "*", "somedescription"),
                        FilePreviewComponent* previewComp = NULL)
-    :   FileBrowserComponent (flags, initialFileOrDirectory, fileFilter, previewComp)
+    :   FileBrowserComponent (flags, initialFileOrDirectory, fileFilter, previewComp),
+        processor (in_processor)
     {
+        setLookAndFeel (new MorphexLookAndFeel());
+        
         pTreeComponent = static_cast<FileTreeComponent*> (this->getDisplayComponent());
         if (pTreeComponent) pTreeComponent->setDragAndDropDescription ("DragAndDrop");
+        
+        loadAllButton.addListener (this);
+        addAndMakeVisible (loadAllButton);
+        
+        resized();
     }
     
     ~CollectionBrowser() {}
@@ -46,9 +59,34 @@ public:
         g.fillAll (GUI::Color::BrowserBackground);
         
         // Draw borders
-        GUI::Paint::drawBorders (g, getLocalBounds(), GUI::Paint::BorderType::Glass);
+        GUI::Paint::drawBorders (g, file_browser_area, GUI::Paint::BorderType::Glass);
     }
-
+    
+    void resized() override
+    {
+        FileBrowserComponent::resized();
+        
+        const float button_height = getHeight() * 0.075;
+        
+        loadAllButton.setBounds (0, getHeight() - button_height, getWidth(), button_height);
+        
+        file_browser_area.setBounds (0, button_height, getWidth(), getHeight() - (2 * button_height));
+        
+        this->getLocalBounds().removeFromBottom (button_height);
+        
+//        auto b = this->getLocalBounds().reduced (80, 35);
+//        b.removeFromBottom (button_height);
+        
+//        filenameBox.setPosition (0, 0);
+        
+//        if (getPreviewComponent() != nullptr)
+//        {
+//            auto b = getLocalBounds();
+//            getPreviewComponent()->setBounds (0,0, 50, 100);
+////            getPreviewComponent()->setBounds (b.removeFromBottom (button_height));
+//        }
+    }
+    
 private:
     
     void fileClicked (const File& f, const MouseEvent& e) override
@@ -64,7 +102,33 @@ private:
         }
     }
     
+    void buttonClicked (Button* b) override
+    {
+        if (b == &loadAllButton)
+        {
+            const File f = getHighlightedFile();
+//            const File f = getSelectedFile (0);
+
+            processor->mMorphexSynth.instrument.reset();
+            
+            if (f.isDirectory())
+            {
+                // Loading selected folder
+                processor->mMorphexSynth.instrument.loadAllSoundsFromFolder (f.getFullPathName().toStdString());
+            }
+            else
+            {
+                // Loading current folder
+                processor->mMorphexSynth.instrument.loadAllSoundsFromFolder (getRoot().getFullPathName().toStdString());
+            }
+        }
+    }
+    
+    SpectralMorphingToolAudioProcessor* processor;
+    
     FileTreeComponent* pTreeComponent;
+    
+    Rectangle<int> file_browser_area;
 
     Rectangle<float> rectangle;
    
@@ -74,5 +138,7 @@ private:
     String mCollectionsDirectory;
     String mPluginDirectory;
     
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CollectionBrowser)
+    TextButton loadAllButton {"Load All Sounds"};
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CollectionBrowser);
 };

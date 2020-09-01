@@ -84,7 +84,6 @@ public:
     // Data
     std::string name;
     std::string samples_dirpath;
-    int num_samples_loaded = 0;
 
     // Mode
     Mode mode = Mode::Morphing;
@@ -99,6 +98,7 @@ public:
     void reset();
     
     void loadSound (std::string file_path, MorphLocation morph_location = MorphLocation::NUM_MORPH_LOCATIONS);
+    void loadAllSoundsFromFolder (std::string folder_path);
     
     std::vector<Note*> getLoadedNotes();
     

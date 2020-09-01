@@ -14,6 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Morphex. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * The function "genspecsines_C" comes from the repository https://github.com/MTG/sms-tools by Xavier Serra.
  */
 
 #include "Synthesis.h"

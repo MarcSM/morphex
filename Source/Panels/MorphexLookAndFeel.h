@@ -58,6 +58,45 @@ public:
         return { height * 0.2f };
     }
     
+    void layoutFileBrowserComponent (FileBrowserComponent& browserComp,
+                                                     DirectoryContentsDisplayComponent* fileListComponent,
+                                                     FilePreviewComponent* previewComp,
+                                                     ComboBox* currentPathBox,
+                                                     TextEditor* filenameBox,
+                                                     Button* goUpButton) override
+    {
+        auto sectionHeight = 22;
+        auto buttonWidth = 50;
+        
+//        auto b = browserComp.getLocalBounds().reduced (20, 5);
+        auto b = browserComp.getLocalBounds();
+
+        const float button_height = b.getHeight() * 0.075;
+        
+//        b = browserComp.getLocalBounds().reduced (200, 5);
+        
+//        auto topSlice    = b.removeFromTop (sectionHeight);
+//        auto bottomSlice = b.removeFromBottom (sectionHeight);
+        
+        auto topSlice    = b.removeFromTop (button_height);
+        auto bottomSlice = b.removeFromBottom (button_height);
+
+        currentPathBox->setBounds (topSlice.removeFromLeft (topSlice.getWidth() - buttonWidth));
+        
+//        topSlice.removeFromLeft (6);
+        goUpButton->setBounds (topSlice);
+        
+//        bottomSlice.removeFromLeft (20);
+        bottomSlice.removeFromBottom (button_height);
+        filenameBox->setBounds (bottomSlice);
+        
+        if (previewComp != nullptr)
+            previewComp->setBounds (b.removeFromRight (b.getWidth() / 3));
+        
+        if (auto* listAsComp = dynamic_cast<Component*> (fileListComponent))
+            listAsComp->setBounds (b.reduced (0, 10));
+    }
+    
     void drawComboBox (Graphics& g, int width, int height, bool isButtonDown,
                        int buttonX, int buttonY, int buttonW, int buttonH,
                        ComboBox& comboBox) override

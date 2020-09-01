@@ -22,7 +22,6 @@
 #include "TopPanel.h"
 #include "BottomPanel.h"
 
-#include "MorphexLookAndFeel.h"
 #include "../Helpers/InterfaceDefines.h"
 
 class MorphexPanel : public Component,
@@ -35,8 +34,6 @@ public:
           mainPanel (inProcessor),
           bottomPanel (inProcessor)
     {
-        setLookAndFeel (new MorphexLookAndFeel());
-        
         addAndMakeVisible (topPanel);
         addAndMakeVisible (mainPanel);
         addAndMakeVisible (bottomPanel);
