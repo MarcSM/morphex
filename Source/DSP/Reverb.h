@@ -20,54 +20,62 @@
 
 #include <JuceHeader.h>
 
-namespace DSP { class Reverb; }
-
-class DSP::Reverb
+namespace morphex
+{
+namespace dsp
+{
+class Reverb
 {
 public:
-    
-    Reverb (AudioProcessorValueTreeState* parameters)
-    :   mParameters (parameters)
+    Reverb (AudioProcessorValueTreeState& parameters) :
+    m_parameters (parameters)
     {
         updateParameters();
     }
-    
+
     ~Reverb() {}
-    
-//    void process (float* buffer, int inNumSamplesToRender)
+
+    //    void process (float* buffer, int inNumSamplesToRender)
     void process (AudioSampleBuffer& buffer, int inNumSamplesToRender)
     {
         updateParameters();
-        
+
         ScopedNoDenormals noDenormals;
-        
+
         const int totalNumInputChannels  = 2;
         const int totalNumOutputChannels = 2;
-        
+
         for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         {
             buffer.clear (i, 0, inNumSamplesToRender);
         }
-        
+
         const auto numChannels = jmin (totalNumInputChannels, totalNumOutputChannels);
-        
-        if (numChannels == 1) theReverb.processMono (buffer.getWritePointer (0), inNumSamplesToRender);
-        else if (numChannels == 2) theReverb.processStereo (buffer.getWritePointer (0), buffer.getWritePointer (1), inNumSamplesToRender);
+
+        if (numChannels == 1)
+        {
+            m_reverb.processMono (buffer.getWritePointer (0), inNumSamplesToRender);
+        }
+        else if (numChannels == 2)
+        {
+            m_reverb.processStereo (buffer.getWritePointer (0), buffer.getWritePointer (1), inNumSamplesToRender);
+        }
     }
-    
+
+private:
     void updateParameters()
     {
-        reverbParameters.wetLevel = *mParameters->getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::ReverbDryWet].ID);
-        reverbParameters.dryLevel = 1 - reverbParameters.wetLevel;
-        reverbParameters.roomSize = 0.8;
-        reverbParameters.damping = 0.1;
-        theReverb.setParameters (reverbParameters);
+        m_reverbParameters.wetLevel = *m_parameters.getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::ReverbDryWet].ID);
+        m_reverbParameters.dryLevel = 1 - m_reverbParameters.wetLevel;
+        m_reverbParameters.roomSize = 0.8;
+        m_reverbParameters.damping  = 0.1;
+        m_reverb.setParameters (m_reverbParameters);
     }
-    
-private:
-    
-    AudioProcessorValueTreeState* mParameters;
-    
-    juce::Reverb theReverb;
-    juce::Reverb::Parameters reverbParameters;
+
+    AudioProcessorValueTreeState& m_parameters;
+
+    juce::Reverb             m_reverb;
+    juce::Reverb::Parameters m_reverbParameters;
+};
+}; // namespace dsp
 };

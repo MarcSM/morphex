@@ -18,13 +18,9 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-
-#include "Instrument.h"
-#include "Sound.h"
-#include "Tools.h"
-
-#include "../Helpers/SMTConstants.h"
+#include "instrument.h"
+#include "sound.h"
+#include "tools.h"
 
 #include <math.h>
 #include <vector>
@@ -37,33 +33,32 @@ enum Channel
     Mono = Left
 };
 
-namespace Core { class Synthesis; }
-
-class Core::Synthesis
+namespace Core
+{
+class Synthesis
 {
 public:
-    
-    const static int MAX_HARMONICS = 100;
-    const static int MAX_SINUSOIDS = 100;
-    const static int FS = 44100;
-    const static int FFT_SIZE = 512; // 512
-    const static int HOP_SIZE = int (FFT_SIZE / 4); // 128
-    const static int NUM_FRAMES_IN_BUFFER = 8; // 512 * 8 = 4096
-    
+    const static int MAX_HARMONICS        = 100;
+    const static int MAX_SINUSOIDS        = 100;
+    const static int FS                   = 44100;
+    const static int FFT_SIZE             = 512;                // 512
+    const static int HOP_SIZE             = int (FFT_SIZE / 4); // 128
+    const static int NUM_FRAMES_IN_BUFFER = 8;                  // 512 * 8 = 4096
+
     enum BufferSection
     {
         Write = 0,
         Clean,
         Play
     };
-    
+
     enum BufferUpdateMode
     {
-        Set = 0,    // The given frame will replace the current content of the buffer
-        Add,        // The given frame will be added to the current content of the buffer
-        Delete      // The current content of the buffer will be set to 0.0
+        Set = 0, // The given frame will replace the current content of the buffer
+        Add,     // The given frame will be added to the current content of the buffer
+        Delete   // The current content of the buffer will be set to 0.0
     };
-    
+
     struct Parameters
     {
         int fs;
@@ -77,18 +72,20 @@ public:
         struct FP
         {
             std::vector<float> last_freqs;
+            //            std::vector<float> last_phases;
             std::vector<float> phases;
         };
-        
-        FP harmonic;
-        FP sinusoidal;
-        int i_samples_ready;
-        int i_current_frame;
+
+        FP   harmonic;
+        FP   sinusoidal;
+        int  i_samples_ready;
+        int  i_current_frame;
         bool first_frame;
         bool last_frame;
     };
     SynthesisLiveValues live_values;
-    
+    //    SynthesisLiveValues live_valuesRight;
+
     struct SynthesisGenerated
     {
         std::vector<float> y;
@@ -103,62 +100,70 @@ public:
     struct Buffer
     {
         std::vector<float> channels[Channel::NUM_CHANNELS];
-        
+
         int length;
-        
+
         struct Pointers
         {
             int write;
             // Try to use lambdas if possible
             int clean (Synthesis* parent, int i_move_position = 0) { return parent->getPointerInLimits (write + parent->parameters.fft_size + i_move_position); };
             int play;
-//            int play(Synthesis* parent, int i_move_position = 0) { return parent->getPointerInLimits( write - parent->parameters.fft_size + i_move_position ); };
+            //            int play(Synthesis* parent, int i_move_position = 0) { return parent->getPointerInLimits( write - parent->parameters.fft_size + i_move_position ); };
         };
         Pointers pointers;
-        
     };
     Buffer buffer;
-    
+
     struct SynthesisWindow
     {
         std::vector<float> harm;
         std::vector<float> stoc;
     };
     SynthesisWindow window;
-    
+
     dsp::FFT* fft;
 
-    Synthesis (Instrument* instrument);
+    Synthesis (Instrument& instrument);
     ~Synthesis();
 
     void reset();
-    
+
     std::vector<float> getBuffer (BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = 0);
-    
+
     void generateSoundFrame (Sound::Frame sound_frame, bool append_to_generated = false);
-    
+
     void updatePlayPointer (int i_pointer_increment);
     void updatePhases (SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs, int hop_size, bool append_to_generated = false);
+    void wrapPhases (std::vector<float>& phases);
     void updateLastFreqs (SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs);
-    
+
 private:
-    
-    Instrument* instrument;
+    Instrument& m_instrument;
 
     void getWindow();
-    
-    int getPointerInLimits (int i_pointer_position);
+
+    int              getPointerInLimits (int i_pointer_position);
     std::vector<int> getBufferIndexes (int i_head, int i_tail);
     std::vector<int> getBufferSectionIndexes (BufferSection buffer_section, int i_frame_length = 0);
-    
+
     void updateWritePointer (int i_pointer_increment);
     void updateBuffer (BufferSection buffer_section, BufferUpdateMode update_mode, std::vector<float> given_frame = std::vector<float>(), Channel selected_channel = Channel::Mono);
-//    void updatePhases (std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
-//    void updateLastFreqs (std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
-    
+    //    void updatePhases (std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
+    //    void updateLastFreqs (std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
+
     std::vector<float> synthesizeSoundFrame (Sound::Frame sound_frame);
     std::vector<float> generateSines (std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs);
     std::vector<float> generateStocs (std::vector<float> stocs_morph, int H, int NS);
+
+    std::vector<std::complex<float>> genSpecSines (std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int N, int fs);
+    void genspecsines_C (float* iploc, float* ipmag, float* ipphase, int n_peaks, float* real, float* imag, int size_spec);
+    std::vector<std::complex<float>> genSpecSines_p (std::vector<float> ipfreq, std::vector<float> ipmag, std::vector<float> ipphase, int N, int fs);
+    float* generateSine (float frequency = 440.0, float level = 0.5f, float samples_to_render = 512, int sample_rate = 44100, float currentAngle = 0.0);
     
-    void genspecsines_C (float *iploc, float *ipmag, float *ipphase, int n_peaks, float *real, float*imag, int size_spec);
+    std::vector<float> genBhLobe (std::vector<float> x);
+    std::vector<float> sinc (std::vector<float> x, int N);
+    void fftShift (float* data, int data_size);
+    template <typename T> std::vector<T> getRange (T start, T end);
 };
+}; // namespace Core

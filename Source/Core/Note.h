@@ -18,39 +18,38 @@
 
 #pragma once
 
-#include "Velocity.h"
+#include "velocity.h"
+
+namespace Constants
+{
+constexpr auto NUM_MIDI_VELOCITIES = 128;
+constexpr auto MAX_MIDI_VELOCITY   = NUM_MIDI_VELOCITIES - 1;
+} // namespace Constants
 
 namespace Core
 {
-    class Note;
-    
-    const static int NUM_MIDI_VELOCITIES = 128;
-    const static int MAX_MIDI_VELOCITY = NUM_MIDI_VELOCITIES - 1;
-}
-    
-class Core::Note
+class Note
 {
 public:
-
     // Midi velocity value
     int value;
 
     // Velocities
     std::vector<Velocity*> velocity;
-    
-    Note(int value)
+
+    Note (int value)
     {
         // Midi velocity value
         this->value = value;
-        
+
         // Velocities
-        this->velocity = std::vector<Velocity*> (NUM_MIDI_VELOCITIES);
+        this->velocity = std::vector<Velocity*> (Constants::NUM_MIDI_VELOCITIES);
         for (int i = 0; i < this->velocity.size(); i++)
         {
             this->velocity[i] = new Velocity (value, i);
         }
     }
-    
+
     void reset()
     {
         // Reset Velocities
@@ -59,28 +58,29 @@ public:
             this->velocity[i]->reset();
         }
     }
-    
+
     std::vector<Velocity*> getLoadedVelocities()
     {
         std::vector<Velocity*> loaded_velocities;
-        
+
         for (int i = 0; i < this->velocity.size(); i++)
         {
             Velocity* velocity = this->velocity[i];
-            
+
             if (velocity->loaded)
             {
                 loaded_velocities.push_back (velocity);
             }
         }
-        
+
         return loaded_velocities;
     }
-    
+
     bool hasAnyVelocity()
     {
         return this->getLoadedVelocities().size() > 0;
     }
-    
+
 private:
 };
+}; // namespace Core

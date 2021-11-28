@@ -18,41 +18,43 @@
 
 #pragma once
 
-#define kMeterSmoothingCoeff 0.02
+namespace Constants
+{
+constexpr auto MeterSmoothingCoeff = 0.02;
+} // namespace Constants
 
-namespace DSP { class Gain; }
-
-class DSP::Gain
+namespace morphex
+{
+namespace dsp
+{
+class Gain
 {
 public:
-    
-    Gain()
-    {
-        mOutputSmoothed = 0;
-    }
-    
+    Gain() :
+        m_outputSmoothed (0) {}
     ~Gain() {}
-    
+
     void process (float* buffer, float inGain, int inNumSamplesToRender)
     {
         float gainMapped = jmap (inGain, 0.0f, 1.0f, -24.0f, 24.0f);
-        gainMapped = Decibels::decibelsToGain (gainMapped, -24.0f);
-        
+        gainMapped       = Decibels::decibelsToGain (gainMapped, -24.0f);
+
         for (int i = 0; i < inNumSamplesToRender; i++)
         {
             buffer[i] = buffer[i] * gainMapped;
         }
-        
-        float absValue = fabs (buffer[0]);
-        mOutputSmoothed = kMeterSmoothingCoeff * (mOutputSmoothed - absValue) + absValue;
+
+        float absValue   = fabs (buffer[0]);
+        m_outputSmoothed = Constants::MeterSmoothingCoeff * (m_outputSmoothed - absValue) + absValue;
     }
-    
+
     float getMeterLevel()
     {
-        return mOutputSmoothed;
+        return m_outputSmoothed;
     }
-    
+
 private:
-    
-    float mOutputSmoothed;
+    float m_outputSmoothed;
+};
+}; // namespace dsp
 };

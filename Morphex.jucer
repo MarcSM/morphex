@@ -1,100 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="AFG8tp" name="Morphex" projectType="audioplug" jucerVersion="5.4.7"
-              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+<JUCERPROJECT id="AFG8tp" name="Morphex" projectType="audioplug" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               cppLanguageStandard="17" version="0.3.0-beta" companyName="Morphex"
-              pluginManufacturer="Morphex" pluginAUMainType="'aumu'">
+              pluginManufacturer="Morphex" pluginAUMainType="'aumu'" displaySplashScreen="1"
+              jucerFormatVersion="1">
   <MAINGROUP id="BTCZAR" name="Morphex">
-    <GROUP id="{AFEC479D-5C67-2E7A-1D34-7E1570EAC1CB}" name="Core">
-      <FILE id="gKEM2f" name="Codec.h" compile="0" resource="0" file="Source/Core/Codec.h"/>
-      <FILE id="MCEVjp" name="Tools.h" compile="0" resource="0" file="Source/Core/Tools.h"/>
-      <FILE id="DIC1Xs" name="Instrument.h" compile="0" resource="0" file="Source/Core/Instrument.h"/>
-      <FILE id="xAtxaC" name="Instrument.cpp" compile="1" resource="0" file="Source/Core/Instrument.cpp"/>
-      <FILE id="JdpZT5" name="Note.h" compile="0" resource="0" file="Source/Core/Note.h"/>
-      <FILE id="icqyDE" name="Velocity.h" compile="0" resource="0" file="Source/Core/Velocity.h"/>
-      <FILE id="d9dn7g" name="Sound.h" compile="0" resource="0" file="Source/Core/Sound.h"/>
-      <FILE id="Ylhobz" name="Sound.cpp" compile="1" resource="0" file="Source/Core/Sound.cpp"/>
-      <FILE id="SV7bdh" name="Model.h" compile="0" resource="0" file="Source/Core/Model.h"/>
-      <FILE id="ENTQtM" name="Synthesis.h" compile="0" resource="0" file="Source/Core/Synthesis.h"/>
-      <FILE id="UZKnB3" name="Synthesis.cpp" compile="1" resource="0" file="Source/Core/Synthesis.cpp"/>
-      <FILE id="r37OOs" name="Voice.h" compile="0" resource="0" file="Source/Core/Voice.h"/>
+    <GROUP id="{AFEC479D-5C67-2E7A-1D34-7E1570EAC1CB}" name="core">
+      <FILE id="gKEM2f" name="codec.h" compile="0" resource="0" file="Source/Core/codec.h"/>
+      <FILE id="MCEVjp" name="tools.h" compile="0" resource="0" file="Source/Core/tools.h"/>
+      <FILE id="DIC1Xs" name="instrument.h" compile="0" resource="0" file="Source/Core/instrument.h"/>
+      <FILE id="xAtxaC" name="instrument.cpp" compile="1" resource="0" file="Source/Core/instrument.cpp"/>
+      <FILE id="JdpZT5" name="note.h" compile="0" resource="0" file="Source/Core/note.h"/>
+      <FILE id="B4UgCb" name="note.cpp" compile="1" resource="0" file="Source/Core/note.cpp"/>
+      <FILE id="icqyDE" name="velocity.h" compile="0" resource="0" file="Source/Core/velocity.h"/>
+      <FILE id="BQFVg0" name="velocity.cpp" compile="1" resource="0" file="Source/Core/velocity.cpp"/>
+      <FILE id="d9dn7g" name="sound.h" compile="0" resource="0" file="Source/Core/sound.h"/>
+      <FILE id="Ylhobz" name="sound.cpp" compile="1" resource="0" file="Source/Core/sound.cpp"/>
+      <FILE id="SV7bdh" name="model.h" compile="0" resource="0" file="Source/Core/model.h"/>
+      <FILE id="Xmd4LF" name="model.cpp" compile="1" resource="0" file="Source/Core/model.cpp"/>
+      <FILE id="ENTQtM" name="synthesis.h" compile="0" resource="0" file="Source/Core/synthesis.h"/>
+      <FILE id="UZKnB3" name="synthesis.cpp" compile="1" resource="0" file="Source/Core/synthesis.cpp"/>
+      <FILE id="r37OOs" name="voice.h" compile="0" resource="0" file="Source/Core/voice.h"/>
+      <FILE id="iApwbC" name="voice.cpp" compile="1" resource="0" file="Source/Core/voice.cpp"/>
+      <FILE id="Ig1Sa3" name="synth_sound.h" compile="0" resource="0" file="Source/core/synth_sound.h"/>
+      <FILE id="i9lv6A" name="synth.cpp" compile="1" resource="0" file="Source/core/synth.cpp"/>
+      <FILE id="lOXcKh" name="synth.h" compile="0" resource="0" file="Source/core/synth.h"/>
     </GROUP>
-    <GROUP id="{4E5E0A46-E03E-E82E-84AF-6D34C82A5934}" name="Entities">
-      <FILE id="XJsfVy" name="MorphSound.h" compile="0" resource="0" file="Source/Entities/MorphSound.h"/>
-      <FILE id="Hioc5C" name="MorphexSynth.h" compile="0" resource="0" file="Source/Entities/MorphexSynth.h"/>
-      <FILE id="XNxybP" name="MorphexSynth.cpp" compile="1" resource="0"
-            file="Source/Entities/MorphexSynth.cpp"/>
+    <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="dsp">
+      <FILE id="DXmxJ0" name="delay.h" compile="0" resource="0" file="Source/DSP/delay.h"/>
+      <FILE id="kvmGy3" name="distortion.h" compile="0" resource="0" file="Source/DSP/distortion.h"/>
+      <FILE id="OvuOxk" name="gain.h" compile="0" resource="0" file="Source/DSP/gain.h"/>
+      <FILE id="jPF0Wj" name="reverb.h" compile="0" resource="0" file="Source/DSP/reverb.h"/>
     </GROUP>
-    <GROUP id="{3F9BEECA-86A6-CC88-63F8-6B2F26C9F9A4}" name="Managers">
-      <FILE id="rg8Fza" name="PresetManager.h" compile="0" resource="0" file="Source/Managers/PresetManager.h"/>
-      <FILE id="zNUnLV" name="PresetManager.cpp" compile="1" resource="0"
-            file="Source/Managers/PresetManager.cpp"/>
+    <GROUP id="{6EDA0A93-483B-32FF-388C-C9E056E99237}" name="gui">
+      <GROUP id="{B04CE76A-724B-76AD-99B6-5F2521380886}" name="components">
+        <FILE id="BBXSfP" name="button.h" compile="0" resource="0" file="Source/gui/components/button.h"/>
+        <FILE id="uNHGPx" name="collection_browser.h" compile="0" resource="0"
+              file="Source/gui/components/collection_browser.h"/>
+        <FILE id="QIzCcQ" name="pad_xy.h" compile="0" resource="0" file="Source/gui/components/pad_xy.h"/>
+        <FILE id="t3H1LL" name="slider.h" compile="0" resource="0" file="Source/gui/components/slider.h"/>
+      </GROUP>
+      <GROUP id="{49891C3B-D18F-7FDB-7E89-2B040CAA4BA2}" name="panels">
+        <FILE id="DLZeQr" name="bottom_panel.h" compile="0" resource="0" file="Source/gui/panels/bottom_panel.h"/>
+        <FILE id="l1RM4N" name="core_panel.h" compile="0" resource="0" file="Source/gui/panels/core_panel.h"/>
+        <FILE id="rvyY9A" name="fx_panel.h" compile="0" resource="0" file="Source/gui/panels/fx_panel.h"/>
+        <FILE id="J0nvYo" name="main_panel.h" compile="0" resource="0" file="Source/gui/panels/main_panel.h"/>
+        <FILE id="XRpNsx" name="morphex_panel.h" compile="0" resource="0" file="Source/gui/panels/morphex_panel.h"/>
+        <FILE id="wQUNVh" name="morphing_panel.h" compile="0" resource="0"
+              file="Source/gui/panels/morphing_panel.h"/>
+        <FILE id="w4J6MU" name="preset_manager_panel.h" compile="0" resource="0"
+              file="Source/gui/panels/preset_manager_panel.h"/>
+        <FILE id="yh8jxU" name="sound_panel.h" compile="0" resource="0" file="Source/gui/panels/sound_panel.h"/>
+        <FILE id="XoVvxu" name="top_panel.h" compile="0" resource="0" file="Source/gui/panels/top_panel.h"/>
+      </GROUP>
+      <GROUP id="{339EBD16-FA18-F5F2-63E9-9FCD5BFF3A5F}" name="themes">
+        <FILE id="qEAdFD" name="morphex_look_and_feel.h" compile="0" resource="0"
+              file="Source/gui/themes/morphex_look_and_feel.h"/>
+      </GROUP>
     </GROUP>
-    <GROUP id="{A8DC72F7-DA5B-6243-1C16-AFA2E4D75948}" name="Components">
-      <FILE id="vBB9P0" name="Slider.h" compile="0" resource="0" file="Source/Components/Slider.h"/>
-      <FILE id="ui5uR3" name="Button.h" compile="0" resource="0" file="Source/Components/Button.h"/>
-      <FILE id="VCzmwz" name="PadXY.h" compile="0" resource="0" file="Source/Components/PadXY.h"/>
-      <FILE id="NcLsvP" name="CollectionBrowser.h" compile="0" resource="0"
-            file="Source/Components/CollectionBrowser.h"/>
+    <GROUP id="{3F9BEECA-86A6-CC88-63F8-6B2F26C9F9A4}" name="managers">
+      <FILE id="rg8Fza" name="preset_manager.h" compile="0" resource="0"
+            file="Source/Managers/preset_manager.h"/>
+      <FILE id="zNUnLV" name="preset_manager.cpp" compile="1" resource="0"
+            file="Source/Managers/preset_manager.cpp"/>
     </GROUP>
-    <GROUP id="{97E6AD4A-6F3E-8144-D45D-39DA01D25B9D}" name="Panels">
-      <FILE id="yG702c" name="MorphexLookAndFeel.h" compile="0" resource="0"
-            file="Source/Panels/MorphexLookAndFeel.h"/>
-      <FILE id="mGmPPY" name="MorphexPanel.h" compile="0" resource="0" file="Source/Panels/MorphexPanel.h"/>
-      <FILE id="LAtgo9" name="MainPanel.h" compile="0" resource="0" file="Source/Panels/MainPanel.h"/>
-      <FILE id="ebnPhb" name="MorphingPanel.h" compile="0" resource="0" file="Source/Panels/MorphingPanel.h"/>
-      <FILE id="XFDGyU" name="CorePanel.h" compile="0" resource="0" file="Source/Panels/CorePanel.h"/>
-      <FILE id="qhEZQo" name="FxPanel.h" compile="0" resource="0" file="Source/Panels/FxPanel.h"/>
-      <FILE id="bZGVbu" name="SoundPanel.h" compile="0" resource="0" file="Source/Panels/SoundPanel.h"/>
-      <FILE id="OrvrnQ" name="TopPanel.h" compile="0" resource="0" file="Source/Panels/TopPanel.h"/>
-      <FILE id="RP5713" name="PresetManagerPanel.h" compile="0" resource="0"
-            file="Source/Panels/PresetManagerPanel.h"/>
-      <FILE id="G4WCVM" name="BottomPanel.h" compile="0" resource="0" file="Source/Panels/BottomPanel.h"/>
+    <GROUP id="{2FE0720A-2404-2915-1953-7D2767C6275A}" name="helpers">
+      <FILE id="AjiFPN" name="interface_defines.h" compile="0" resource="0"
+            file="Source/Helpers/interface_defines.h"/>
+      <FILE id="Wli5cb" name="helper_functions.h" compile="0" resource="0"
+            file="Source/Helpers/helper_functions.h"/>
+      <FILE id="KpnAB6" name="parameters.h" compile="0" resource="0" file="Source/Helpers/parameters.h"/>
+      <FILE id="WNkw0V" name="utils.h" compile="0" resource="0" file="Source/Helpers/utils.h"/>
     </GROUP>
-    <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="DSP">
-      <FILE id="DXmxJ0" name="Delay.h" compile="0" resource="0" file="Source/DSP/Delay.h"/>
-      <FILE id="kvmGy3" name="Distortion.h" compile="0" resource="0" file="Source/DSP/Distortion.h"/>
-      <FILE id="OvuOxk" name="Gain.h" compile="0" resource="0" file="Source/DSP/Gain.h"/>
-      <FILE id="jPF0Wj" name="Reverb.h" compile="0" resource="0" file="Source/DSP/Reverb.h"/>
-    </GROUP>
-    <GROUP id="{2FE0720A-2404-2915-1953-7D2767C6275A}" name="Helpers">
-      <FILE id="AjiFPN" name="InterfaceDefines.h" compile="0" resource="0"
-            file="Source/Helpers/InterfaceDefines.h"/>
-      <FILE id="DGsm73" name="SMTAudioHelpers.h" compile="0" resource="0"
-            file="Source/Helpers/SMTAudioHelpers.h"/>
-      <FILE id="tM9Uey" name="SMTConstants.h" compile="0" resource="0" file="Source/Helpers/SMTConstants.h"/>
-      <FILE id="Wli5cb" name="SMTHelperFunctions.h" compile="0" resource="0"
-            file="Source/Helpers/SMTHelperFunctions.h"/>
-      <FILE id="KpnAB6" name="SMTParameters.h" compile="0" resource="0" file="Source/Helpers/SMTParameters.h"/>
-      <FILE id="WNkw0V" name="SMTUtils.h" compile="0" resource="0" file="Source/Helpers/SMTUtils.h"/>
-    </GROUP>
-    <GROUP id="{50819E26-3EF6-F93E-380B-A567157B7389}" name="Source">
-      <FILE id="bskq50" name="PluginProcessor.h" compile="0" resource="0"
-            file="Source/PluginProcessor.h"/>
-      <FILE id="Zbg3ub" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
-      <FILE id="A5d8x0" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="ED1KcU" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-    </GROUP>
-    <GROUP id="{AE3F5129-A357-44A3-5200-C0035B16DD0C}" name="Assets">
-      <GROUP id="{5D9C3E8A-AF11-EC02-719E-C4792FC59B6E}" name="Sounds"/>
-      <GROUP id="{9FFC6437-B955-888F-5958-311B4D3E97CA}" name="Images">
-        <GROUP id="{AD3D7109-2980-41D2-CF8D-6D8897780DF4}" name="Logos">
-          <FILE id="IZ0261" name="morphex_long_logo.png" compile="0" resource="1"
-                file="Assets/Images/Logos/morphex_long_logo.png"/>
-          <FILE id="qlYWS0" name="morphex_long_logo.svg" compile="0" resource="1"
-                file="Assets/Images/Logos/morphex_long_logo.svg"/>
-          <FILE id="etXlaC" name="morphex_logo_small.png" compile="0" resource="1"
-                file="Assets/Images/Logos/morphex_logo_small.png"/>
-          <FILE id="s5bjdA" name="morphex_logo.png" compile="0" resource="1"
-                file="Assets/Images/Logos/morphex_logo.png"/>
-          <FILE id="gVbKwJ" name="github_logo_small.png" compile="0" resource="1"
-                file="Assets/Images/Logos/github_logo_small.png"/>
-          <FILE id="VTnZ8c" name="github_logo.png" compile="0" resource="1" file="Assets/Images/Logos/github_logo.png"/>
+    <GROUP id="{AE3F5129-A357-44A3-5200-C0035B16DD0C}" name="assets">
+      <GROUP id="{5E4C884E-1E8F-B633-A8AC-D3394DDE7739}" name="sounds"/>
+      <GROUP id="{BF2BA3AE-50D0-E456-5550-DC33175D60EE}" name="images">
+        <GROUP id="{B6DA318F-1BBC-0CF5-9857-011ECB123352}" name="gui">
+          <FILE id="aSD0BU" name="current_version.png" compile="0" resource="1"
+                file="assets/images/gui/current_version.png"/>
+          <FILE id="LR8Hkw" name="v0.1.0-beta.png" compile="0" resource="1" file="assets/images/gui/v0.1.0-beta.png"/>
+          <FILE id="Sh1DZB" name="v0.2.0-beta.png" compile="0" resource="1" file="assets/images/gui/v0.2.0-beta.png"/>
+          <FILE id="m8H8Oj" name="v0.3.0-beta.png" compile="0" resource="1" file="assets/images/gui/v0.3.0-beta.png"/>
+        </GROUP>
+        <GROUP id="{348F03BC-6316-68B9-80B4-9C33F800F7E2}" name="logos">
+          <FILE id="Hm4XwE" name="github_logo.png" compile="0" resource="1" file="assets/images/logos/github_logo.png"/>
+          <FILE id="orvgeX" name="github_logo_small.png" compile="0" resource="1"
+                file="assets/images/logos/github_logo_small.png"/>
+          <FILE id="JaJO9y" name="morphex_logo.png" compile="0" resource="1"
+                file="assets/images/logos/morphex_logo.png"/>
+          <FILE id="TqTZT2" name="morphex_logo_original.png" compile="0" resource="1"
+                file="assets/images/logos/morphex_logo_original.png"/>
+          <FILE id="r25Jli" name="morphex_logo_small.png" compile="0" resource="1"
+                file="assets/images/logos/morphex_logo_small.png"/>
+          <FILE id="Ewj9cn" name="morphex_long_logo.png" compile="0" resource="1"
+                file="assets/images/logos/morphex_long_logo.png"/>
+          <FILE id="jNCwEw" name="morphex_long_logo.svg" compile="0" resource="1"
+                file="assets/images/logos/morphex_long_logo.svg"/>
+          <FILE id="islB4c" name="morphex_long_logo_shadow.svg" compile="0" resource="1"
+                file="assets/images/logos/morphex_long_logo_shadow.svg"/>
         </GROUP>
       </GROUP>
     </GROUP>
+    <FILE id="bskq50" name="processor.h" compile="0" resource="0" file="Source/processor.h"/>
+    <FILE id="Zbg3ub" name="processor.cpp" compile="1" resource="0" file="Source/processor.cpp"/>
+    <FILE id="A5d8x0" name="editor.h" compile="0" resource="0" file="Source/editor.h"/>
+    <FILE id="ED1KcU" name="editor.cpp" compile="1" resource="0" file="Source/editor.cpp"/>
   </MAINGROUP>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" bigIcon="s5bjdA" smallIcon="s5bjdA">
@@ -145,6 +155,30 @@
         <MODULEPATH id="danlin_fontawesome" path="../../SDKs/JUCE/custom_modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
+    <ANDROIDSTUDIO targetFolder="Builds/Android" androidKeyStore="/Users/Marc/Development/SDK/Android/Keys/MarcSMTest">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_opengl"/>
+        <MODULEPATH id="juce_gui_extra"/>
+        <MODULEPATH id="juce_gui_basics"/>
+        <MODULEPATH id="juce_graphics"/>
+        <MODULEPATH id="juce_events"/>
+        <MODULEPATH id="juce_dsp"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_cryptography"/>
+        <MODULEPATH id="juce_core"/>
+        <MODULEPATH id="juce_audio_utils"/>
+        <MODULEPATH id="juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_plugin_client"/>
+        <MODULEPATH id="juce_audio_formats"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="danlin_fontawesome"/>
+      </MODULEPATHS>
+    </ANDROIDSTUDIO>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="danlin_fontawesome" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

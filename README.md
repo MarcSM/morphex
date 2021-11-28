@@ -14,7 +14,7 @@
   <a href="https://github.com/MarcSM/morphex"><img src="https://github.com/MarcSM/morphex/blob/master/Assets/Images/GUI/current_version.png?raw=true" alt="Morphex GUI"></a>
 </p>
 
-Morphex is an open source audio plugin that morphs the harmonics of two sounds while exploring the latent timbral space that emerges from the spectral analysis of musical sounds, and to craft new hybrid instruments. 
+Morphex is an audio plugin that morphs the harmonics of multiple sounds while exploring the latent timbral space that emerges from the spectral analysis of musical sounds, and to craft new hybrid instruments. 
 
 You can download the latest release of the plugin here: https://github.com/MarcSM/morphex/releases
 
@@ -70,6 +70,8 @@ Right now we have 3 different builds of the plugin:
 ## License
 
 All the software is distributed with the Affero GPL license (http://www.gnu.org/licenses/agpl-3.0.en.html). The sounds located at "data/sounds" come from freesound.org, in particular from http://www.freesound.org/people/xserra/packs/13038/.
+
+If you are making a proprietary or closed source app and would like to use Morphex's source code, contact marc.sanchez.info@gmail.com for non AGPLv3 licensing options.
 
 Copyright © 2019, [Marc Sanchez](https://github.com/MarcSM).
 All rights reserved.
