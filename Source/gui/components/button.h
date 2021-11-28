@@ -28,11 +28,11 @@ class Button : public juce::TextButton
 {
 public:
     Button() :
-        juce::TextButton (String()) {}
+        juce::TextButton (juce::String()) {}
 
     ~Button() {}
 
-    void paintButton (Graphics& g,
+    void paintButton (juce::Graphics& g,
                       bool      shouldDrawButtonAsHighlighted,
                       bool      shouldDrawButtonAsDown)
     {
@@ -47,8 +47,8 @@ public:
             g.setColour (findColour (getToggleState() ? TextButton::textColourOnId
                                                       : TextButton::textColourOffId)
                              .withMultipliedAlpha (isEnabled() ? 1.0f : 0.5f));
-            const float icon_size = jmin (getWidth(), getHeight()) * 0.6f;
-            FontAwesome::drawCenterd (g, icon, icon_size, Colours::white, getLocalBounds());
+            const float icon_size = juce::jmin (getWidth(), getHeight()) * 0.6f;
+            FontAwesome::drawCenterd (g, icon, icon_size, juce::Colours::white, getLocalBounds());
         }
     }
 

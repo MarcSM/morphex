@@ -27,9 +27,9 @@ MorphexAudioProcessor::MorphexAudioProcessor()
     AudioProcessor (BusesProperties()
 #if !JucePlugin_IsMidiEffect
 #if !JucePlugin_IsSynth
-                        .withInput ("Input", AudioChannelSet::stereo(), true)
+                        .withInput ("Input", juce::AudioChannelSet::stereo(), true)
 #endif
-                        .withOutput ("Output", AudioChannelSet::stereo(), true)
+                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
 #endif
                     ),
     parameters (*this,                    /** reference to processor */
@@ -49,7 +49,7 @@ MorphexAudioProcessor::~MorphexAudioProcessor()
 }
 
 //==============================================================================
-const String MorphexAudioProcessor::getName() const
+const juce::String MorphexAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
@@ -101,19 +101,19 @@ void MorphexAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const String MorphexAudioProcessor::getProgramName (int index)
+const juce::String MorphexAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void MorphexAudioProcessor::changeProgramName (int index, const String& newName)
+void MorphexAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
 void MorphexAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    ignoreUnused (samplesPerBlock);
+    juce::ignoreUnused (samplesPerBlock);
 
     // Pre-playback initializations
     m_midiCollector.reset (sampleRate);
@@ -135,8 +135,8 @@ bool MorphexAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 #else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-        && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
+        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
         // This checks if the input layout matches the output layout
@@ -150,7 +150,7 @@ bool MorphexAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 }
 #endif
 
-void MorphexAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void MorphexAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     buffer.clear();
 
@@ -169,21 +169,21 @@ bool MorphexAudioProcessor::hasEditor() const
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-AudioProcessorEditor* MorphexAudioProcessor::createEditor()
+juce::AudioProcessorEditor* MorphexAudioProcessor::createEditor()
 {
     return new MorphexAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void MorphexAudioProcessor::getStateInformation (MemoryBlock& destData)
+void MorphexAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 
-    XmlElement preset ("MPF_StateInfo");
+    juce::XmlElement preset ("MPF_StateInfo");
 
-    XmlElement* presetBody = new XmlElement ("MPF_Preset");
+    juce::XmlElement* presetBody = new juce::XmlElement ("MPF_Preset");
 
     m_presetManager.getXmlForPreset (presetBody);
 
@@ -193,7 +193,7 @@ void MorphexAudioProcessor::getStateInformation (MemoryBlock& destData)
 
 void MorphexAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    std::unique_ptr<XmlElement> xmlState = getXmlFromBinary (data, sizeInBytes);
+    std::unique_ptr<juce::XmlElement> xmlState = getXmlFromBinary (data, sizeInBytes);
 
     if (xmlState != nullptr)
     {
@@ -210,7 +210,7 @@ void MorphexAudioProcessor::setStateInformation (const void* data, int sizeInByt
 }
 
 // This creates new instances of the plugin
-AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new MorphexAudioProcessor();
 }

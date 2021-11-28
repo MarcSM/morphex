@@ -20,9 +20,9 @@
 
 #include <JuceHeader.h>
 
-namespace Core
+namespace morphex
 {
-struct SynthSound : public SynthesiserSound
+struct SynthSound : public juce::SynthesiserSound
 {
     SynthSound() {};
 

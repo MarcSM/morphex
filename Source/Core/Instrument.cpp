@@ -19,7 +19,7 @@
 #include "instrument.h"
 #include "tools.h"
 
-namespace Core
+namespace morphex
 {
 Instrument::Instrument()
 {
@@ -110,11 +110,11 @@ void Instrument::loadAllSoundsFromFolder (std::string folder_path)
 {
     int num_samples_loaded = 0;
 
-    DirectoryIterator iter (File (folder_path), true, "*.had");
+    juce::DirectoryIterator iter (juce::File (folder_path), true, "*.had");
 
     while (iter.next())
     {
-        File        sound_file (iter.getFile());
+        juce::File        sound_file (iter.getFile());
         std::string sound_file_path = sound_file.getFullPathName().toStdString();
 
         MorphLocation morph_location = MorphLocation::Total;
@@ -212,7 +212,7 @@ MorphSounds Instrument::getCloserSounds (float f_target_note, float f_velocity)
     MorphSounds closer_sounds {};
 
     // Transform velocity range from 0-1 to 0-127
-    float f_velocity_midi_range = jmap (f_velocity, 0.0f, 1.0f, 1.0f, 127.0f);
+    float f_velocity_midi_range = juce::jmap (f_velocity, 0.0f, 1.0f, 1.0f, 127.0f);
 
     // Getting closer velocities
     for (int i = 0; i < closer_notes.size(); i++)
@@ -535,4 +535,4 @@ std::vector<float> Instrument::interpolateFrames (FrameType          frame_type,
 
     return interpolated_frame;
 }
-} // namespace Core
+} // namespace morphex

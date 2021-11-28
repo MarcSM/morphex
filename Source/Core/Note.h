@@ -26,7 +26,7 @@ constexpr auto NUM_MIDI_VELOCITIES = 128;
 constexpr auto MAX_MIDI_VELOCITY   = NUM_MIDI_VELOCITIES - 1;
 } // namespace Constants
 
-namespace Core
+namespace morphex
 {
 class Note
 {
@@ -83,4 +83,4 @@ public:
 
 private:
 };
-}; // namespace Core
+}; // namespace moprhex

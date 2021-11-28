@@ -31,16 +31,16 @@ enum MorphLocation
     Total
 };
 
-using MorphNotes       = std::array<Core::Note*, MorphLocation::Total>;
-using MorphSounds      = std::array<Core::Sound*, MorphLocation::Total>;
-using MorphSoundFrames = std::array<Core::Sound::Frame, MorphLocation::Total>;
+using MorphNotes       = std::array<morphex::Note*, MorphLocation::Total>;
+using MorphSounds      = std::array<morphex::Sound*, MorphLocation::Total>;
+using MorphSoundFrames = std::array<morphex::Sound::Frame, MorphLocation::Total>;
 
 namespace Constants
 {
 constexpr auto NUM_MIDI_NOTES = 128;
 }
 
-namespace Core
+namespace morphex
 {
 class Instrument
 {
@@ -122,4 +122,4 @@ private:
     MorphNotes  morph_notes;
     MorphSounds morph_sounds {};
 };
-}; // namespace Core
+}; // namespace morphex

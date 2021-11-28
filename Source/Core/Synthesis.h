@@ -33,7 +33,7 @@ enum Channel
     Mono = Left
 };
 
-namespace Core
+namespace morphex
 {
 class Synthesis
 {
@@ -122,9 +122,9 @@ public:
     };
     SynthesisWindow window;
 
-    dsp::FFT* fft;
+    juce::dsp::FFT* fft;
 
-    Synthesis (Instrument& instrument);
+    Synthesis (morphex::Instrument& instrument);
     ~Synthesis();
 
     void reset();

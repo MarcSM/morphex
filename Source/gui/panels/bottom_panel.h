@@ -20,11 +20,11 @@
 
 #include <JuceHeader.h>
 
-class BottomPanel : public Component
+class BottomPanel : public juce::Component
 {
 public:
     BottomPanel (MorphexAudioProcessor& processor) :
-        m_midiKeyboard (processor.getMidiState(), MidiKeyboardComponent::Orientation::horizontalKeyboard)
+        m_midiKeyboard (processor.getMidiState(), juce::MidiKeyboardComponent::Orientation::horizontalKeyboard)
     {
         // Set available note range
         int i_octaves  = 6;
@@ -46,7 +46,7 @@ public:
 
     ~BottomPanel() {}
 
-    void paint (Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
         // Draw borders
         GUI::Paint::drawBorders (g, m_midiKeyboard.getLocalBounds());
@@ -54,16 +54,16 @@ public:
 
     void resized() override
     {
-        FlexBox fb;
+        juce::FlexBox fb;
 
         float centerPanelWidth = getWidth() * 0.75f;
         float sidePanelWidth   = (getWidth() - centerPanelWidth) / 2.0f;
 
         m_midiKeyboard.setKeyWidth (centerPanelWidth / (float) m_numWhiteKeys);
 
-        FlexItem left (sidePanelWidth, getHeight(), m_leftPanel);
-        FlexItem center (centerPanelWidth, getHeight(), m_midiKeyboard);
-        FlexItem right (sidePanelWidth, getHeight(), m_rightPanel);
+        juce::FlexItem left (sidePanelWidth, getHeight(), m_leftPanel);
+        juce::FlexItem center (centerPanelWidth, getHeight(), m_midiKeyboard);
+        juce::FlexItem right (sidePanelWidth, getHeight(), m_rightPanel);
 
         fb.items.addArray ({ left, center, right });
         fb.performLayout (getLocalBounds().toFloat());
@@ -74,7 +74,7 @@ private:
     {
         LeftSidePanel() {}
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             // Draw borders
             GUI::Paint::drawBorders (g, getLocalBounds());
@@ -87,7 +87,7 @@ private:
     {
         RightSidePanel() {}
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             // Draw borders
             GUI::Paint::drawBorders (g, getLocalBounds());
@@ -96,7 +96,7 @@ private:
         void resized() override {}
     };
 
-    MidiKeyboardComponent m_midiKeyboard;
+    juce::MidiKeyboardComponent m_midiKeyboard;
 
     LeftSidePanel  m_leftPanel;
     RightSidePanel m_rightPanel;

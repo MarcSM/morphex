@@ -27,7 +27,7 @@ namespace dsp
 class Reverb
 {
 public:
-    Reverb (AudioProcessorValueTreeState& parameters) :
+    Reverb (juce::AudioProcessorValueTreeState& parameters) :
     m_parameters (parameters)
     {
         updateParameters();
@@ -36,11 +36,11 @@ public:
     ~Reverb() {}
 
     //    void process (float* buffer, int inNumSamplesToRender)
-    void process (AudioSampleBuffer& buffer, int inNumSamplesToRender)
+    void process (juce::AudioSampleBuffer& buffer, int inNumSamplesToRender)
     {
         updateParameters();
 
-        ScopedNoDenormals noDenormals;
+        juce::ScopedNoDenormals noDenormals;
 
         const int totalNumInputChannels  = 2;
         const int totalNumOutputChannels = 2;
@@ -50,7 +50,7 @@ public:
             buffer.clear (i, 0, inNumSamplesToRender);
         }
 
-        const auto numChannels = jmin (totalNumInputChannels, totalNumOutputChannels);
+        const auto numChannels = juce::jmin (totalNumInputChannels, totalNumOutputChannels);
 
         if (numChannels == 1)
         {
@@ -72,7 +72,7 @@ private:
         m_reverb.setParameters (m_reverbParameters);
     }
 
-    AudioProcessorValueTreeState& m_parameters;
+    juce::AudioProcessorValueTreeState& m_parameters;
 
     juce::Reverb             m_reverb;
     juce::Reverb::Parameters m_reverbParameters;

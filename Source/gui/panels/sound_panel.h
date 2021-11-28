@@ -20,9 +20,9 @@
 
 #include <JuceHeader.h>
 
-class SoundPanel : public Component,
-                   public DragAndDropTarget,
-                   public Timer
+class SoundPanel : public juce::Component,
+public juce::DragAndDropTarget,
+public juce::Timer
 {
 public:
     SoundPanel (MorphexAudioProcessor& processor, int m_numSound) :
@@ -41,12 +41,12 @@ public:
         if (m_morphLocation != MorphLocation::Total)
             this->updateCurrentSound();
         else
-            m_sound = new Core::Sound();
+            m_sound = new morphex::Sound();
 
         addAndMakeVisible (m_soundNumberPanel);
         addAndMakeVisible (m_soundNamePanel);
-        addAndMakeVisible (m_items.add (new GridItemPanel (Colours::blue, "2")));
-        addAndMakeVisible (m_items.add (new GridItemPanel (Colours::green, "3")));
+        addAndMakeVisible (m_items.add (new GridItemPanel (juce::Colours::blue, "2")));
+        addAndMakeVisible (m_items.add (new GridItemPanel (juce::Colours::green, "3")));
 
         // Start the timer callback
         startTimer (100);
@@ -54,9 +54,9 @@ public:
 
     ~SoundPanel() {}
 
-    void paint (Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
-        g.setColour (Colours::white);
+        g.setColour (juce::Colours::white);
         g.setFont (14.0f);
 
         // Draw borders
@@ -65,16 +65,18 @@ public:
 
     void resized() override
     {
-        Grid grid;
+        juce::Grid grid;
 
         float grid_margin = getWidth() * 0.04f;
 
-        grid.rowGap = Grid::Px (grid_margin);
+        grid.rowGap = juce::Grid::Px (grid_margin);
         ;
-        grid.columnGap = Grid::Px (grid_margin);
+        grid.columnGap = juce::Grid::Px (grid_margin);
         ;
 
-        using Track = Grid::TrackInfo;
+        using Track = juce::Grid::TrackInfo;
+        using juce::operator""_fr;
+
 
         grid.templateRows = { Track (1_fr),
                               Track (1_fr),
@@ -88,27 +90,27 @@ public:
         if (m_morphLocation == MorphLocation::UpLeft or m_numSound == 3)
         {
             grid.items.addArray ({
-                GridItem (m_soundNumberPanel),
-                GridItem (m_soundNamePanel).withArea (1, 2, 1, 4),
-                GridItem (m_items[0]).withArea (2, 1, 4, 1),
-                GridItem (m_items[1]).withArea (2, 2, 4, 4),
+                juce::GridItem (m_soundNumberPanel),
+                juce::GridItem (m_soundNamePanel).withArea (1, 2, 1, 4),
+                juce::GridItem (m_items[0]).withArea (2, 1, 4, 1),
+                juce::GridItem (m_items[1]).withArea (2, 2, 4, 4),
             });
         }
         else
         {
             grid.items.addArray ({
-                GridItem (m_soundNamePanel).withArea (1, 1, 1, 3),
-                GridItem (m_soundNumberPanel),
-                GridItem (m_items[0]).withArea (2, 1, 4, 3),
-                GridItem (m_items[1]).withArea (2, 3, 4, 3),
+                juce::GridItem (m_soundNamePanel).withArea (1, 1, 1, 3),
+                juce::GridItem (m_soundNumberPanel),
+                juce::GridItem (m_items[0]).withArea (2, 1, 4, 3),
+                juce::GridItem (m_items[1]).withArea (2, 3, 4, 3),
             });
         }
 
-        grid.justifyContent = Grid::JustifyContent::spaceBetween;
-        grid.justifyItems   = Grid::JustifyItems::stretch;
-        grid.alignContent   = Grid::AlignContent::spaceAround;
+        grid.justifyContent = juce::Grid::JustifyContent::spaceBetween;
+        grid.justifyItems   = juce::Grid::JustifyItems::stretch;
+        grid.alignContent   = juce::Grid::AlignContent::spaceAround;
 
-        Rectangle<int> grid_bounds (grid_margin, grid_margin, getWidth() - (grid_margin * 2.0f), getHeight() - (grid_margin * 2.0f));
+        juce::Rectangle<int> grid_bounds (grid_margin, grid_margin, getWidth() - (grid_margin * 2.0f), getHeight() - (grid_margin * 2.0f));
 
         grid.performLayout (grid_bounds);
     }
@@ -142,18 +144,18 @@ public:
         repaint();
     }
 
-    void paintOverChildren (Graphics& g) override
+    void paintOverChildren (juce::Graphics& g) override
     {
         if (m_isDragOver)
         {
-            g.setColour (Colours::white.withAlpha (0.75f));
+            g.setColour (juce::Colours::white.withAlpha (0.75f));
             g.drawRect (getLocalBounds(), 2);
         }
 
         if (m_numSound == 2 or m_numSound == 3)
         {
-            g.setColour (Colours::white);
-            g.drawText ("Disabled", getLocalBounds(), Justification::centred, false);
+            g.setColour (juce::Colours::white);
+            g.drawText ("Disabled", getLocalBounds(), juce::Justification::centred, false);
 
             GUI::Paint::drawDisabled (g, getLocalBounds());
         }
@@ -165,18 +167,18 @@ private:
         SoundNumberPanel (int m_numSound) :
             m_numSound (m_numSound) {}
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             g.setColour (GUI::Color::Logo);
             g.setFont (font_6);
 
             if (m_numSound == 1 or m_numSound == 3)
             {
-                g.drawText (String (m_numSound), getLocalBounds(), Justification::topLeft, false);
+                g.drawText (juce::String (m_numSound), getLocalBounds(), juce::Justification::topLeft, false);
             }
             else
             {
-                g.drawText (String (m_numSound), getLocalBounds(), Justification::topRight, false);
+                g.drawText (juce::String (m_numSound), getLocalBounds(), juce::Justification::topRight, false);
             }
         }
 
@@ -188,7 +190,7 @@ private:
         SoundNamePanel (SoundPanel* sound_panel) :
             sound_panel (sound_panel) {}
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             g.setColour (GUI::Color::Logo);
             g.setFont (font_2);
@@ -197,11 +199,11 @@ private:
             {
                 if (sound_panel->m_numSound == 1 or sound_panel->m_numSound == 3)
                 {
-                    g.drawText (sound_panel->m_sound->name, getLocalBounds(), Justification::topRight, false);
+                    g.drawText (sound_panel->m_sound->name, getLocalBounds(), juce::Justification::topRight, false);
                 }
                 else
                 {
-                    g.drawText (sound_panel->m_sound->name, getLocalBounds(), Justification::topLeft, false);
+                    g.drawText (sound_panel->m_sound->name, getLocalBounds(), juce::Justification::topLeft, false);
                 }
             }
         }
@@ -211,13 +213,13 @@ private:
 
     struct GridItemPanel : public Component
     {
-        GridItemPanel (Colour colourToUse, const String& textToUse) :
+        GridItemPanel (juce::Colour colourToUse, const juce::String& textToUse) :
             colour (colourToUse), text (textToUse) {}
 
-        void paint (Graphics& g) override {}
+        void paint (juce::Graphics& g) override {}
 
-        Colour colour;
-        String text;
+        juce::Colour colour;
+        juce::String text;
     };
 
     void timerCallback() override
@@ -240,13 +242,13 @@ private:
     int           m_numSound;
     MorphLocation m_morphLocation;
 
-    Core::Instrument& m_instrument;
-    Core::Sound*      m_sound;
+    morphex::Instrument& m_instrument;
+    morphex::Sound*      m_sound;
 
     SoundNumberPanel          m_soundNumberPanel;
     SoundNamePanel            m_soundNamePanel;
-    OwnedArray<GridItemPanel> m_items;
-    OwnedArray<TextButton>    m_buttons;
+    juce::OwnedArray<GridItemPanel> m_items;
+    juce::OwnedArray<juce::TextButton>    m_buttons;
 
     bool m_isDragOver = false;
 

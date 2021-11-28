@@ -25,7 +25,7 @@
 #include "fx_panel.h"
 #include "sound_panel.h"
 
-class MorphingPanel : public Component
+class MorphingPanel : public juce::Component
 {
 public:
     MorphingPanel (MorphexAudioProcessor& inProcessor) :
@@ -40,27 +40,27 @@ public:
 
     ~MorphingPanel() {}
 
-    void paint (Graphics& g) override {}
+    void paint (juce::Graphics& g) override {}
 
     void resized() override
     {
-        FlexBox fb;
+        juce::FlexBox fb;
 
         // TODO - Keep all the widths and heights
         // in a class and access them via pointers
         float m_centerPanelWidth = getWidth() * 0.75f * 0.45f;
         float soundPanelWidth    = (getWidth() - m_centerPanelWidth) / 2.0f;
 
-        FlexItem left (soundPanelWidth, getHeight(), m_leftPanel);
-        FlexItem center (m_centerPanelWidth, getHeight(), m_centerPanel);
-        FlexItem right (soundPanelWidth, getHeight(), m_rightPanel);
+        juce::FlexItem left (soundPanelWidth, getHeight(), m_leftPanel);
+        juce::FlexItem center (m_centerPanelWidth, getHeight(), m_centerPanel);
+        juce::FlexItem right (soundPanelWidth, getHeight(), m_rightPanel);
 
         fb.items.addArray ({ left, center, right });
         fb.performLayout (getLocalBounds().toFloat());
     }
 
 private:
-    struct LeftSidePanel : public Component
+    struct LeftSidePanel : public juce::Component
     {
         LeftSidePanel (MorphexAudioProcessor& inProcessor) :
             sound1Panel (inProcessor, 1),
@@ -70,17 +70,17 @@ private:
             addAndMakeVisible (sound3Panel);
         }
 
-        void paint (Graphics& g) override {}
+        void paint (juce::Graphics& g) override {}
 
         void resized() override
         {
-            FlexBox fb;
-            fb.flexDirection = FlexBox::Direction::column;
+            juce::FlexBox fb;
+            fb.flexDirection = juce::FlexBox::Direction::column;
 
             float soundPanelHeight = getHeight() / 2.0f;
 
-            FlexItem sound1 (getWidth(), soundPanelHeight, sound1Panel);
-            FlexItem sound3 (getWidth(), soundPanelHeight, sound3Panel);
+            juce::FlexItem sound1 (getWidth(), soundPanelHeight, sound1Panel);
+            juce::FlexItem sound3 (getWidth(), soundPanelHeight, sound3Panel);
 
             fb.items.addArray ({ sound1, sound3 });
             fb.performLayout (getLocalBounds().toFloat());
@@ -89,11 +89,11 @@ private:
         SoundPanel sound1Panel;
         SoundPanel sound3Panel;
 
-        Colour             backgroundColour;
-        OwnedArray<Slider> knobs;
+        juce::Colour             backgroundColour;
+        juce::OwnedArray<juce::Slider> knobs;
     };
 
-    struct RightSidePanel : public Component
+    struct RightSidePanel : public juce::Component
     {
         RightSidePanel (MorphexAudioProcessor& inProcessor) :
             sound2Panel (inProcessor, 2),
@@ -103,17 +103,17 @@ private:
             addAndMakeVisible (sound4Panel);
         }
 
-        void paint (Graphics& g) override {}
+        void paint (juce::Graphics& g) override {}
 
         void resized() override
         {
-            FlexBox fb;
-            fb.flexDirection = FlexBox::Direction::column;
+            juce::FlexBox fb;
+            fb.flexDirection = juce::FlexBox::Direction::column;
 
             float soundPanelHeight = getHeight() / 2.0f;
 
-            FlexItem sound2 (getWidth(), soundPanelHeight, sound2Panel);
-            FlexItem sound4 (getWidth(), soundPanelHeight, sound4Panel);
+            juce::FlexItem sound2 (getWidth(), soundPanelHeight, sound2Panel);
+            juce::FlexItem sound4 (getWidth(), soundPanelHeight, sound4Panel);
 
             fb.items.addArray ({ sound2, sound4 });
             fb.performLayout (getLocalBounds().toFloat());
@@ -122,11 +122,11 @@ private:
         SoundPanel sound2Panel;
         SoundPanel sound4Panel;
 
-        Colour                 backgroundColour;
-        OwnedArray<TextButton> buttons;
+        juce::Colour                 backgroundColour;
+        juce::OwnedArray<juce::TextButton> buttons;
     };
 
-    struct CenterPanel : public Component
+    struct CenterPanel : public juce::Component
     {
         CenterPanel (MorphexAudioProcessor& inProcessor)
         {
@@ -148,7 +148,7 @@ private:
             m_browser->setBounds (browser_x, browser_y, browser_width, browser_height);
 
             // Tabbed Component
-            m_tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop);
+            m_tabbedComponent = new juce::TabbedComponent (juce::TabbedButtonBar::TabsAtTop);
             m_tabbedComponent->setOutline (0);
             m_tabbedComponent->addTab (TRANS ("CORE"), GUI::Color::Transparent, m_corePanel, true);
             m_tabbedComponent->addTab (TRANS ("FX"), GUI::Color::Transparent, m_fxPanel, true);
@@ -158,7 +158,7 @@ private:
             addAndMakeVisible (m_tabbedComponent);
         }
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             auto area = getLocalBounds();
             m_tabbedComponent->setBounds (area);
@@ -169,12 +169,12 @@ private:
             m_tabbedComponent->setTabBarDepth (getHeight() / 8.0f);
         }
 
-        OwnedArray<Slider> m_sliders;
+        juce::OwnedArray<juce::Slider> m_sliders;
 
-        ScopedPointer<TabbedComponent>   m_tabbedComponent;
-        ScopedPointer<CorePanel>         m_corePanel;
-        ScopedPointer<FxPanel>           m_fxPanel;
-        ScopedPointer<CollectionBrowser> m_browser;
+        juce::ScopedPointer<juce::TabbedComponent>   m_tabbedComponent;
+        juce::ScopedPointer<CorePanel>         m_corePanel;
+        juce::ScopedPointer<FxPanel>           m_fxPanel;
+        juce::ScopedPointer<CollectionBrowser> m_browser;
     };
 
     LeftSidePanel  m_leftPanel;

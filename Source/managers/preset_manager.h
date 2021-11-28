@@ -25,34 +25,34 @@ namespace morphex
 class PresetManager
 {
 public:
-    PresetManager (AudioProcessor& processor, Core::MorphexSynth& synth);
+    PresetManager (juce::AudioProcessor& processor, Synth& synth);
 
-    void getXmlForPreset (XmlElement* xmlElement);
-    bool loadPresetFromXml (XmlElement* xmlElement);
+    void getXmlForPreset (juce::XmlElement* xmlElement);
+    bool loadPresetFromXml (juce::XmlElement* xmlElement);
 
     int    getNumberOfPresets();
-    String getPresetName (int presetIndex);
+    juce::String getPresetName (int presetIndex);
 
     void   createNewPreset();
     void   savePreset();
-    void   saveAsPreset (String presetName);
+    void   saveAsPreset (juce::String presetName);
     bool   loadPreset (int presetIndex);
     bool   getIsCurrentPresetSaved() const;
-    String getCurrentPresetName() const;
+    juce::String getCurrentPresetName() const;
 
-    void getSoundInformation (XmlElement* xmlElement) const;
-    bool setSoundInformation (XmlElement* presetBody);
+    void getSoundInformation (juce::XmlElement* xmlElement) const;
+    bool setSoundInformation (juce::XmlElement* presetBody);
 
 private:
     void storeLocalPreset();
 
-    AudioProcessor&     m_processor;
-    Core::MorphexSynth& m_synth;
+    juce::AudioProcessor&     m_processor;
+    Synth& m_synth;
 
-    Array<File> m_localPresets;
-    String      m_currentPresetName;
+    juce::Array<juce::File> m_localPresets;
+    juce::String      m_currentPresetName;
     bool        m_currentPresetIsSaved;
-    XmlElement* m_currentPresetXml;
-    File        m_currentLoadedPreset;
+    juce::XmlElement* m_currentPresetXml;
+    juce::File        m_currentLoadedPreset;
 };
 }; // namespace morphex

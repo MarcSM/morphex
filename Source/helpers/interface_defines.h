@@ -41,15 +41,15 @@ namespace GUI
 {
     namespace Color
     {
-        const Colour Transparent = Colour(0, 0, 0).withAlpha(0.0f);
-        const Colour Accent = Colour(0, 168, 204);
-        const Colour Background = Colour(34, 34, 34);
-        const Colour BackgroundGradientStart = Colour(70, 70, 70).withAlpha(0.75f);
-        const Colour BackgroundGradientEnd = BackgroundGradientStart.withAlpha(0.0f);
-        const Colour BackgroundDark = Background.overlaidWith (Colour(0, 0, 0).withAlpha(0.25f));
-        const Colour Logo = Colour(250, 250, 250);
-        const Colour BrowserBackground = Colour(0, 0, 0);
-        const Colour KeyDown = Colour(180, 180, 180);
+        const juce::Colour Transparent = juce::Colour(0, 0, 0).withAlpha(0.0f);
+        const juce::Colour Accent = juce::Colour(0, 168, 204);
+        const juce::Colour Background = juce::Colour(34, 34, 34);
+        const juce::Colour BackgroundGradientStart = juce::Colour(70, 70, 70).withAlpha(0.75f);
+        const juce::Colour BackgroundGradientEnd = BackgroundGradientStart.withAlpha(0.0f);
+        const juce::Colour BackgroundDark = Background.overlaidWith (juce::Colour(0, 0, 0).withAlpha(0.25f));
+        const juce::Colour Logo = juce::Colour(250, 250, 250);
+        const juce::Colour BrowserBackground = juce::Colour(0, 0, 0);
+        const juce::Colour KeyDown = juce::Colour(180, 180, 180);
     }
     
     namespace Paint
@@ -60,8 +60,8 @@ namespace GUI
             Glass
         };
         
-        inline void drawBorders (Graphics& g,
-                                 Rectangle<int> componentBounds,
+        inline void drawBorders (juce::Graphics& g,
+                                 juce::Rectangle<int> componentBounds,
                                  BorderType border_type = BorderType::Normal)
         {
             int line_thickness = 3;
@@ -75,8 +75,8 @@ namespace GUI
             // Light color
             switch (border_type)
             {
-                case BorderType::Normal: g.setColour (Colour(255, 255, 255).withAlpha(0.10f));  break;
-                case BorderType::Glass:  g.setColour (Colour(255, 255, 255).withAlpha(0.15f));  break;
+                case BorderType::Normal: g.setColour (juce::Colour(255, 255, 255).withAlpha(0.10f));  break;
+                case BorderType::Glass:  g.setColour (juce::Colour(255, 255, 255).withAlpha(0.15f));  break;
                 default:                 jassertfalse; break;
             }
             
@@ -89,7 +89,7 @@ namespace GUI
                         topRight.getX(), topRight.getY(), line_thickness);
             
             // Shadow color
-            g.setColour (Colour(0, 0, 0).withAlpha(0.75f));
+            g.setColour (juce::Colour(0, 0, 0).withAlpha(0.75f));
 //            switch (border_type)
 //            {
 //                case BorderType::Normal: g.setColour (Colour(0, 0, 0).withAlpha(0.75f));        break;
@@ -108,49 +108,49 @@ namespace GUI
             //g.drawRect (componentBounds, 1);   // draw an outline around the component
         }
         
-        inline void drawDisabled (Graphics& g, Rectangle<int> componentBounds)
+        inline void drawDisabled (juce::Graphics& g, juce::Rectangle<int> componentBounds)
         {
-            g.fillAll (Colours::black.withAlpha (0.25f));
+            g.fillAll (juce::Colours::black.withAlpha (0.25f));
         }
     }
 }
 
-const Colour SMTColour_bg = Colour(34, 34, 34);
+const juce::Colour SMTColour_bg = juce::Colour(34, 34, 34);
 
-const Colour SMTBlackColour = Colour(0, 0, 0);
-const Colour SMTWhiteColour = Colour(255, 255, 255);
-const Colour SMTTransparentColour = Colour(0, 0, 0).withAlpha(0.0f);
+const juce::Colour SMTBlackColour = juce::Colour(0, 0, 0);
+const juce::Colour SMTWhiteColour = juce::Colour(255, 255, 255);
+const juce::Colour SMTTransparentColour = juce::Colour(0, 0, 0).withAlpha(0.0f);
 
-const Colour SMTColour_Logo = SMTWhiteColour;
-const Colour SMTColour_Text = SMTWhiteColour;
+const juce::Colour SMTColour_Logo = SMTWhiteColour;
+const juce::Colour SMTColour_Text = SMTWhiteColour;
 
-const Colour SMTColour_1 = Colour(105, 105, 105);
-const Colour SMTColour_2 = Colour(0, 0, 0).withAlpha(0.0f);
-const Colour SMTColour_3 = Colour(0, 0, 0).withAlpha(0.3f);
-const Colour SMTColour_4 = Colour(0, 0, 0).withAlpha(0.6f);
-const Colour SMTColour_5 = Colour(105, 105, 105).withAlpha(0.8f);
-const Colour SMTColour_6 = Colour(0, 0, 0).withAlpha(0.8f);
-const Colour SMTColour_7 = Colour(125, 125, 125).withAlpha(0.3f);
+const juce::Colour SMTColour_1 = juce::Colour(105, 105, 105);
+const juce::Colour SMTColour_2 = juce::Colour(0, 0, 0).withAlpha(0.0f);
+const juce::Colour SMTColour_3 = juce::Colour(0, 0, 0).withAlpha(0.3f);
+const juce::Colour SMTColour_4 = juce::Colour(0, 0, 0).withAlpha(0.6f);
+const juce::Colour SMTColour_5 = juce::Colour(105, 105, 105).withAlpha(0.8f);
+const juce::Colour SMTColour_6 = juce::Colour(0, 0, 0).withAlpha(0.8f);
+const juce::Colour SMTColour_7 = juce::Colour(125, 125, 125).withAlpha(0.3f);
 
 // Button Colours
-const Colour SMTHyperlinkButtonColour = SMTWhiteColour;
-const Colour SMTButtonColour = SMTBlackColour;
-const Colour SMTButtonOnColour = SMTColour_2;
-const Colour SMTButtonTextOffColour = SMTWhiteColour;
-const Colour SMTButtonTextOnColour = SMTWhiteColour;
+const juce::Colour SMTHyperlinkButtonColour = SMTWhiteColour;
+const juce::Colour SMTButtonColour = SMTBlackColour;
+const juce::Colour SMTButtonOnColour = SMTColour_2;
+const juce::Colour SMTButtonTextOffColour = SMTWhiteColour;
+const juce::Colour SMTButtonTextOnColour = SMTWhiteColour;
 
 // ComboBox Colours
-const Colour SMTComboBoxBackgroundColour = SMTBlackColour;
-const Colour SMTComboBoxOutlineColour = SMTColour_2;
-const Colour SMTComboBoxArrowColour = SMTWhiteColour;
-const Colour SMTComboBoxTextColour = SMTWhiteColour;
+const juce::Colour SMTComboBoxBackgroundColour = SMTBlackColour;
+const juce::Colour SMTComboBoxOutlineColour = SMTColour_2;
+const juce::Colour SMTComboBoxArrowColour = SMTWhiteColour;
+const juce::Colour SMTComboBoxTextColour = SMTWhiteColour;
 
 // Fonts
-const Font font_1 ("Helvetica Neue", 12.00f, Font::bold);
-const Font font_2 ("Helvetica Neue", 18.00f, Font::bold);
-const Font font_3 ("Helvetica Neue", 22.00f, Font::bold);
-const Font font_4 ("Helvetica Neue", 26.00f, Font::bold);
-const Font font_5 ("Helvetica Neue", 28.00f, Font::bold);
-const Font font_6 ("Helvetica Neue", 30.00f, Font::bold);
-const Font font_7 ("Helvetica Neue", 36.00f, Font::bold);
-const Font font_8 ("Helvetica Neue", 48.00f, Font::bold);
+const juce::Font font_1 ("Helvetica Neue", 12.00f, juce::Font::bold);
+const juce::Font font_2 ("Helvetica Neue", 18.00f, juce::Font::bold);
+const juce::Font font_3 ("Helvetica Neue", 22.00f, juce::Font::bold);
+const juce::Font font_4 ("Helvetica Neue", 26.00f, juce::Font::bold);
+const juce::Font font_5 ("Helvetica Neue", 28.00f, juce::Font::bold);
+const juce::Font font_6 ("Helvetica Neue", 30.00f, juce::Font::bold);
+const juce::Font font_7 ("Helvetica Neue", 36.00f, juce::Font::bold);
+const juce::Font font_8 ("Helvetica Neue", 48.00f, juce::Font::bold);

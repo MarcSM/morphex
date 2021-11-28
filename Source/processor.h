@@ -22,7 +22,7 @@
 #include "helpers/parameters.h"
 #include "managers/preset_manager.h"
 
-class MorphexAudioProcessor : public AudioProcessor
+class MorphexAudioProcessor : public juce::AudioProcessor
 {
 public:
     //==============================================================================
@@ -37,14 +37,14 @@ public:
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
 #endif
 
-    void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
+    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     //==============================================================================
-    AudioProcessorEditor* createEditor() override;
+    juce::AudioProcessorEditor* createEditor() override;
     bool                  hasEditor() const override;
 
     //==============================================================================
-    const String getName() const override;
+    const juce::String getName() const override;
 
     bool   acceptsMidi() const override;
     bool   producesMidi() const override;
@@ -55,11 +55,11 @@ public:
     int          getNumPrograms() override;
     int          getCurrentProgram() override;
     void         setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void         changeProgramName (int index, const String& newName) override;
+    const juce::String getProgramName (int index) override;
+    void         changeProgramName (int index, const juce::String& newName) override;
 
     //==============================================================================
-    void getStateInformation (MemoryBlock& destData) override;
+    void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     //==============================================================================
@@ -68,25 +68,25 @@ public:
         return m_presetManager;
     }
 
-    MidiKeyboardState& getMidiState()
+    juce::MidiKeyboardState& getMidiState()
     {
         return m_midiState;
     }
 
-    AudioProcessorValueTreeState parameters;
-    Core::MorphexSynth           m_synth;
+    juce::AudioProcessorValueTreeState parameters;
+    morphex::Synth m_synth;
 
 private:
-    AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     {
         //        std::vector<std::unique_ptr<AudioParameterFloat>> params;
-        std::vector<std::unique_ptr<RangedAudioParameter>> params;
+        std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
         for (int i = 0; i < Morphex::Parameters::TotalNumParameters; i++)
         {
             Morphex::Parameter<float> smt_parameter = Morphex::PARAMETERS<float>[i];
 
-            params.push_back (std::make_unique<AudioParameterFloat> (smt_parameter.ID, smt_parameter.ID, NormalisableRange<float> (smt_parameter.min_value, smt_parameter.max_value), smt_parameter.default_value, smt_parameter.label));
+            params.push_back (std::make_unique<juce::AudioParameterFloat> (smt_parameter.ID, smt_parameter.ID, juce::NormalisableRange<float> (smt_parameter.min_value, smt_parameter.max_value), smt_parameter.default_value, smt_parameter.label));
         }
 
         return { params.begin(), params.end() };
@@ -94,8 +94,8 @@ private:
 
     morphex::PresetManager m_presetManager;
 
-    MidiKeyboardState    m_midiState;
-    MidiMessageCollector m_midiCollector;
+    juce::MidiKeyboardState    m_midiState;
+    juce::MidiMessageCollector m_midiCollector;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphexAudioProcessor)
 };

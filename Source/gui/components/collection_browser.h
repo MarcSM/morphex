@@ -22,25 +22,25 @@
 
 namespace Constants
 {
-const auto PluginDataDirectory = (File::getSpecialLocation (File::userDesktopDirectory)).getFullPathName() + File::getSeparatorChar() + ProjectInfo::projectName;
-const auto CollectionDirectory = Constants::PluginDataDirectory + File::getSeparatorChar() + "Collections";
-const auto FactoryDirectory = CollectionDirectory + File::getSeparatorChar() + "Factory";
-const auto FileBrowserComponentFlags = FileBrowserComponent::openMode
-                                        | FileBrowserComponent::canSelectFiles
-                                        | FileBrowserComponent::useTreeView
-                                        | FileBrowserComponent::filenameBoxIsReadOnly;
+const auto PluginDataDirectory = (juce::File::getSpecialLocation (juce::File::userDesktopDirectory)).getFullPathName() + juce::File::getSeparatorChar() + ProjectInfo::projectName;
+const auto CollectionDirectory = Constants::PluginDataDirectory + juce::File::getSeparatorChar() + "Collections";
+const auto FactoryDirectory = CollectionDirectory + juce::File::getSeparatorChar() + "Factory";
+const auto FileBrowserComponentFlags = juce::FileBrowserComponent::openMode
+                                        | juce::FileBrowserComponent::canSelectFiles
+                                        | juce::FileBrowserComponent::useTreeView
+                                        | juce::FileBrowserComponent::filenameBoxIsReadOnly;
 }
 
-class CollectionBrowser : public FileBrowserComponent,
-                          public Button::Listener
+class CollectionBrowser : public juce::FileBrowserComponent,
+public juce::Button::Listener
 {
 public:
     CollectionBrowser (MorphexAudioProcessor& processor) :
         FileBrowserComponent (Constants::FileBrowserComponentFlags,
                               Constants::CollectionDirectory,
-                              new WildcardFileFilter ("*.had", "*", "somedescription"),
+                              new juce::WildcardFileFilter ("*.had", "*", "somedescription"),
                               nullptr),
-        m_fileTreeComponent(static_cast<FileTreeComponent*> (getDisplayComponent())),
+        m_fileTreeComponent(static_cast<juce::FileTreeComponent*> (getDisplayComponent())),
         m_processor (processor)
     {
         setLookAndFeel (new MorphexLookAndFeel());
@@ -59,7 +59,7 @@ public:
 
     ~CollectionBrowser() {}
 
-    void paint (Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
         g.fillAll (GUI::Color::BrowserBackground);
 
@@ -93,7 +93,7 @@ public:
     }
 
 private:
-    void fileClicked (const File& f, const MouseEvent& e) override
+    void fileClicked (const juce::File& f, const juce::MouseEvent& e) override
     {
         FileBrowserComponent::fileClicked (f, e);
         if (f.isDirectory())
@@ -106,11 +106,11 @@ private:
         }
     }
 
-    void buttonClicked (Button* b) override
+    void buttonClicked (juce::Button* b) override
     {
         if (b == &m_loadAllButton)
         {
-            const File f = getHighlightedFile();
+            const juce::File f = getHighlightedFile();
             //            const File f = getSelectedFile (0);
 
             m_processor.m_synth.m_instrument.reset();
@@ -128,19 +128,19 @@ private:
         }
     }
     
-    FileTreeComponent* m_fileTreeComponent;
+    juce::FileTreeComponent* m_fileTreeComponent;
     MorphexAudioProcessor& m_processor;
 
-    Rectangle<int>   m_fileBrowserArea;
-    Rectangle<float> m_rectangle;
+    juce::Rectangle<int>   m_fileBrowserArea;
+    juce::Rectangle<float> m_rectangle;
 
     juce::Point<float> currentMouseXY;
     juce::Point<float> mouseDownXY;
 
-    String m_collectionsDirectory;
-    String m_pluginDirectory;
+    juce::String m_collectionsDirectory;
+    juce::String m_pluginDirectory;
 
-    TextButton m_loadAllButton { "Load All Sounds" };
+    juce::TextButton m_loadAllButton { "Load All Sounds" };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CollectionBrowser);
 };

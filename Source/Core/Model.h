@@ -21,7 +21,7 @@
 #include "codec.h"
 #include "tools.h"
 
-namespace Core
+namespace morphex
 {
 class Model
 {
@@ -258,4 +258,4 @@ public:
 private:
     Values _values;
 };
-}; // namespace Core
+}; // namespace moprhex

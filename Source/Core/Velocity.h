@@ -20,7 +20,7 @@
 
 #include "sound.h"
 
-namespace Core
+namespace morphex
 {
 class Velocity
 {
@@ -78,4 +78,4 @@ public:
 
 private:
 };
-}; // namespace Core
+}; // namespace moprhex

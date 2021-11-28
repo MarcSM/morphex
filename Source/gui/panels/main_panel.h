@@ -20,7 +20,7 @@
 
 #include "morphing_panel.h"
 
-class MainPanel : public Component
+class MainPanel : public juce::Component
 {
 public:
     MainPanel (MorphexAudioProcessor& processor) :
@@ -31,13 +31,13 @@ public:
 
     ~MainPanel() {}
 
-    void paint (Graphics& g) override {}
+    void paint (juce::Graphics& g) override {}
 
     void resized() override
     {
-        FlexBox fb;
+        juce::FlexBox fb;
 
-        FlexItem morphing (getWidth(), getHeight(), m_morphingPanel);
+        juce::FlexItem morphing (getWidth(), getHeight(), m_morphingPanel);
 
         fb.items.addArray ({ morphing });
         fb.performLayout (getLocalBounds().toFloat());

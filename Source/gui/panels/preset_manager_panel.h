@@ -22,9 +22,9 @@
 
 #include "../components/button.h"
 
-class PresetManagerPanel : public Component,
-                           public Button::Listener,
-                           public ComboBox::Listener
+class PresetManagerPanel : public juce::Component,
+public juce::Button::Listener,
+public juce::ComboBox::Listener
 {
 public:
     enum MenuOption
@@ -63,18 +63,19 @@ public:
 
     ~PresetManagerPanel() {}
 
-    void paint (Graphics& g) override {}
+    void paint (juce::Graphics& g) override {}
 
     void resized() override
     {
-        Grid grid;
+        juce::Grid grid;
 
         float grid_margin = getWidth() * 0.0f;
 
-        grid.rowGap    = Grid::Px (grid_margin);
-        grid.columnGap = Grid::Px (grid_margin);
+        grid.rowGap    = juce::Grid::Px (grid_margin);
+        grid.columnGap = juce::Grid::Px (grid_margin);
 
-        using Track = Grid::TrackInfo;
+        using Track = juce::Grid::TrackInfo;
+        using juce::operator""_fr;
 
         grid.templateRows    = { Track (1_fr),
                               Track (1_fr) };
@@ -87,26 +88,26 @@ public:
         grid.autoColumns = Track (1_fr);
         grid.autoRows    = Track (1_fr);
 
-        grid.items.addArray ({ GridItem (m_savePreset).withArea ("save"),
-                               GridItem (m_presetDisplay).withArea ("preset"),
-                               GridItem (m_menu).withArea ("menu"),
-                               GridItem (m_informationPanel).withArea ("info") });
+        grid.items.addArray ({ juce::GridItem (m_savePreset).withArea ("save"),
+            juce::GridItem (m_presetDisplay).withArea ("preset"),
+            juce::GridItem (m_menu).withArea ("menu"),
+            juce::GridItem (m_informationPanel).withArea ("info") });
 
-        grid.justifyContent = Grid::JustifyContent::spaceBetween;
-        grid.justifyItems   = Grid::JustifyItems::stretch;
-        grid.alignContent   = Grid::AlignContent::spaceAround;
+        grid.justifyContent = juce::Grid::JustifyContent::spaceBetween;
+        grid.justifyItems   = juce::Grid::JustifyItems::stretch;
+        grid.alignContent   = juce::Grid::AlignContent::spaceAround;
 
-        Rectangle<int> grid_bounds (grid_margin, grid_margin, getWidth() - (grid_margin * 2.0f), getHeight() - (grid_margin * 2.0f));
+        juce::Rectangle<int> grid_bounds (grid_margin, grid_margin, getWidth() - (grid_margin * 2.0f), getHeight() - (grid_margin * 2.0f));
 
         grid.performLayout (grid_bounds);
     }
 
 private:
-    struct InformationPanel : public Component
+    struct InformationPanel : public juce::Component
     {
         InformationPanel() {}
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             // Draw borders
             GUI::Paint::drawBorders (g, getLocalBounds(), GUI::Paint::BorderType::Glass);
@@ -151,7 +152,7 @@ private:
             m_menu.setSelectedId (MenuOption::None);
     }
 
-    void buttonClicked (Button* b) override
+    void buttonClicked (juce::Button* b) override
     {
         if (b == &m_savePreset)
             m_presetManager.savePreset();
@@ -169,7 +170,7 @@ private:
         //        }
     }
 
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override
+    void comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged) override
     {
         if (comboBoxThatHasChanged == &m_presetDisplay)
         {
@@ -183,7 +184,7 @@ private:
                 }
                 else
                 {
-                    m_presetDisplay.setSelectedItemIndex (this->m_currentPresetIndex, NotificationType::dontSendNotification);
+                    m_presetDisplay.setSelectedItemIndex (this->m_currentPresetIndex, juce::NotificationType::dontSendNotification);
                 }
             }
         }
@@ -198,9 +199,9 @@ private:
 
     void displayInitPopup()
     {
-        String currentPresetName = m_presetManager.getCurrentPresetName();
+        juce::String currentPresetName = m_presetManager.getCurrentPresetName();
 
-        AlertWindow window ("Init", "Are you sure you want to initialize this preset?", AlertWindow::NoIcon);
+        juce::AlertWindow window ("Init", "Are you sure you want to initialize this preset?", juce::AlertWindow::NoIcon);
 
         window.centreAroundComponent (this, getWidth(), getHeight());
         window.addButton ("Confirm", 1);
@@ -215,9 +216,9 @@ private:
 
     void displaySaveAsPopup()
     {
-        String currentPresetName = m_presetManager.getCurrentPresetName();
+        juce::String currentPresetName = m_presetManager.getCurrentPresetName();
 
-        AlertWindow window ("Save As", "Please enter a name for your preset", AlertWindow::NoIcon);
+        juce::AlertWindow window ("Save As", "Please enter a name for your preset", juce::AlertWindow::NoIcon);
 
         window.centreAroundComponent (this, getWidth(), getHeight());
         window.addTextEditor ("presetName", currentPresetName, "Preset Name: ");
@@ -226,7 +227,7 @@ private:
 
         if (window.runModalLoop())
         {
-            String presetName = window.getTextEditor ("presetName")->getText();
+            juce::String presetName = window.getTextEditor ("presetName")->getText();
             m_presetManager.saveAsPreset (presetName);
             updatePresetComboBox();
         }
@@ -236,9 +237,9 @@ private:
     {
         this->m_currentPresetIndex = m_presetDisplay.getSelectedItemIndex();
 
-        String presetName = m_presetManager.getCurrentPresetName();
+        juce::String presetName = m_presetManager.getCurrentPresetName();
 
-        m_presetDisplay.clear (dontSendNotification);
+        m_presetDisplay.clear (juce::dontSendNotification);
 
         const int numPresets = m_presetManager.getNumberOfPresets();
 
@@ -253,8 +254,8 @@ private:
     InformationPanel m_informationPanel;
 
     morphex::Button m_savePreset;
-    ComboBox        m_presetDisplay;
-    ComboBox        m_menu;
+    juce::ComboBox        m_presetDisplay;
+    juce::ComboBox        m_menu;
 
     int m_currentPresetIndex = 0;
 

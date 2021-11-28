@@ -24,8 +24,8 @@
 
 #include "../../helpers/interface_defines.h"
 
-class MorphexPanel : public Component,
-                     public DragAndDropContainer
+class MorphexPanel : public juce::Component,
+public juce::DragAndDropContainer
 {
 public:
     MorphexPanel (MorphexAudioProcessor& processor) :
@@ -40,11 +40,11 @@ public:
         setSize (MORPHEX_PANEL_WIDTH, MORPHEX_PANEL_HEIGHT);
     }
 
-    void paint (Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
-        g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId)); // clear the background
+        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId)); // clear the background
 
-        ColourGradient cg (GUI::Color::BackgroundGradientStart,
+        juce::ColourGradient cg (GUI::Color::BackgroundGradientStart,
                            getWidth() / 2.0f,
                            getHeight() / 4.0f,
                            GUI::Color::BackgroundGradientEnd,
@@ -58,33 +58,33 @@ public:
 
     void resized() override
     {
-        FlexBox fb;
-        fb.flexDirection = FlexBox::Direction::column;
+        juce::FlexBox fb;
+        fb.flexDirection = juce::FlexBox::Direction::column;
 
         float m_topPanelHeight    = getHeight() / 10.0f;
         float m_bottomPanelHeight = getHeight() / 8.0f;
 
-        FlexItem top (getWidth(), m_topPanelHeight, m_topPanel);
-        FlexItem main (getWidth(), getHeight() - m_topPanelHeight - m_bottomPanelHeight, m_mainPanel);
-        FlexItem bottom (getWidth(), m_bottomPanelHeight, m_bottomPanel);
+        juce::FlexItem top (getWidth(), m_topPanelHeight, m_topPanel);
+        juce::FlexItem main (getWidth(), getHeight() - m_topPanelHeight - m_bottomPanelHeight, m_mainPanel);
+        juce::FlexItem bottom (getWidth(), m_bottomPanelHeight, m_bottomPanel);
 
         fb.items.addArray ({ top, main, bottom });
         fb.performLayout (getLocalBounds().toFloat());
     }
 
 private:
-    struct RightSidePanel : public Component
+    struct RightSidePanel : public juce::Component
     {
-        RightSidePanel (Colour c) :
+        RightSidePanel (juce::Colour c) :
             m_backgroundColour (c)
         {
             for (int i = 0; i < 9; ++i)
             {
-                addAndMakeVisible (m_buttons.add (new TextButton (String (i))));
+                addAndMakeVisible (m_buttons.add (new juce::TextButton (juce::String (i))));
             }
         }
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             g.fillAll (m_backgroundColour);
         }
@@ -103,26 +103,26 @@ private:
             }
         }
 
-        Colour                 m_backgroundColour;
-        OwnedArray<TextButton> m_buttons;
+        juce::Colour                 m_backgroundColour;
+        juce::OwnedArray<juce::TextButton> m_buttons;
     };
 
-    struct LeftSidePanel : public Component
+    struct LeftSidePanel : public juce::Component
     {
-        LeftSidePanel (Colour c) :
+        LeftSidePanel (juce::Colour c) :
             m_backgroundColour (c)
         {
             for (int i = 0; i < 6; ++i)
             {
-                auto* slider = new Slider();
-                slider->setSliderStyle (Slider::SliderStyle::Rotary);
-                slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
+                auto* slider = new juce::Slider();
+                slider->setSliderStyle (juce::Slider::SliderStyle::Rotary);
+                slider->setTextBoxStyle (juce::Slider::NoTextBox, true, 0, 0);
 
                 addAndMakeVisible (m_knobs.add (slider));
             }
         }
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             g.fillAll (m_backgroundColour);
         }
@@ -141,8 +141,8 @@ private:
             }
         }
 
-        Colour             m_backgroundColour;
-        OwnedArray<Slider> m_knobs;
+        juce::Colour             m_backgroundColour;
+        juce::OwnedArray<juce::Slider> m_knobs;
     };
 
     TopPanel    m_topPanel;

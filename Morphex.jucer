@@ -3,7 +3,7 @@
 <JUCERPROJECT id="AFG8tp" name="Morphex" projectType="audioplug" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               cppLanguageStandard="17" version="0.3.0-beta" companyName="Morphex"
               pluginManufacturer="Morphex" pluginAUMainType="'aumu'" displaySplashScreen="1"
-              jucerFormatVersion="1">
+              jucerFormatVersion="1" addUsingNamespaceToJuceHeader="0">
   <MAINGROUP id="BTCZAR" name="Morphex">
     <GROUP id="{AFEC479D-5C67-2E7A-1D34-7E1570EAC1CB}" name="core">
       <FILE id="gKEM2f" name="codec.h" compile="0" resource="0" file="Source/Core/codec.h"/>

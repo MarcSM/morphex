@@ -36,8 +36,8 @@ public:
 
     void process (float* buffer, float inGain, int inNumSamplesToRender)
     {
-        float gainMapped = jmap (inGain, 0.0f, 1.0f, -24.0f, 24.0f);
-        gainMapped       = Decibels::decibelsToGain (gainMapped, -24.0f);
+        float gainMapped = juce::jmap (inGain, 0.0f, 1.0f, -24.0f, 24.0f);
+        gainMapped       = juce::Decibels::decibelsToGain (gainMapped, -24.0f);
 
         for (int i = 0; i < inNumSamplesToRender; i++)
         {

@@ -18,14 +18,9 @@
 
 #include "synth.h"
 
-namespace Constants
+namespace morphex
 {
-constexpr auto MaxVoices = 10;
-} // namespace Constants
-
-namespace Core
-{
-MorphexSynth::MorphexSynth (AudioProcessorValueTreeState& parameters) :
+Synth::Synth (juce::AudioProcessorValueTreeState& parameters) :
     m_parameters (parameters),
     m_reverb (parameters)
 {
@@ -58,9 +53,9 @@ MorphexSynth::MorphexSynth (AudioProcessorValueTreeState& parameters) :
     //    }
 
     // Add some voices to our synth, to play the sounds..
-    for (int i = 0; i < Constants::MaxVoices; i++)
+    for (int i = 0; i < MaxVoices; i++)
     {
-        addVoice (new Voice (m_instrument, parameters));
+        addVoice (new Voice (parameters, m_instrument));
     }
 
     // TODO - NOTE: If we enter on release stated, there is no way back, the
@@ -78,27 +73,10 @@ MorphexSynth::MorphexSynth (AudioProcessorValueTreeState& parameters) :
     setNoteStealingEnabled (true);
 }
 
-MorphexSynth::~MorphexSynth() {}
+// Synth::~Synth() {}
 
-void MorphexSynth::setCurrentPlaybackSampleRate (double sampleRate)
-{
-    Voice* morph_voice;
-
-    // Set new sample rate to ADSR for each voice instance
-    for (int i = 0; i < getNumVoices(); i++)
-    {
-        if ((morph_voice = dynamic_cast<Voice*> (getVoice (i))))
-        {
-            morph_voice->setADSRSampleRate (sampleRate);
-        }
-    }
-
-    // Call base class method
-    Synthesiser::setCurrentPlaybackSampleRate (sampleRate);
-}
-
-void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
-                                    const MidiBuffer&   inputMidi,
+void Synth::renderNextBlock (juce::AudioBuffer<float>& outputAudio,
+                                    const juce::MidiBuffer&   inputMidi,
                                     int                 startSample,
                                     int                 numSamples)
 {
@@ -123,9 +101,9 @@ void MorphexSynth::renderNextBlock (AudioBuffer<float>& outputAudio,
     //    }
 }
 
-void MorphexSynth::reset()
+void Synth::reset()
 {
     // Reset the instrument
     m_instrument.reset();
 }
-} // namespace Core
+} // namespace moprhex

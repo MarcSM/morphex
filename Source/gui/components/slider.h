@@ -25,7 +25,7 @@ namespace morphex
 class Slider : public juce::Slider
 {
 public:
-    Slider (AudioProcessorValueTreeState& state_to_control, const Morphex::Parameters parameter_num) :
+    Slider (juce::AudioProcessorValueTreeState& state_to_control, const Morphex::Parameters parameter_num) :
         juce::Slider()
     {
         Morphex::Parameter morphex_parameter = Morphex::PARAMETERS<float>[parameter_num];
@@ -37,15 +37,15 @@ public:
         setTextBoxStyle (Slider::TextEntryBoxPosition::TextBoxBelow, false, 0, 0);
         setRange (morphex_parameter.min_value, morphex_parameter.max_value, 0.001f);
 
-        m_attachment = new AudioProcessorValueTreeState::SliderAttachment (state_to_control, morphex_parameter.ID, *this);
+        m_attachment = new juce::AudioProcessorValueTreeState::SliderAttachment (state_to_control, morphex_parameter.ID, *this);
     }
 
     ~Slider() {}
 
 private:
     // TODO
-    //    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> m_attachment;
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> m_attachment;
+    //    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_attachment;
+    juce::ScopedPointer<juce::AudioProcessorValueTreeState::SliderAttachment> m_attachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Slider);
 };

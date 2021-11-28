@@ -20,7 +20,7 @@
 
 #include "../components/slider.h"
 
-class FxPanel : public Component
+class FxPanel : public juce::Component
 {
 public:
     FxPanel (MorphexAudioProcessor& inProcessor)
@@ -42,9 +42,9 @@ public:
     {
     }
 
-    void paint (Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
-        g.fillAll (Colours::black);
+        g.fillAll (juce::Colours::black);
 
         // Draw borders
         GUI::Paint::drawBorders (g, getLocalBounds());
@@ -64,18 +64,18 @@ public:
 private:
     struct FxRow : public Component
     {
-        FxRow (MorphexAudioProcessor& inProcessor, String name) :
+        FxRow (MorphexAudioProcessor& inProcessor, juce::String name) :
             m_name (name)
         {
             m_sliders.clear();
         }
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             g.fillAll (GUI::Color::BackgroundDark);
-            g.setColour (Colours::white);
+            g.setColour (juce::Colours::white);
             g.setFont (14.0f);
-            g.drawText (m_name, getLocalBounds(), Justification::topLeft, true);
+            g.drawText (m_name, getLocalBounds(), juce::Justification::topLeft, true);
 
             // Draw borders
             GUI::Paint::drawBorders (g, getLocalBounds());
@@ -83,23 +83,23 @@ private:
 
         void resized() override
         {
-            FlexBox fb;
-            fb.flexDirection  = FlexBox::Direction::column;
-            fb.flexWrap       = FlexBox::Wrap::wrap;
-            fb.justifyContent = FlexBox::JustifyContent::flexEnd;
+            juce::FlexBox fb;
+            fb.flexDirection  = juce::FlexBox::Direction::column;
+            fb.flexWrap       = juce::FlexBox::Wrap::wrap;
+            fb.justifyContent = juce::FlexBox::JustifyContent::flexEnd;
 
-            FlexItem drywet_knob (getWidth(), getHeight(), *m_sliders[0]);
+            juce::FlexItem drywet_knob (getWidth(), getHeight(), *m_sliders[0]);
 
             fb.items.addArray ({ drywet_knob });
             fb.performLayout (getLocalBounds().toFloat());
         }
 
-        String m_name;
+        juce::String m_name;
 
-        OwnedArray<Slider> m_sliders;
+        juce::OwnedArray<juce::Slider> m_sliders;
     };
 
-    OwnedArray<FxRow> m_fxRows;
+    juce::OwnedArray<FxRow> m_fxRows;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FxPanel)
 };

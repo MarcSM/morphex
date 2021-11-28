@@ -25,28 +25,28 @@ namespace Constants
 constexpr auto PresetFileExtension      = ".mpf";
 constexpr auto PresetNameParameterId    = "PresetName";
 constexpr auto SoundFilePathParameterId = "MorphSoundFilePath";
-const auto     PluginDataDirectory      = (File::getSpecialLocation (File::userDesktopDirectory)).getFullPathName() + File::getSeparatorChar() + ProjectInfo::projectName;
-const auto     PresetsDirectory         = PluginDataDirectory + File::getSeparatorChar() + "Presets";
-const auto     CollectionDirectory      = PluginDataDirectory + File::getSeparatorChar() + "Collections";
+const auto     PluginDataDirectory      = (juce::File::getSpecialLocation (juce::File::userDesktopDirectory)).getFullPathName() + juce::File::getSeparatorChar() + ProjectInfo::projectName;
+const auto     PresetsDirectory         = PluginDataDirectory + juce::File::getSeparatorChar() + "Presets";
+const auto     CollectionDirectory      = PluginDataDirectory + juce::File::getSeparatorChar() + "Collections";
 } // namespace Constants
 
 namespace morphex
 {
-PresetManager::PresetManager (AudioProcessor& processor, Core::MorphexSynth& synth) :
+PresetManager::PresetManager (juce::AudioProcessor& processor, Synth& synth) :
     m_processor (processor),
     m_synth (synth),
     m_currentPresetName ("Untitled"),
     m_currentPresetIsSaved (false)
 {
-    if (!File (Constants::PresetsDirectory).exists())
+    if (!juce::File (Constants::PresetsDirectory).exists())
     {
-        File (Constants::PresetsDirectory).createDirectory();
+        juce::File (Constants::PresetsDirectory).createDirectory();
     }
 
     storeLocalPreset();
 }
 
-void PresetManager::getXmlForPreset (XmlElement* xmlElement)
+void PresetManager::getXmlForPreset (juce::XmlElement* xmlElement)
 {
     // Get preset name
     xmlElement->setAttribute (Constants::PresetNameParameterId, m_currentPresetName);
@@ -59,13 +59,13 @@ void PresetManager::getXmlForPreset (XmlElement* xmlElement)
 
     for (int i = 0; i < parameters.size(); i++)
     {
-        AudioProcessorParameterWithID* parameter = (AudioProcessorParameterWithID*) parameters.getUnchecked (i);
+        juce::AudioProcessorParameterWithID* parameter = (juce::AudioProcessorParameterWithID*) parameters.getUnchecked (i);
 
         xmlElement->setAttribute (parameter->paramID, parameter->getValue());
     }
 }
 
-bool PresetManager::loadPresetFromXml (XmlElement* xmlElement)
+bool PresetManager::loadPresetFromXml (juce::XmlElement* xmlElement)
 {
     m_currentPresetXml    = xmlElement;
     bool presentWasLoaded = false;
@@ -78,13 +78,13 @@ bool PresetManager::loadPresetFromXml (XmlElement* xmlElement)
 
         for (int i = 0; i < m_currentPresetXml->getNumAttributes(); i++)
         {
-            const String paramId = m_currentPresetXml->getAttributeName (i);
+            const juce::String paramId = m_currentPresetXml->getAttributeName (i);
             const float  value   = m_currentPresetXml->getDoubleAttribute (paramId);
 
             for (int j = 0; j < parameters.size(); j++)
             {
-                AudioProcessorParameterWithID* parameter =
-                    (AudioProcessorParameterWithID*) parameters.getUnchecked (j);
+                juce::AudioProcessorParameterWithID* parameter =
+                    (juce::AudioProcessorParameterWithID*) parameters.getUnchecked (j);
 
                 if (paramId == parameter->paramID)
                 {
@@ -107,7 +107,7 @@ int PresetManager::getNumberOfPresets()
     return m_localPresets.size();
 }
 
-String PresetManager::getPresetName (int inPresetIndex)
+juce::String PresetManager::getPresetName (int inPresetIndex)
 {
     return m_localPresets[inPresetIndex].getFileNameWithoutExtension();
 }
@@ -118,7 +118,7 @@ void PresetManager::createNewPreset()
 
     for (int i = 0; i < parameters.size(); i++)
     {
-        AudioProcessorParameterWithID* parameter = (AudioProcessorParameterWithID*) parameters.getUnchecked (i);
+        juce::AudioProcessorParameterWithID* parameter = (juce::AudioProcessorParameterWithID*) parameters.getUnchecked (i);
 
         const float defaultValue = parameter->getDefaultValue();
 
@@ -133,7 +133,7 @@ void PresetManager::createNewPreset()
 
 void PresetManager::savePreset()
 {
-    MemoryBlock destinationData;
+    juce::MemoryBlock destinationData;
     m_processor.getStateInformation (destinationData);
 
     m_currentLoadedPreset.deleteFile();
@@ -144,10 +144,10 @@ void PresetManager::savePreset()
     m_currentPresetIsSaved = true;
 }
 
-void PresetManager::saveAsPreset (String inPresetName)
+void PresetManager::saveAsPreset (juce::String inPresetName)
 {
-    auto presetFilePath = Constants::PresetsDirectory + File::getSeparatorChar() + inPresetName + Constants::PresetFileExtension;
-    File presetFile     = File (presetFilePath);
+    auto presetFilePath = Constants::PresetsDirectory + juce::File::getSeparatorChar() + inPresetName + Constants::PresetFileExtension;
+    juce::File presetFile = juce::File (presetFilePath);
 
     if (!presetFile.exists())
     {
@@ -158,7 +158,7 @@ void PresetManager::saveAsPreset (String inPresetName)
         presetFile.deleteFile();
     }
 
-    MemoryBlock destinationData;
+    juce::MemoryBlock destinationData;
     m_processor.getStateInformation (destinationData);
 
     presetFile.appendData (destinationData.getData(),
@@ -176,11 +176,11 @@ bool PresetManager::loadPreset (int inPresetIndex = 0)
 
     m_currentLoadedPreset = m_localPresets[inPresetIndex];
 
-    MemoryBlock presetBinary;
+    juce::MemoryBlock presetBinary;
 
     if (m_currentLoadedPreset.loadFileAsData (presetBinary))
     {
-        std::unique_ptr<XmlElement> xmlState = juce::AudioPluginInstance::getXmlFromBinary (presetBinary.getData(), (int) presetBinary.getSize());
+        std::unique_ptr<juce::XmlElement> xmlState = juce::AudioPluginInstance::getXmlFromBinary (presetBinary.getData(), (int) presetBinary.getSize());
 
         if (xmlState != nullptr)
         {
@@ -210,7 +210,7 @@ bool PresetManager::getIsCurrentPresetSaved() const
     return m_currentPresetIsSaved;
 }
 
-String PresetManager::getCurrentPresetName() const
+juce::String PresetManager::getCurrentPresetName() const
 {
     return m_currentPresetName;
 }
@@ -218,15 +218,15 @@ String PresetManager::getCurrentPresetName() const
 // TODO - Save only the full path of loaded sounds on instrument->notes-velocity->sounds, not on instrument->morphSounds
 // afterwards, save which note and velocity are referenced to each morphSounds, follow the same structure in the xml,
 // maybe swith to a ValueTree to make it more straightforward
-void PresetManager::getSoundInformation (XmlElement* xmlElement) const
+void PresetManager::getSoundInformation (juce::XmlElement* xmlElement) const
 {
     MorphSounds morphSounds = m_synth.m_instrument.getMorphSounds();
 
     for (int i = 0; i < morphSounds.size(); i++)
     {
         std::string soundFilePath = morphSounds[i]->path;
-        removeSubStr (soundFilePath, (Constants::CollectionDirectory + File::getSeparatorChar()).toStdString());
-        String soundFilePathId = Constants::SoundFilePathParameterId + String (i + 1);
+        removeSubStr (soundFilePath, (Constants::CollectionDirectory + juce::File::getSeparatorChar()).toStdString());
+        juce::String soundFilePathId = Constants::SoundFilePathParameterId + juce::String (i + 1);
         xmlElement->setAttribute (soundFilePathId, soundFilePath);
     }
 }
@@ -234,7 +234,7 @@ void PresetManager::getSoundInformation (XmlElement* xmlElement) const
 // TODO - Save only the full path of loaded sounds on instrument->notes-velocity->sounds, not on instrument->morphSounds
 // afterwards, save which note and velocity are referenced to each morphSounds, follow the same structure in the xml,
 // maybe swith to a ValueTree to make it more straightforward
-bool PresetManager::setSoundInformation (XmlElement* presetBody)
+bool PresetManager::setSoundInformation (juce::XmlElement* presetBody)
 {
     bool soundsWereLoaded = true;
 
@@ -243,13 +243,13 @@ bool PresetManager::setSoundInformation (XmlElement* presetBody)
     std::vector<std::string> soundFilePathsToLoad;
 
     // Error vars
-    String errorMessage = "The preset couldn't be loaded, the following sounds are not in your library:\n";
+    juce::String errorMessage = "The preset couldn't be loaded, the following sounds are not in your library:\n";
 
     // Checking of the sounds exist
     for (int i = 0; i < morphSounds.size(); i++)
     {
         // Generate sound ID
-        String soundFilePathId = Constants::SoundFilePathParameterId + String (i + 1);
+        juce::String soundFilePathId = Constants::SoundFilePathParameterId + juce::String (i + 1);
 
         // Retrieve the sound file path
         std::string soundFilePath = presetBody->getStringAttribute (soundFilePathId).toStdString();
@@ -258,15 +258,15 @@ bool PresetManager::setSoundInformation (XmlElement* presetBody)
         if (!soundFilePath.empty())
         {
             // Prepend the user's plugin data directory
-            soundFilePath = (Constants::CollectionDirectory + File::getSeparatorChar()).toStdString() + soundFilePath;
+            soundFilePath = (Constants::CollectionDirectory + juce::File::getSeparatorChar()).toStdString() + soundFilePath;
 
             // Check if sound file path is valid
-            File soundFilePath_check (soundFilePath);
+            juce::File soundFilePath_check (soundFilePath);
 
             if (!soundFilePath_check.existsAsFile())
             {
                 soundsWereLoaded = false;
-                errorMessage += String ("\n" + soundFilePath);
+                errorMessage += juce::String ("\n" + soundFilePath);
             }
             else
             {
@@ -300,13 +300,13 @@ void PresetManager::storeLocalPreset()
 {
     m_localPresets.clear();
 
-    for (DirectoryIterator di (File (Constants::PresetsDirectory),
+    for (juce::DirectoryIterator di (juce::File (Constants::PresetsDirectory),
                                false,
                                "*" + static_cast<std::string> (Constants::PresetFileExtension),
-                               File::TypesOfFileToFind::findFiles);
+                                     juce::File::TypesOfFileToFind::findFiles);
          di.next();)
     {
-        File preset = di.getFile();
+        juce::File preset = di.getFile();
         m_localPresets.add (preset);
     }
 }

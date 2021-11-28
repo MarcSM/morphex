@@ -25,8 +25,8 @@ namespace Morphex
 template <typename T>
 struct Parameter
 {
-    String ID;
-    String label;
+    juce::String ID;
+    juce::String label;
     T      min_value;
     T      max_value;
     T      default_value;
@@ -73,7 +73,7 @@ static IndexedParameters<T> PARAMETERS = {
 };
 
 template <typename T>
-inline Parameter<T> getParameterByID (String parameter_ID)
+inline Parameter<T> getParameterByID (juce::String parameter_ID)
 {
     Parameter<T> found_parameter;
 

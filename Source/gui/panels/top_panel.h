@@ -24,7 +24,7 @@
 
 #include "preset_manager_panel.h"
 
-class TopPanel : public Component
+class TopPanel : public juce::Component
 {
 public:
     TopPanel (MorphexAudioProcessor& processor) :
@@ -38,18 +38,18 @@ public:
 
     ~TopPanel() {}
 
-    void paint (Graphics& g) override {}
+    void paint (juce::Graphics& g) override {}
 
     void resized() override
     {
-        FlexBox fb;
+        juce::FlexBox fb;
 
         float centerPanelWidth = getWidth() * 0.75f * 0.45f;
         float soundPanelWidth  = (getWidth() - centerPanelWidth) / 2.0f;
 
-        FlexItem left (soundPanelWidth, getHeight(), m_leftPanel);
-        FlexItem center (centerPanelWidth, getHeight(), m_centerPanel);
-        FlexItem right (soundPanelWidth, getHeight(), m_rightPanel);
+        juce::FlexItem left (soundPanelWidth, getHeight(), m_leftPanel);
+        juce::FlexItem center (centerPanelWidth, getHeight(), m_centerPanel);
+        juce::FlexItem right (soundPanelWidth, getHeight(), m_rightPanel);
 
         fb.items.addArray ({ left, center, right });
         fb.performLayout (getLocalBounds().toFloat());
@@ -61,18 +61,18 @@ private:
         LeftSidePanel()
         {
             // Morphex Logo
-            m_morphexLongLogo = Drawable::createFromImageData (BinaryData::morphex_long_logo_svg, BinaryData::morphex_long_logo_svgSize);
-            m_morphexLongLogo->replaceColour (Colours::white, GUI::Color::Logo);
+            m_morphexLongLogo = juce::Drawable::createFromImageData (BinaryData::morphex_long_logo_svg, BinaryData::morphex_long_logo_svgSize);
+            m_morphexLongLogo->replaceColour (juce::Colours::white, GUI::Color::Logo);
         }
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
-            m_morphexLongLogo->drawWithin (g, m_morphexLongLogoBounds, RectanglePlacement::xLeft, 1.0f);
+            m_morphexLongLogo->drawWithin (g, m_morphexLongLogoBounds, juce::RectanglePlacement::xLeft, 1.0f);
 
             // Plugin Version
-            g.setColour (Colours::white);
+            g.setColour (juce::Colours::white);
             g.setFont (14.0f);
-            g.drawText ("v" + static_cast<std::string>(ProjectInfo::versionString), -m_morphexLongLogoMargin, m_morphexLongLogoMargin, getWidth(), getHeight(), Justification::right);
+            g.drawText ("v" + static_cast<std::string>(ProjectInfo::versionString), -m_morphexLongLogoMargin, m_morphexLongLogoMargin, getWidth(), getHeight(), juce::Justification::right);
 
             // Draw borders
             GUI::Paint::drawBorders (g, getLocalBounds());
@@ -85,12 +85,12 @@ private:
             m_morphexLongLogoBounds.setBounds (m_morphexLongLogoMargin, m_morphexLongLogoMargin, getWidth() - 2 * m_morphexLongLogoMargin, getHeight() - 2 * m_morphexLongLogoMargin);
         }
 
-        std::unique_ptr<Drawable> m_morphexLongLogo;
-        Rectangle<float>          m_morphexLongLogoBounds;
+        std::unique_ptr<juce::Drawable> m_morphexLongLogo;
+        juce::Rectangle<float>          m_morphexLongLogoBounds;
         float                     m_morphexLongLogoMargin;
     };
 
-    struct CenterPanel : public Component
+    struct CenterPanel : public juce::Component
     {
         CenterPanel (MorphexAudioProcessor& processor) :
             preset_manager_panel (processor)
@@ -98,7 +98,7 @@ private:
             addAndMakeVisible (preset_manager_panel);
         }
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             g.fillAll (GUI::Color::BrowserBackground);
         }
@@ -112,7 +112,7 @@ private:
         PresetManagerPanel preset_manager_panel;
     };
 
-    struct RightSidePanel : public Component
+    struct RightSidePanel : public juce::Component
     {
         RightSidePanel (MorphexAudioProcessor& processor)
         {
@@ -123,7 +123,7 @@ private:
             m_sliders.add (m_outputGainSlider);
         }
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
             // Draw borders
             GUI::Paint::drawBorders (g, getLocalBounds());
@@ -131,14 +131,14 @@ private:
 
         void resized() override
         {
-            FlexBox fb;
-            fb.flexDirection  = FlexBox::Direction::column;
-            fb.flexWrap       = FlexBox::Wrap::wrap;
-            fb.alignContent   = FlexBox::AlignContent::flexEnd;
-            fb.alignItems     = FlexBox::AlignItems::flexEnd;
-            fb.justifyContent = FlexBox::JustifyContent::flexEnd;
+            juce::FlexBox fb;
+            fb.flexDirection  = juce::FlexBox::Direction::column;
+            fb.flexWrap       = juce::FlexBox::Wrap::wrap;
+            fb.alignContent   = juce::FlexBox::AlignContent::flexEnd;
+            fb.alignItems     = juce::FlexBox::AlignItems::flexEnd;
+            fb.justifyContent = juce::FlexBox::JustifyContent::flexEnd;
 
-            FlexItem gain_knob (getHeight(), getHeight(), *m_sliders[0]);
+            juce::FlexItem gain_knob (getHeight(), getHeight(), *m_sliders[0]);
 
             fb.items.addArray ({ gain_knob });
             fb.performLayout (getLocalBounds().toFloat());
@@ -146,7 +146,7 @@ private:
 
         morphex::Slider* m_outputGainSlider;
 
-        OwnedArray<morphex::Slider> m_sliders;
+        juce::OwnedArray<morphex::Slider> m_sliders;
     };
 
     LeftSidePanel  m_leftPanel;

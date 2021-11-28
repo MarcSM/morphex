@@ -27,19 +27,19 @@ namespace Constants
 constexpr auto GuiRefreshTimer = 100; // 0.1 seconds
 } // namespace Constants
 
-class PadXY : public Component, public Timer
+class PadXY : public juce::Component, public juce::Timer
 {
 public:
     PadXY (MorphexAudioProcessor& inProcessor,
-           AudioProcessorValueTreeState&       stateToControl,
+           juce::AudioProcessorValueTreeState&       stateToControl,
            Morphex::Parameter<float>           freqs_interp_factor_parameter,
            Morphex::Parameter<float>           mags_interp_factor_parameter) :
         m_processor (inProcessor)
     {
-        const String& x_parameterID    = freqs_interp_factor_parameter.ID;
-        const String& x_parameterLabel = freqs_interp_factor_parameter.label;
-        const String& y_parameterID    = mags_interp_factor_parameter.ID;
-        const String& y_parameterLabel = mags_interp_factor_parameter.label;
+        const juce::String& x_parameterID    = freqs_interp_factor_parameter.ID;
+        const juce::String& x_parameterLabel = freqs_interp_factor_parameter.label;
+        const juce::String& y_parameterID    = mags_interp_factor_parameter.ID;
+        const juce::String& y_parameterLabel = mags_interp_factor_parameter.label;
 
         // Default dimensions
         setSize (getWidth(), getHeight());
@@ -54,17 +54,17 @@ public:
         m_invertY = false;
 
         // Add the circle
-        m_circle.setColour (GUI::Color::Accent.overlaidWith (Colour (255, 255, 255).withAlpha (0.15f)));
+        m_circle.setColour (GUI::Color::Accent.overlaidWith (juce::Colour (255, 255, 255).withAlpha (0.15f)));
         m_circle.setInterceptsMouseClicks (false, false);
         addAndMakeVisible (m_circle);
 
         // Initialize the sliders
-        m_xAxisSlider = new Slider (x_parameterLabel);
-        m_yAxisSlider = new Slider (y_parameterLabel);
+        m_xAxisSlider = new juce::Slider (x_parameterLabel);
+        m_yAxisSlider = new juce::Slider (y_parameterLabel);
 
         // Attach the sliders to the AudioProcessorValueTreeState
-        m_xAxisSliderAttachment = new AudioProcessorValueTreeState::SliderAttachment (stateToControl, x_parameterID, *m_xAxisSlider);
-        m_yAxisSliderAttachment = new AudioProcessorValueTreeState::SliderAttachment (stateToControl, y_parameterID, *m_yAxisSlider);
+        m_xAxisSliderAttachment = new juce::AudioProcessorValueTreeState::SliderAttachment (stateToControl, x_parameterID, *m_xAxisSlider);
+        m_yAxisSliderAttachment = new juce::AudioProcessorValueTreeState::SliderAttachment (stateToControl, y_parameterID, *m_yAxisSlider);
 
         // Define the range for the sliders
         m_xAxisSlider->setRange (m_xMin, m_xMax);
@@ -78,7 +78,7 @@ public:
 
     ~PadXY() {}
 
-    void paint (Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
         int borderWidth = 0;
         int cornerSize  = 4;
@@ -86,7 +86,7 @@ public:
         // Background
         m_rectangle.setPosition (borderWidth / 2, borderWidth / 2);
         m_rectangle.setSize (getWidth() - borderWidth, getHeight() - borderWidth);
-        g.setColour (Colours::transparentBlack);
+        g.setColour (juce::Colours::transparentBlack);
         g.fillRoundedRectangle (m_rectangle, cornerSize);
 
         // Draw borders
@@ -110,30 +110,30 @@ public:
 
     void setValues (float x, float y, bool notify = true)
     {
-        m_xAxisSlider->setValue (x, sendNotification);
-        m_yAxisSlider->setValue (y, sendNotification);
+        m_xAxisSlider->setValue (x, juce::sendNotification);
+        m_yAxisSlider->setValue (y, juce::sendNotification);
     }
 
     class PadCircle : public Component
     {
         juce::Point<float> circleXY;
-        Colour             colour;
+        juce::Colour             colour;
 
     public:
         PadCircle() {}
 
-        void setColour (Colour col)
+        void setColour (juce::Colour col)
         {
             colour = col;
             repaint();
         }
 
-        void paint (Graphics& g) override
+        void paint (juce::Graphics& g) override
         {
-            g.fillAll (Colours::transparentBlack);
+            g.fillAll (juce::Colours::transparentBlack);
             g.setColour (colour);
 
-            Rectangle<int> cirlce_bounds = getLocalBounds();
+            juce::Rectangle<int> cirlce_bounds = getLocalBounds();
 
             float line_thickness = cirlce_bounds.getWidth() * 0.2f;
             float circle_x       = cirlce_bounds.getX() + (line_thickness / 2.0f);
@@ -153,8 +153,8 @@ public:
 private:
     juce::Point<int> constrainPosition (float x, float y)
     {
-        const float xPos = jlimit (m_rectangle.getX(), (m_rectangle.getWidth() + m_rectangle.getX()) - m_circle.getWidth(), x - m_circle.getWidth() / 2.f);
-        const float yPos = jlimit (m_rectangle.getY(), (m_rectangle.getHeight() + m_rectangle.getY()) - m_circle.getHeight(), y - m_circle.getHeight() / 2.f);
+        const float xPos = juce::jlimit (m_rectangle.getX(), (m_rectangle.getWidth() + m_rectangle.getX()) - m_circle.getWidth(), x - m_circle.getWidth() / 2.f);
+        const float yPos = juce::jlimit (m_rectangle.getY(), (m_rectangle.getHeight() + m_rectangle.getY()) - m_circle.getHeight(), y - m_circle.getHeight() / 2.f);
         return juce::Point<int> (xPos, yPos);
     }
 
@@ -163,15 +163,15 @@ private:
         if (m_invertY)
             y = m_yMax - y;
 
-        const float xPos = jmap (x, m_rectangle.getX(), (m_rectangle.getWidth() + m_rectangle.getX()) - m_circle.getWidth());
-        const float yPos = jmap (y, m_rectangle.getY(), (m_rectangle.getHeight() + m_rectangle.getY()) - m_circle.getHeight());
+        const float xPos = juce::jmap (x, m_rectangle.getX(), (m_rectangle.getWidth() + m_rectangle.getX()) - m_circle.getWidth());
+        const float yPos = juce::jmap (y, m_rectangle.getY(), (m_rectangle.getHeight() + m_rectangle.getY()) - m_circle.getHeight());
         return juce::Point<int> (xPos, yPos);
     }
 
     void setPositionAsValue (juce::Point<float> position)
     {
-        const float xVal = jlimit (m_xMin, m_xMax, jmap (position.getX(), m_rectangle.getX(), m_rectangle.getWidth() - m_circle.getWidth(), m_xMin, m_xMax));
-        float       yVal = jlimit (m_yMin, m_yMax, jmap (position.getY(), m_rectangle.getY(), m_rectangle.getHeight() - m_circle.getHeight(), m_yMin, m_yMax));
+        const float xVal = juce::jlimit (m_xMin, m_xMax, juce::jmap (position.getX(), m_rectangle.getX(), m_rectangle.getWidth() - m_circle.getWidth(), m_xMin, m_xMax));
+        float       yVal = juce::jlimit (m_yMin, m_yMax, juce::jmap (position.getY(), m_rectangle.getY(), m_rectangle.getHeight() - m_circle.getHeight(), m_yMin, m_yMax));
 
         if (m_invertY)
             yVal = m_yMax - yVal;
@@ -179,7 +179,7 @@ private:
         setValues (xVal, yVal);
     }
 
-    void mouseDown (const MouseEvent& e) override
+    void mouseDown (const juce::MouseEvent& e) override
     {
         m_circle.setTopLeftPosition (constrainPosition (e.getPosition().getX(), e.getPosition().getY()));
         m_mouseDownXY.setXY (m_circle.getPosition().getX() + m_circle.getWidth() * .5f, m_circle.getPosition().getY() + m_circle.getHeight() * .5f);
@@ -187,7 +187,7 @@ private:
         repaint();
     }
 
-    void mouseDrag (const MouseEvent& e) override
+    void mouseDrag (const juce::MouseEvent& e) override
     {
         if (e.mouseWasDraggedSinceMouseDown())
         {
@@ -224,7 +224,7 @@ private:
 
     PadCircle m_circle;
 
-    Rectangle<float> m_rectangle;
+    juce::Rectangle<float> m_rectangle;
 
     float m_xMin, m_xMax, m_yMin, m_yMax, m_xVal, m_yVal;
     bool  m_invertY;
@@ -233,13 +233,13 @@ private:
     juce::Point<float> m_currentMouseXY;
     juce::Point<float> m_mouseDownXY;
 
-    ScopedPointer<Slider> m_xAxisSlider;
-    ScopedPointer<Slider> m_yAxisSlider;
+    juce::ScopedPointer<juce::Slider> m_xAxisSlider;
+    juce::ScopedPointer<juce::Slider> m_yAxisSlider;
 
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> m_xAxisSliderAttachment;
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> m_yAxisSliderAttachment;
+    juce::ScopedPointer<juce::AudioProcessorValueTreeState::SliderAttachment> m_xAxisSliderAttachment;
+    juce::ScopedPointer<juce::AudioProcessorValueTreeState::SliderAttachment> m_yAxisSliderAttachment;
 
-    String m_currentPresetName;
+    juce::String m_currentPresetName;
 
     MorphexAudioProcessor& m_processor;
 

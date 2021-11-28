@@ -19,7 +19,7 @@
 #include "sound.h"
 #include "tools.h"
 
-#include "../helpers/audio_helpers.h"
+#include "../helpers/utils.h"
 #include "../helpers/helper_functions.h"
 
 // TODO - Adapt / remake the "Sound" class to use "ValueTree"
@@ -30,7 +30,7 @@ namespace Constants
 constexpr auto CurrentFileVersion = 1;
 } // namespace Constants
 
-namespace Core
+namespace morphex
 {
 Sound::Sound()
 {
@@ -43,7 +43,7 @@ Sound::Sound (std::string file_path)
     init();
 
     // Load data from file_path
-    String file_data = loadDataFromFile (file_path);
+    juce::String file_data = loadDataFromFile (file_path);
 
     // Load the sound
     load (file_data, HadFileSource::Binary);
@@ -57,14 +57,14 @@ Sound::Sound (std::string file_path, int note, int velocity)
     velocity = velocity;
 
     // Load data from file_path
-    String file_data = loadDataFromFile (file_path);
+    juce::String file_data = loadDataFromFile (file_path);
 
     // Load the sound
     load (file_data, HadFileSource::Binary);
 };
 
 // Read the file from a binary file with an hypothetical file_path
-Sound::Sound (String file_data, std::string file_path)
+Sound::Sound (juce::String file_data, std::string file_path)
 {
     init();
 
@@ -110,24 +110,24 @@ void Sound::reset()
 }
 
 // Load data of ".had" file
-String Sound::loadDataFromFile (std::string file_path)
+juce::String Sound::loadDataFromFile (std::string file_path)
 {
-    File file = File (file_path);
+    juce::File file = juce::File (file_path);
     name      = file.getFileNameWithoutExtension().toStdString();
     extension = file.getFileExtension().toStdString();
     path      = file_path;
     dirpath   = file.getParentDirectory().getFullPathName().toStdString();
-    
+
     std::stringstream had_file_path_aux;
-    had_file_path_aux << dirpath << static_cast<std::string>(File::getSeparatorString()) << name << ".had";
+    had_file_path_aux << dirpath << static_cast<std::string> (juce::File::getSeparatorString()) << name << ".had";
 
     std::string had_file_path = had_file_path_aux.str();
-    File        had_file      = File (had_file_path);
+    juce::File        had_file      = juce::File (had_file_path);
 
     return had_file.loadFileAsString();
 }
 
-void Sound::load (String file_data, HadFileSource file_source)
+void Sound::load (juce::String file_data, HadFileSource file_source)
 {
     // Initialize default values
     loaded = false;
@@ -135,17 +135,17 @@ void Sound::load (String file_data, HadFileSource file_source)
     // If file_data is a file_path
     if (file_source == HadFileSource::Path)
     {
-        String file_path = file_data;
+        juce::String file_path = file_data;
         file_data        = loadDataFromFile (file_data.toStdString());
     }
 
-    std::unique_ptr<XmlElement> xml (XmlDocument::parse (file_data));
+    std::unique_ptr<juce::XmlElement> xml (juce::XmlDocument::parse (file_data));
 
     if (xml)
     {
         try
         {
-            XmlElement* xml_file = xml->getChildByName ("file"); // had["file"]
+            juce::XmlElement* xml_file = xml->getChildByName ("file"); // had["file"]
 
             if (xml_file == nullptr)
                 throw "Sound file not compatible";
@@ -157,7 +157,7 @@ void Sound::load (String file_data, HadFileSource file_source)
                 decimal_places = xml_file->getChildByName ("dp")->getAllSubText().getIntValue();
 
                 // Sound
-                XmlElement* xml_sound = xml->getChildByName ("sound"); // had["sound"]
+                juce::XmlElement* xml_sound = xml->getChildByName ("sound"); // had["sound"]
                 fs                    = xml_sound->getChildByName ("fs")->getAllSubText().getIntValue();
                 note                  = xml_sound->getChildByName ("note")->getAllSubText().getIntValue();
                 velocity              = xml_sound->getChildByName ("velocity")->getAllSubText().getIntValue();
@@ -167,7 +167,7 @@ void Sound::load (String file_data, HadFileSource file_source)
                 loop.end              = xml_sound->getChildByName ("loop")->getChildByName ("end")->getAllSubText().getIntValue();
 
                 // Model
-                XmlElement* xml_synthesis = xml->getChildByName ("synthesis"); // had["synthesis"]
+                juce::XmlElement* xml_synthesis = xml->getChildByName ("synthesis"); // had["synthesis"]
                 model->harmonic           = hasChild (xml_synthesis, "h");
                 model->sinusoidal         = hasChild (xml_synthesis, "s");
                 model->stochastic         = hasChild (xml_synthesis, "c");
@@ -175,7 +175,7 @@ void Sound::load (String file_data, HadFileSource file_source)
                 model->residual           = hasChild (xml_synthesis, "r");
                 if (model->harmonic)
                 {
-                    XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName ("h"); // had["synthesis"]["h"]
+                    juce::XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName ("h"); // had["synthesis"]["h"]
                     model->setHarmonic (getMatrixOfInts (xml_synthesis_harmonic, "f"),
                                         getMatrixOfInts (xml_synthesis_harmonic, "m"),
                                         getMatrixOfInts (xml_synthesis_harmonic, "p"),
@@ -183,7 +183,7 @@ void Sound::load (String file_data, HadFileSource file_source)
                 }
                 if (model->sinusoidal)
                 {
-                    XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName ("s"); // had["synthesis"]["s"]
+                    juce::XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName ("s"); // had["synthesis"]["s"]
                     model->setSinusoidal (getMatrixOfInts (xml_synthesis_sinusoidal, "f"),
                                           getMatrixOfInts (xml_synthesis_sinusoidal, "m"),
                                           getMatrixOfInts (xml_synthesis_sinusoidal, "p"),
@@ -205,7 +205,7 @@ void Sound::load (String file_data, HadFileSource file_source)
                 //                    if (dirpath.empty()) dirpath = "";
 
                 // Analysis parameters
-                XmlElement* xml_parameters              = xml->getChildByName ("parameters"); // had["parameters"]
+                juce::XmlElement* xml_parameters              = xml->getChildByName ("parameters"); // had["parameters"]
                 analysis.parameters.window_type         = (WindowType) xml_parameters->getChildByName ("window_type")->getAllSubText().getIntValue();
                 analysis.parameters.window_size         = xml_parameters->getChildByName ("window_size")->getAllSubText().getIntValue();
                 analysis.parameters.fft_size            = xml_parameters->getChildByName ("fft_size")->getAllSubText().getIntValue();
@@ -719,4 +719,4 @@ void Sound::normalizeWaveform (std::vector<float>& waveform, float max_val, floa
     jassert (results_great.size() == 0); // Upper clipping
     jassert (results_less.size() == 0);  // Lower clipping
 }
-} // namespace Core
+} // namespace moprhex

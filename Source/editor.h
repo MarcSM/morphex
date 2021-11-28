@@ -26,14 +26,14 @@
 //==============================================================================
 /**
 */
-class MorphexAudioProcessorEditor : public AudioProcessorEditor
+class MorphexAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
     MorphexAudioProcessorEditor (MorphexAudioProcessor&);
     ~MorphexAudioProcessorEditor();
 
     //==============================================================================
-    void paint (Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
@@ -43,10 +43,10 @@ private:
 
     MorphexPanel m_morphexPanel;
 
-    ScopedPointer<ResizableCornerComponent>   m_resizeCorner;
-    ScopedPointer<ComponentBoundsConstrainer> m_resizeConstrainer;
+    juce::ScopedPointer<juce::ResizableCornerComponent>   m_resizeCorner;
+    juce::ScopedPointer<juce::ComponentBoundsConstrainer> m_resizeConstrainer;
 
-    Image m_backgroundImage;
+    juce::Image m_backgroundImage;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphexAudioProcessorEditor)
 };

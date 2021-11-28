@@ -22,7 +22,7 @@
 
 #include "../components/pad_xy.h"
 
-class CorePanel : public Component
+class CorePanel : public juce::Component
 {
 public:
     CorePanel (MorphexAudioProcessor& processor) :
@@ -36,11 +36,11 @@ public:
         m_residualButton.setClickingTogglesState (true);
 
         // Core parameters default values
-        m_harmonicButton.setToggleState (m_instrument.generate.harmonic, NotificationType::dontSendNotification);
-        m_sinusoidalButton.setToggleState (m_instrument.generate.sinusoidal, NotificationType::dontSendNotification);
-        m_stochasticButton.setToggleState (m_instrument.generate.stochastic, NotificationType::dontSendNotification);
-        m_attackButton.setToggleState (m_instrument.generate.attack, NotificationType::dontSendNotification);
-        m_residualButton.setToggleState (m_instrument.generate.residual, NotificationType::dontSendNotification);
+        m_harmonicButton.setToggleState (m_instrument.generate.harmonic, juce::NotificationType::dontSendNotification);
+        m_sinusoidalButton.setToggleState (m_instrument.generate.sinusoidal, juce::NotificationType::dontSendNotification);
+        m_stochasticButton.setToggleState (m_instrument.generate.stochastic, juce::NotificationType::dontSendNotification);
+        m_attackButton.setToggleState (m_instrument.generate.attack, juce::NotificationType::dontSendNotification);
+        m_residualButton.setToggleState (m_instrument.generate.residual, juce::NotificationType::dontSendNotification);
 
         addAndMakeVisible (m_harmonicButton);
         addAndMakeVisible (m_sinusoidalButton);
@@ -61,13 +61,13 @@ public:
     {
     }
 
-    void paint (Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
-        g.fillAll (Colours::black);
+        g.fillAll (juce::Colours::black);
         //        g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
         //        getWidth() * 0.75f , getHeight() * 0.75f, true);
         // Background gradient
-        ColourGradient cg (GUI::Color::Accent.withAlpha (0.5f),
+        juce::ColourGradient cg (GUI::Color::Accent.withAlpha (0.5f),
                            getWidth() * 0.5f,
                            getHeight() * 0.5f,
                            GUI::Color::Accent.withAlpha (0.0f),
@@ -94,7 +94,7 @@ public:
         float             glow_w      = glow_radius * 2.0f;
         float             glow_h      = glow_radius * 2.0f;
 
-        ColourGradient cg_glow (GUI::Color::Accent.withAlpha (0.3f),
+        juce::ColourGradient cg_glow (GUI::Color::Accent.withAlpha (0.3f),
                                 glow_x,
                                 glow_y,
                                 GUI::Color::Accent.withAlpha (0.0f),
@@ -134,13 +134,13 @@ public:
         m_residualButton.setBounds (4 * button_width, core_controls_y, button_width, button_height);
     }
 
-    void updateToggleState (Button* button, String name)
+    void updateToggleState (juce::Button* button, juce::String name)
     {
         auto   state          = button->getToggleState();
-        String stateString    = state ? "ON" : "OFF";
-        String selectedString = state ? " (selected)" : "";
+        juce::String stateString    = state ? "ON" : "OFF";
+        juce::String selectedString = state ? " (selected)" : "";
 
-        Logger::outputDebugString (name + " Button changed to " + stateString);
+        juce::Logger::outputDebugString (name + " Button changed to " + stateString);
         button->setButtonText (name + selectedString);
     }
 
@@ -150,19 +150,19 @@ public:
         parameter = new_value;
     }
 
-    void updateToggleCoreParameter (Button* button, bool& core_parameter)
+    void updateToggleCoreParameter (juce::Button* button, bool& core_parameter)
     {
         core_parameter = button->getToggleState();
     }
 
 private:
-    Core::Instrument& m_instrument;
+    morphex::Instrument& m_instrument;
 
-    TextButton m_harmonicButton { "Harmonics" };
-    TextButton m_sinusoidalButton { "Sinusoidal" };
-    TextButton m_stochasticButton { "Stochastic" };
-    TextButton m_attackButton { "Attack" };
-    TextButton m_residualButton { "Residual" };
+    juce::TextButton m_harmonicButton { "Harmonics" };
+    juce::TextButton m_sinusoidalButton { "Sinusoidal" };
+    juce::TextButton m_stochasticButton { "Stochastic" };
+    juce::TextButton m_attackButton { "Attack" };
+    juce::TextButton m_residualButton { "Residual" };
 
     PadXY* m_padXy;
 

@@ -43,7 +43,7 @@
         mapped_type& _second() { return (*this)->second; }; \
     }
 
-namespace Core
+namespace morphex
 {
 class Sound
 {
@@ -209,14 +209,14 @@ public:
     Sound();
     Sound (std::string file_path);
     Sound (std::string file_path, int note, int velocity = 1);
-    Sound (String file_data, std::string filepath);
+    Sound (juce::String file_data, std::string filepath);
     ~Sound();
 
     void init (bool init_model = true);
     void reset();
 
-    String loadDataFromFile (std::string file_path);
-    void   load (String file_data, HadFileSource file_source = HadFileSource::Path);
+    juce::String loadDataFromFile (std::string file_path);
+    void         load (juce::String file_data, HadFileSource file_source = HadFileSource::Path);
 
     Sound::Frame       getFrame (int i_num_frame, int i_hop_size);
     std::vector<float> getComponentFrame (Frame::Component component_name, int i_num_frame, int i_hop_size = 0);
@@ -234,4 +234,4 @@ private:
     int file_version;
     int decimal_places;
 };
-}; // namespace Core
+}; // namespace moprhex

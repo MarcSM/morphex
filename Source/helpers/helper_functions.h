@@ -24,7 +24,7 @@
 
 //#include "SMTParameterSlider.h"
 
-inline void paintComponentLabel (Graphics& g, Component* inComponent)
+inline void paintComponentLabel (juce::Graphics& g, juce::Component* inComponent)
 {
     // Initialize variables
     int x = 0;
@@ -60,12 +60,12 @@ inline void paintComponentLabel (Graphics& g, Component* inComponent)
     //        // TODO - Not reached yet
     //    }
 
-    const String label = inComponent->getName();
+    const juce::String label = inComponent->getName();
 
     g.setColour (SMTColour_Text);
     g.setFont (font_2);
 
-    g.drawFittedText (label, x, y, w, h, Justification::centred, 1);
+    g.drawFittedText (label, x, y, w, h, juce::Justification::centred, 1);
 }
 
 // Method to compare which one is the more close.

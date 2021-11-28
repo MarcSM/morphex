@@ -34,7 +34,7 @@ MorphexAudioProcessorEditor::MorphexAudioProcessorEditor (MorphexAudioProcessor&
     setFullScreen (true);
 #else
     //    setUsingNativeTitleBar (true);
-    this->m_resizeCorner = new ResizableCornerComponent (this, getConstrainer());
+    this->m_resizeCorner = new juce::ResizableCornerComponent (this, getConstrainer());
     addAndMakeVisible (this->m_resizeCorner);
     this->m_resizeCorner->setBounds (getWidth() - 20, getHeight() - 20, 20, 20);
 
@@ -52,7 +52,7 @@ MorphexAudioProcessorEditor::MorphexAudioProcessorEditor (MorphexAudioProcessor&
 MorphexAudioProcessorEditor::~MorphexAudioProcessorEditor() {}
 
 //==============================================================================
-void MorphexAudioProcessorEditor::paint (Graphics& g) {}
+void MorphexAudioProcessorEditor::paint (juce::Graphics& g) {}
 
 void MorphexAudioProcessorEditor::resized()
 {

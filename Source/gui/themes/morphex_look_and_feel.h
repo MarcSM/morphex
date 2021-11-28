@@ -22,46 +22,46 @@
 
 #include "../../helpers/interface_defines.h"
 
-class MorphexLookAndFeel : public LookAndFeel_V4
+class MorphexLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
     MorphexLookAndFeel()
     {
         // General
-        setColour (ResizableWindow::backgroundColourId, GUI::Color::Background);
+        setColour (juce::ResizableWindow::backgroundColourId, GUI::Color::Background);
 
         // Tabbed Component
-        setColour (TabbedButtonBar::tabOutlineColourId, GUI::Color::Transparent);
+        setColour (juce::TabbedButtonBar::tabOutlineColourId, GUI::Color::Transparent);
 
         // Midi Keyboard Component
-        setColour (MidiKeyboardComponent::mouseOverKeyOverlayColourId, GUI::Color::KeyDown.withAlpha (0.75f));
-        setColour (MidiKeyboardComponent::keyDownOverlayColourId, GUI::Color::KeyDown);
-        setColour (MidiKeyboardComponent::textLabelColourId, GUI::Color::Transparent);
+        setColour (juce::MidiKeyboardComponent::mouseOverKeyOverlayColourId, GUI::Color::KeyDown.withAlpha (0.75f));
+        setColour (juce::MidiKeyboardComponent::keyDownOverlayColourId, GUI::Color::KeyDown);
+        setColour (juce::MidiKeyboardComponent::textLabelColourId, GUI::Color::Transparent);
 
         // TextButton
-        setColour (TextButton::buttonColourId, GUI::Color::Transparent);
-        setColour (TextButton::textColourOffId, Colours::white);
-        setColour (TextButton::buttonOnColourId, GUI::Color::Accent);
-        setColour (TextButton::textColourOnId, GUI::Color::Accent);
+        setColour (juce::TextButton::buttonColourId, GUI::Color::Transparent);
+        setColour (juce::TextButton::textColourOffId, juce::Colours::white);
+        setColour (juce::TextButton::buttonOnColourId, GUI::Color::Accent);
+        setColour (juce::TextButton::textColourOnId, GUI::Color::Accent);
 
         // ComboBox
-        setColour (ComboBox::backgroundColourId, GUI::Color::Transparent);
-        setColour (ComboBox::textColourId, Colours::white);
-        setColour (ComboBox::outlineColourId, GUI::Color::Transparent);
-        setColour (ComboBox::arrowColourId, Colours::white);
+        setColour (juce::ComboBox::backgroundColourId, GUI::Color::Transparent);
+        setColour (juce::ComboBox::textColourId, juce::Colours::white);
+        setColour (juce::ComboBox::outlineColourId, GUI::Color::Transparent);
+        setColour (juce::ComboBox::arrowColourId, juce::Colours::white);
     }
 
-    Font getTabButtonFont (TabBarButton&, float height) override
+    juce::Font getTabButtonFont (juce::TabBarButton&, float height) override
     {
         return { height * 0.2f };
     }
 
-    void layoutFileBrowserComponent (FileBrowserComponent&              browserComp,
-                                     DirectoryContentsDisplayComponent* fileListComponent,
-                                     FilePreviewComponent*              previewComp,
-                                     ComboBox*                          currentPathBox,
-                                     TextEditor*                        filenameBox,
-                                     Button*                            goUpButton) override
+    void layoutFileBrowserComponent (juce::FileBrowserComponent&              browserComp,
+                                     juce::DirectoryContentsDisplayComponent* fileListComponent,
+                                     juce::FilePreviewComponent*              previewComp,
+                                     juce::ComboBox*                          currentPathBox,
+                                     juce::TextEditor*                        filenameBox,
+                                     juce::Button*                            goUpButton) override
     {
         auto sectionHeight = 22;
         auto buttonWidth   = 50;
@@ -91,11 +91,11 @@ public:
         if (previewComp != nullptr)
             previewComp->setBounds (b.removeFromRight (b.getWidth() / 3));
 
-        if (auto* listAsComp = dynamic_cast<Component*> (fileListComponent))
+        if (auto* listAsComp = dynamic_cast<juce::Component*> (fileListComponent))
             listAsComp->setBounds (b.reduced (0, 10));
     }
 
-    void drawComboBox (Graphics& g, int width, int height, bool isButtonDown, int buttonX, int buttonY, int buttonW, int buttonH, ComboBox& comboBox) override
+    void drawComboBox (juce::Graphics& g, int width, int height, bool isButtonDown, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& comboBox) override
     {
         LookAndFeel_V4::drawComboBox (g, width, height, isButtonDown, buttonX, buttonY, buttonW, buttonH, comboBox);
 
@@ -104,7 +104,7 @@ public:
     }
 
     // TODO - Tab button text
-    void drawTabButtonText (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
+    void drawTabButtonText (juce::TabBarButton& button, juce::Graphics& g, bool isMouseOver, bool isMouseDown) override
     {
         auto area = button.getTextArea().toFloat();
 
@@ -114,21 +114,21 @@ public:
         if (button.getTabbedButtonBar().isVertical())
             std::swap (length, depth);
 
-        Font font (getTabButtonFont (button, depth));
+        juce::Font font (getTabButtonFont (button, depth));
         font.setUnderline (button.hasKeyboardFocus (false));
 
-        AffineTransform t;
+        juce::AffineTransform t;
 
         switch (button.getTabbedButtonBar().getOrientation())
         {
-            case TabbedButtonBar::TabsAtLeft:
-                t = t.rotated (MathConstants<float>::pi * -0.5f).translated (area.getX(), area.getBottom());
+            case juce::TabbedButtonBar::TabsAtLeft:
+                t = t.rotated (juce::MathConstants<float>::pi * -0.5f).translated (area.getX(), area.getBottom());
                 break;
-            case TabbedButtonBar::TabsAtRight:
-                t = t.rotated (MathConstants<float>::pi * 0.5f).translated (area.getRight(), area.getY());
+            case juce::TabbedButtonBar::TabsAtRight:
+                t = t.rotated (juce::MathConstants<float>::pi * 0.5f).translated (area.getRight(), area.getY());
                 break;
-            case TabbedButtonBar::TabsAtTop:
-            case TabbedButtonBar::TabsAtBottom:
+            case juce::TabbedButtonBar::TabsAtTop:
+            case juce::TabbedButtonBar::TabsAtBottom:
                 t = t.translated (area.getX(), area.getY());
                 break;
             default:
@@ -136,16 +136,16 @@ public:
                 break;
         }
 
-        Colour col;
+        juce::Colour col;
 
-        if (button.isFrontTab() && (button.isColourSpecified (TabbedButtonBar::frontTextColourId) || isColourSpecified (TabbedButtonBar::frontTextColourId)))
+        if (button.isFrontTab() && (button.isColourSpecified (juce::TabbedButtonBar::frontTextColourId) || isColourSpecified (juce::TabbedButtonBar::frontTextColourId)))
         {
-            col = findColour (TabbedButtonBar::frontTextColourId);
+            col = findColour (juce::TabbedButtonBar::frontTextColourId);
         }
-        else if (button.isColourSpecified (TabbedButtonBar::tabTextColourId)
-                 || isColourSpecified (TabbedButtonBar::tabTextColourId))
+        else if (button.isColourSpecified (juce::TabbedButtonBar::tabTextColourId)
+                 || isColourSpecified (juce::TabbedButtonBar::tabTextColourId))
         {
-            col = findColour (TabbedButtonBar::tabTextColourId);
+            col = findColour (juce::TabbedButtonBar::tabTextColourId);
         }
         else
         {
@@ -163,25 +163,25 @@ public:
                           0,
                           (int) length,
                           (int) depth,
-                          Justification::centred,
-                          jmax (1, ((int) depth) / 12));
+                          juce::Justification::centred,
+                          juce::jmax (1, ((int) depth) / 12));
     }
 
-    void drawButtonText (Graphics& g, TextButton& button, bool /*shouldDrawButtonAsHighlighted*/, bool /*shouldDrawButtonAsDown*/) override
+    void drawButtonText (juce::Graphics& g, juce::TextButton& button, bool /*shouldDrawButtonAsHighlighted*/, bool /*shouldDrawButtonAsDown*/) override
     {
-        Font font (getTextButtonFont (button, button.getHeight()));
+        juce::Font font (getTextButtonFont (button, button.getHeight()));
         g.setFont (font);
-        g.setColour (button.findColour (button.getToggleState() ? TextButton::textColourOnId
-                                                                : TextButton::textColourOffId)
+        g.setColour (button.findColour (button.getToggleState() ? juce::TextButton::textColourOnId
+                                                                : juce::TextButton::textColourOffId)
                          .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
 
-        const int yIndent = jmin (4, button.proportionOfHeight (0.3f));
+        const int yIndent = juce::jmin (4, button.proportionOfHeight (0.3f));
         //        const int cornerSize = jmin (button.getHeight(), button.getWidth()) / 2;
         const int cornerSize = 0;
 
-        const int fontHeight  = roundToInt (font.getHeight() * 0.6f);
-        const int leftIndent  = jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
-        const int rightIndent = jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
+        const int fontHeight  = juce::roundToInt (font.getHeight() * 0.6f);
+        const int leftIndent  = juce::jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
+        const int rightIndent = juce::jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
         const int textWidth   = button.getWidth() - leftIndent - rightIndent;
 
         if (textWidth > 0)
@@ -191,7 +191,7 @@ public:
                               yIndent,
                               textWidth,
                               button.getHeight() - yIndent * 2,
-                              Justification::centred,
+                              juce::Justification::centred,
                               2);
         }
 
@@ -200,12 +200,12 @@ public:
     }
 
     // TabbedComponent
-    int getTabButtonBestWidth (TabBarButton& button, int tabDepth) override
+    int getTabButtonBestWidth (juce::TabBarButton& button, int tabDepth) override
     {
         return button.getTabbedButtonBar().getWidth() / button.getTabbedButtonBar().getNumTabs();
     }
 
-    void drawTabAreaBehindFrontButton (TabbedButtonBar& bar, Graphics& g, const int w, const int h) override
+    void drawTabAreaBehindFrontButton (juce::TabbedButtonBar& bar, juce::Graphics& g, const int w, const int h) override
     {
         LookAndFeel_V3::drawTabAreaBehindFrontButton (bar, g, w, h);
 
@@ -213,25 +213,25 @@ public:
         GUI::Paint::drawBorders (g, bar.getLocalBounds());
     }
 
-    void createTabTextLayout (const TabBarButton& button, float length, float depth, Colour colour, TextLayout& textLayout)
+    void createTabTextLayout (const juce::TabBarButton& button, float length, float depth, juce::Colour colour, juce::TextLayout& textLayout)
     {
-        Font font (depth * 0.4f);
+        juce::Font font (depth * 0.4f);
         font.setUnderline (button.hasKeyboardFocus (false));
 
-        AttributedString s;
-        s.setJustification (Justification::centred);
+        juce::AttributedString s;
+        s.setJustification (juce::Justification::centred);
         s.append (button.getButtonText().trim(), font, colour);
 
         textLayout.createLayout (s, length);
     }
 
-    void drawTabButton (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override
+    void drawTabButton (juce::TabBarButton& button, juce::Graphics& g, bool isMouseOver, bool isMouseDown) override
     {
-        const Rectangle<int> activeArea (button.getActiveArea());
+        const juce::Rectangle<int> activeArea (button.getActiveArea());
 
-        const TabbedButtonBar::Orientation o = button.getTabbedButtonBar().getOrientation();
+        const juce::TabbedButtonBar::Orientation o = button.getTabbedButtonBar().getOrientation();
 
-        const Colour bkg (button.getTabBackgroundColour());
+        const juce::Colour bkg (button.getTabBackgroundColour());
 
         if (button.getToggleState())
         {
@@ -243,19 +243,19 @@ public:
 
             switch (o)
             {
-                case TabbedButtonBar::TabsAtBottom:
+                case juce::TabbedButtonBar::TabsAtBottom:
                     p1 = activeArea.getBottomLeft();
                     p2 = activeArea.getTopLeft();
                     break;
-                case TabbedButtonBar::TabsAtTop:
+                case juce::TabbedButtonBar::TabsAtTop:
                     p1 = activeArea.getTopLeft();
                     p2 = activeArea.getBottomLeft();
                     break;
-                case TabbedButtonBar::TabsAtRight:
+                case juce::TabbedButtonBar::TabsAtRight:
                     p1 = activeArea.getTopRight();
                     p2 = activeArea.getTopLeft();
                     break;
-                case TabbedButtonBar::TabsAtLeft:
+                case juce::TabbedButtonBar::TabsAtLeft:
                     p1 = activeArea.getTopLeft();
                     p2 = activeArea.getTopRight();
                     break;
@@ -264,32 +264,32 @@ public:
                     break;
             }
 
-            g.setGradientFill (ColourGradient (bkg.brighter (0.2f), p1.toFloat(), bkg.darker (0.1f), p2.toFloat(), false));
+            g.setGradientFill (juce::ColourGradient (bkg.brighter (0.2f), p1.toFloat(), bkg.darker (0.1f), p2.toFloat(), false));
         }
 
         g.fillRect (activeArea);
 
-        g.setColour (button.findColour (TabbedButtonBar::tabOutlineColourId));
+        g.setColour (button.findColour (juce::TabbedButtonBar::tabOutlineColourId));
 
-        Rectangle<int> r (activeArea);
+        juce::Rectangle<int> r (activeArea);
 
-        if (o != TabbedButtonBar::TabsAtBottom)
+        if (o != juce::TabbedButtonBar::TabsAtBottom)
             g.fillRect (r.removeFromTop (1));
-        if (o != TabbedButtonBar::TabsAtTop)
+        if (o != juce::TabbedButtonBar::TabsAtTop)
             g.fillRect (r.removeFromBottom (1));
-        if (o != TabbedButtonBar::TabsAtRight)
+        if (o != juce::TabbedButtonBar::TabsAtRight)
             g.fillRect (r.removeFromLeft (1));
-        if (o != TabbedButtonBar::TabsAtLeft)
+        if (o != juce::TabbedButtonBar::TabsAtLeft)
             g.fillRect (r.removeFromRight (1));
 
         const float alpha = button.isEnabled() ? ((isMouseOver || isMouseDown) ? 1.0f : 0.8f) : 0.3f;
 
-        Colour col (bkg.contrasting().withMultipliedAlpha (alpha));
+        juce::Colour col (bkg.contrasting().withMultipliedAlpha (alpha));
 
-        if (TabbedButtonBar* bar = button.findParentComponentOfClass<TabbedButtonBar>())
+        if (juce::TabbedButtonBar* bar = button.findParentComponentOfClass<juce::TabbedButtonBar>())
         {
-            TabbedButtonBar::ColourIds colID = button.isFrontTab() ? TabbedButtonBar::frontTextColourId
-                                                                   : TabbedButtonBar::tabTextColourId;
+            juce::TabbedButtonBar::ColourIds colID = button.isFrontTab() ? juce::TabbedButtonBar::frontTextColourId
+                                                                   : juce::TabbedButtonBar::tabTextColourId;
 
             if (bar->isColourSpecified (colID))
                 col = bar->findColour (colID);
@@ -297,7 +297,7 @@ public:
                 col = findColour (colID);
         }
 
-        const Rectangle<float> area (button.getTextArea().toFloat());
+        const juce::Rectangle<float> area (button.getTextArea().toFloat());
 
         float length = area.getWidth();
         float depth  = area.getHeight();
@@ -305,21 +305,21 @@ public:
         if (button.getTabbedButtonBar().isVertical())
             std::swap (length, depth);
 
-        TextLayout textLayout;
+        juce::TextLayout textLayout;
         createTabTextLayout (button, length, depth, col, textLayout);
 
-        AffineTransform t;
+        juce::AffineTransform t;
 
         switch (o)
         {
-            case TabbedButtonBar::TabsAtLeft:
-                t = t.rotated (MathConstants<float>::pi * -0.5f).translated (area.getX(), area.getBottom());
+            case juce::TabbedButtonBar::TabsAtLeft:
+                t = t.rotated (juce::MathConstants<float>::pi * -0.5f).translated (area.getX(), area.getBottom());
                 break;
-            case TabbedButtonBar::TabsAtRight:
-                t = t.rotated (MathConstants<float>::pi * 0.5f).translated (area.getRight(), area.getY());
+            case juce::TabbedButtonBar::TabsAtRight:
+                t = t.rotated (juce::MathConstants<float>::pi * 0.5f).translated (area.getRight(), area.getY());
                 break;
-            case TabbedButtonBar::TabsAtTop:
-            case TabbedButtonBar::TabsAtBottom:
+            case juce::TabbedButtonBar::TabsAtTop:
+            case juce::TabbedButtonBar::TabsAtBottom:
                 t = t.translated (area.getX(), area.getY());
                 break;
             default:
@@ -328,28 +328,28 @@ public:
         }
 
         g.addTransform (t);
-        textLayout.draw (g, Rectangle<float> (length, depth));
+        textLayout.draw (g, juce::Rectangle<float> (length, depth));
     }
 
-    void drawTabbedButtonBarBackground (TabbedButtonBar&, Graphics&) override
+    void drawTabbedButtonBarBackground (juce::TabbedButtonBar&, juce::Graphics&) override
     {
         // TODO - Now empty it's fine
     }
 
-    void fillTabButtonShape (TabBarButton&, Graphics&, const Path&, bool isMouseOver, bool isMouseDown) override
+    void fillTabButtonShape (juce::TabBarButton&, juce::Graphics&, const juce::Path&, bool isMouseOver, bool isMouseDown) override
     {
         // TODO - Now empty it's fine
     }
 
     // Buttons
-    Font getTextButtonFont (TextButton&, int buttonHeight) override
+    juce::Font getTextButtonFont (juce::TextButton&, int buttonHeight) override
     {
         return font_1;
     }
 
-    void drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    void drawButtonBackground (juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
-        Colour fillColour;
+        juce::Colour fillColour;
 
         if (shouldDrawButtonAsDown)
         {
@@ -365,36 +365,36 @@ public:
         }
 
         const float            cornerSize = 3.0f;
-        const Rectangle<float> bounds     = button.getLocalBounds().toFloat().reduced (0.5f, 0.5f);
+        const juce::Rectangle<float> bounds     = button.getLocalBounds().toFloat().reduced (0.5f, 0.5f);
 
         g.setColour (fillColour);
         g.fillRoundedRectangle (bounds.reduced (1), cornerSize);
     }
 
     // Combo Boxes
-    Font getLabelFont (Label& label) override
+    juce::Font getLabelFont (juce::Label& label) override
     {
         return font_1;
     }
 
-    void drawPopupMenuItem (Graphics& g, const Rectangle<int>& area, bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu, const String& text, const String& shortcutKeyText, const Drawable* icon, const Colour* textColour) override
+    void drawPopupMenuItem (juce::Graphics& g, const juce::Rectangle<int>& area, bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu, const juce::String& text, const juce::String& shortcutKeyText, const juce::Drawable* icon, const juce::Colour* textColour) override
     {
-        Rectangle<int> r (area);
+        juce::Rectangle<int> r (area);
 
-        Colour fillColour = isHighlighted ? SMTColour_5 : SMTColour_4;
+        juce::Colour fillColour = isHighlighted ? SMTColour_5 : SMTColour_4;
 
         g.setColour (fillColour);
         g.fillRect (r.getX(), r.getY(), r.getWidth(), r.getHeight() - 1);
 
-        Colour customTextColour = isTicked ? SMTColour_7 : SMTColour_1;
+        juce::Colour customTextColour = isTicked ? SMTColour_7 : SMTColour_1;
         g.setColour (customTextColour);
         g.setFont (font_1);
 
         r.setLeft (10);
         r.setY (1);
-        g.drawFittedText (text, r, Justification::left, 1);
+        g.drawFittedText (text, r, juce::Justification::left, 1);
     }
 
 private:
-    Image m_sliderImage;
+    juce::Image m_sliderImage;
 };

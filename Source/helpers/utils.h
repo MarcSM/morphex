@@ -25,13 +25,13 @@
 #include <JuceHeader.h>
 
 /** Check if an xml element has any child with a given name */
-inline bool hasChild (std::unique_ptr<XmlElement> parent, String child_name)
+inline bool hasChild (std::unique_ptr<juce::XmlElement> parent, juce::String child_name)
 {
     return parent->getChildByName (child_name) != nullptr;
 }
 
 /** Check if an xml element has any child with a given name */
-inline bool hasChild (XmlElement* parent, String child_name)
+inline bool hasChild (juce::XmlElement* parent, juce::String child_name)
 {
     return parent->getChildByName (child_name) != nullptr;
 }
@@ -139,19 +139,19 @@ inline std::vector<double> splitDoubles (const std::string& list_of_doubles)
 }
 
 /** Get a vector of ints from an xml element */
-inline std::vector<long long> getVectorOfInts (XmlElement* parent, String child_name)
+inline std::vector<long long> getVectorOfInts (juce::XmlElement* parent, juce::String child_name)
 {
     return splitInts (parent->getChildByName (child_name)->getAllSubText().toStdString());
 }
 
 /** Get a vector of floats from an xml element */
-inline std::vector<float> getVectorOfFloats (XmlElement* parent, String child_name)
+inline std::vector<float> getVectorOfFloats (juce::XmlElement* parent, juce::String child_name)
 {
     return splitFloats (parent->getChildByName (child_name)->getAllSubText().toStdString(), true);
 }
 
 /** Get a vector of doubles from an xml element */
-inline std::vector<double> getVectorOfDoubles (XmlElement* parent, String child_name)
+inline std::vector<double> getVectorOfDoubles (juce::XmlElement* parent, juce::String child_name)
 {
     std::vector<double> result_vector;
 
@@ -164,7 +164,7 @@ inline std::vector<double> getVectorOfDoubles (XmlElement* parent, String child_
 }
 
 /** Get a matrix of ints from an xml element */
-inline std::vector<std::vector<long long>> getMatrixOfInts (XmlElement* parent, String child_name)
+inline std::vector<std::vector<long long>> getMatrixOfInts (juce::XmlElement* parent, juce::String child_name)
 {
     std::vector<std::vector<long long>> result_matrix;
 
@@ -184,7 +184,7 @@ inline std::vector<std::vector<long long>> getMatrixOfInts (XmlElement* parent, 
 }
 
 /** Get a matrix of floats from an xml element */
-inline std::vector<std::vector<float>> getMatrixOfFloats (XmlElement* parent, String child_name)
+inline std::vector<std::vector<float>> getMatrixOfFloats (juce::XmlElement* parent, juce::String child_name)
 {
     std::vector<std::vector<float>> result_matrix;
 
@@ -204,7 +204,7 @@ inline std::vector<std::vector<float>> getMatrixOfFloats (XmlElement* parent, St
 }
 
 /** Get a matrix of doubles from an xml element */
-inline std::vector<std::vector<double>> getMatrixOfDoubles (XmlElement* parent, String child_name)
+inline std::vector<std::vector<double>> getMatrixOfDoubles (juce::XmlElement* parent, juce::String child_name)
 {
     std::vector<std::vector<double>> result_matrix;
 

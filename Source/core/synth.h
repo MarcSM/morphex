@@ -27,27 +27,26 @@
 #include "../dsp/gain.h"
 #include "../dsp/reverb.h"
 
-namespace Core
+namespace morphex
 {
-class MorphexSynth : public Synthesiser
+class Synth : public juce::Synthesiser
 {
 public:
-    MorphexSynth (AudioProcessorValueTreeState& parameters);
-    ~MorphexSynth();
+    Synth (juce::AudioProcessorValueTreeState& parameters);
+//    ~Synth();
 
-    void setCurrentPlaybackSampleRate (double sampleRate) override;
-    void renderNextBlock (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples);
+    void renderNextBlock (juce::AudioBuffer<float>& outputAudio, const juce::MidiBuffer& inputMidi, int startSample, int numSamples);
     void reset();
 
+    static constexpr auto MaxVoices = 10;
+
+    // TODO - Make private
     Instrument m_instrument;
-
-protected:
-    OwnedArray<Voice> m_voices;
-
+    
 private:
-    AudioProcessorValueTreeState& m_parameters;
+    juce::AudioProcessorValueTreeState& m_parameters;
 
-    morphex::dsp::Reverb m_reverb;
-    morphex::dsp::Gain   m_outputGain;
+    dsp::Reverb m_reverb;
+    dsp::Gain   m_outputGain;
 };
-}; // namespace Core
+}; // namespace moprhex

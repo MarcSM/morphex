@@ -24,7 +24,7 @@
 #include <numeric>
 #include <vector>
 
-namespace Core
+namespace morphex
 {
 namespace Tools
 {
@@ -350,4 +350,4 @@ namespace Tools
         }
     } // namespace Cast
 } // namespace Tools
-} // namespace Core
+} // namespace moprhex
