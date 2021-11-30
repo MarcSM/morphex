@@ -20,16 +20,16 @@
 
 // TODO - Put everything in a namespace called "Morphex::Parameters"
 
-namespace Morphex
+namespace morphex                                     
 {
 template <typename T>
 struct Parameter
 {
     juce::String ID;
     juce::String label;
-    T      min_value;
-    T      max_value;
-    T      default_value;
+    T            min_value;
+    T            max_value;
+    T            default_value;
 };
 
 // Rename them and call them like: SMTParameter::FreqsInterpFactor
@@ -59,7 +59,7 @@ using IndexedParameters = std::map<int, Parameter<T>>;
 //static std::map<int, Parameter> smt_parameters =
 template <typename T>
 static IndexedParameters<T> PARAMETERS = {
-    //  index                   ID                      label                       min_value   max_value   default_value
+    //  index ID label min_value max_value default_value
     { OutputGain, { "OutputGain", "Master", 0.0f, 1.0f, 0.5f } },
     { ReverbDryWet, { "ReverbDryWet", "Dry/Wet", 0.0f, 1.0f, 0.15f } },
     { FreqsInterpFactor, { "FreqsInterpFactor", "Harmonic Frequencies", 0.0f, 1.0f, 0.5f } },
@@ -88,4 +88,4 @@ inline Parameter<T> getParameterByID (juce::String parameter_ID)
 
     return found_parameter;
 }
-} // namespace Morphex
+} // namespace morphex

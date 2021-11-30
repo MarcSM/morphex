@@ -27,9 +27,13 @@
       <FILE id="lOXcKh" name="synth.h" compile="0" resource="0" file="Source/core/synth.h"/>
     </GROUP>
     <GROUP id="{0C75B458-2ECD-3A38-2FCF-46A5AAC2E6E8}" name="dsp">
+      <FILE id="zndkWz" name="delay.cpp" compile="1" resource="0" file="Source/dsp/delay.cpp"/>
       <FILE id="DXmxJ0" name="delay.h" compile="0" resource="0" file="Source/DSP/delay.h"/>
+      <FILE id="kpXwz8" name="distortion.cpp" compile="1" resource="0" file="Source/dsp/distortion.cpp"/>
       <FILE id="kvmGy3" name="distortion.h" compile="0" resource="0" file="Source/DSP/distortion.h"/>
+      <FILE id="xdDoZO" name="gain.cpp" compile="1" resource="0" file="Source/dsp/gain.cpp"/>
       <FILE id="OvuOxk" name="gain.h" compile="0" resource="0" file="Source/DSP/gain.h"/>
+      <FILE id="Mdy7tw" name="reverb.cpp" compile="1" resource="0" file="Source/dsp/reverb.cpp"/>
       <FILE id="jPF0Wj" name="reverb.h" compile="0" resource="0" file="Source/DSP/reverb.h"/>
     </GROUP>
     <GROUP id="{6EDA0A93-483B-32FF-388C-C9E056E99237}" name="gui">

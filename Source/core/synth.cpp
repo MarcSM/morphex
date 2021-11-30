@@ -22,7 +22,8 @@ namespace morphex
 {
 Synth::Synth (juce::AudioProcessorValueTreeState& parameters) :
     m_parameters (parameters),
-    m_reverb (parameters)
+    m_reverb (parameters),
+    m_outputGain(parameters)
 {
     m_instrument.mode               = Instrument::Mode::Morphing;
     m_instrument.interpolation_mode = Instrument::Interpolation::Manual;
@@ -73,37 +74,24 @@ Synth::Synth (juce::AudioProcessorValueTreeState& parameters) :
     setNoteStealingEnabled (true);
 }
 
-// Synth::~Synth() {}
-
 void Synth::renderNextBlock (juce::AudioBuffer<float>& outputAudio,
-                                    const juce::MidiBuffer&   inputMidi,
-                                    int                 startSample,
-                                    int                 numSamples)
+                                const juce::MidiBuffer&   inputMidi,
+                                int                 startSample,
+                                int                 numSamples)
 {
     // Call base class method
     Synthesiser::renderNextBlock (outputAudio, inputMidi, startSample, numSamples);
 
-    auto& reverbDryWet = *m_parameters.getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::ReverbDryWet].ID);
+    auto block = juce::dsp::AudioBlock<float>(outputAudio);
+    auto context = juce::dsp::ProcessContextReplacing<float>(block);
 
     // DSP
-    m_reverb.process (outputAudio, outputAudio.getNumSamples());
-
-    //    // Output gain
-    //    for (int channel = 0; channel < outputAudio.getNumChannels(); ++channel)
-    //    {
-    //        auto* buffer = outputAudio.getWritePointer (channel);
-    //
-    //        // Output gain
-    //        float output_gain = *mParameters->getRawParameterValue
-    //        (Morphex::PARAMETERS<float>[Morphex::Parameters::OutputGain].ID);
-    //        mOutputGain[channel]->process (buffer, output_gain,
-    //        outputAudio.getNumSamples());
-    //    }
+    m_reverb.process (context);
+    m_outputGain.process (context);
 }
 
 void Synth::reset()
 {
-    // Reset the instrument
     m_instrument.reset();
 }
 } // namespace moprhex

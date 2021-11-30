@@ -25,10 +25,10 @@ namespace morphex
 class Slider : public juce::Slider
 {
 public:
-    Slider (juce::AudioProcessorValueTreeState& state_to_control, const Morphex::Parameters parameter_num) :
+    Slider (juce::AudioProcessorValueTreeState& state_to_control, const morphex::Parameters parameter_num) :
         juce::Slider()
     {
-        Morphex::Parameter morphex_parameter = Morphex::PARAMETERS<float>[parameter_num];
+        morphex::Parameter morphex_parameter = morphex::PARAMETERS<float>[parameter_num];
 
         setName (morphex_parameter.label);
 

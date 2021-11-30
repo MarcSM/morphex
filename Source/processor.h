@@ -82,9 +82,9 @@ private:
         //        std::vector<std::unique_ptr<AudioParameterFloat>> params;
         std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
-        for (int i = 0; i < Morphex::Parameters::TotalNumParameters; i++)
+        for (int i = 0; i < morphex::Parameters::TotalNumParameters; i++)
         {
-            Morphex::Parameter<float> smt_parameter = Morphex::PARAMETERS<float>[i];
+            morphex::Parameter<float> smt_parameter = morphex::PARAMETERS<float>[i];
 
             params.push_back (std::make_unique<juce::AudioParameterFloat> (smt_parameter.ID, smt_parameter.ID, juce::NormalisableRange<float> (smt_parameter.min_value, smt_parameter.max_value), smt_parameter.default_value, smt_parameter.label));
         }

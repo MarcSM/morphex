@@ -32,8 +32,8 @@ class PadXY : public juce::Component, public juce::Timer
 public:
     PadXY (MorphexAudioProcessor& inProcessor,
            juce::AudioProcessorValueTreeState&       stateToControl,
-           Morphex::Parameter<float>           freqs_interp_factor_parameter,
-           Morphex::Parameter<float>           mags_interp_factor_parameter) :
+           morphex::Parameter<float>           freqs_interp_factor_parameter,
+           morphex::Parameter<float>           mags_interp_factor_parameter) :
         m_processor (inProcessor)
     {
         const juce::String& x_parameterID    = freqs_interp_factor_parameter.ID;

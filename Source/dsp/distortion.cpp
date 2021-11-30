@@ -16,29 +16,4 @@
  * along with Morphex. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-#include <JuceHeader.h>
-
-namespace morphex
-{
-namespace dsp
-{
-    class Reverb
-    {
-    public:
-        Reverb (juce::AudioProcessorValueTreeState& parameters);
-
-        void prepare (juce::dsp::ProcessSpec& spec);
-        void process (juce::dsp::ProcessContextReplacing<float>& context);
-
-    private:
-        void updateParameters();
-
-        juce::AudioProcessorValueTreeState& m_parameters;
-
-        juce::dsp::Reverb        m_reverb;
-        juce::Reverb::Parameters m_reverbParameters;
-    };
-}; // namespace dsp
-}; // namespace morphex
+#include "distortion.h"

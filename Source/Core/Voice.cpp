@@ -314,8 +314,8 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
         // Instrument::Mode::Morphing
         if (m_instrument.mode == Instrument::Mode::Morphing)
         {
-            float freqs_interp_factor = *m_parameters.getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::FreqsInterpFactor].ID);
-            float mags_interp_factor  = *m_parameters.getRawParameterValue (Morphex::PARAMETERS<float>[Morphex::Parameters::MagsInterpFactor].ID);
+            float freqs_interp_factor = *m_parameters.getRawParameterValue (morphex::PARAMETERS<float>[morphex::Parameters::FreqsInterpFactor].ID);
+            float mags_interp_factor  = *m_parameters.getRawParameterValue (morphex::PARAMETERS<float>[morphex::Parameters::MagsInterpFactor].ID);
 
             // TODO - Apply fade out if *i_current_frame > min_note_end - 4 (4 = fade_out_frames)
             sound_frame = m_instrument.morphSoundFrames (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size, freqs_interp_factor, mags_interp_factor);

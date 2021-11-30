@@ -118,7 +118,7 @@ private:
         {
             m_sliders.clear();
 
-            m_outputGainSlider = new morphex::Slider (processor.parameters, Morphex::Parameters::OutputGain);
+            m_outputGainSlider = new morphex::Slider (processor.parameters, morphex::Parameters::OutputGain);
             addAndMakeVisible (m_outputGainSlider);
             m_sliders.add (m_outputGainSlider);
         }

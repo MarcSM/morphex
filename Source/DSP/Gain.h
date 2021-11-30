@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <JuceHeader.h>
+
 namespace Constants
 {
 constexpr auto MeterSmoothingCoeff = 0.02;
@@ -27,34 +29,24 @@ namespace morphex
 {
 namespace dsp
 {
-class Gain
-{
-public:
-    Gain() :
-        m_outputSmoothed (0) {}
-    ~Gain() {}
-
-    void process (float* buffer, float inGain, int inNumSamplesToRender)
+    class Gain
     {
-        float gainMapped = juce::jmap (inGain, 0.0f, 1.0f, -24.0f, 24.0f);
-        gainMapped       = juce::Decibels::decibelsToGain (gainMapped, -24.0f);
+    public:
+        Gain (juce::AudioProcessorValueTreeState& parameters);
 
-        for (int i = 0; i < inNumSamplesToRender; i++)
-        {
-            buffer[i] = buffer[i] * gainMapped;
-        }
+        void prepare (juce::dsp::ProcessSpec& spec);
+        void process (juce::dsp::ProcessContextReplacing<float>& context);
 
-        float absValue   = fabs (buffer[0]);
-        m_outputSmoothed = Constants::MeterSmoothingCoeff * (m_outputSmoothed - absValue) + absValue;
-    }
+        float getMeterLevel();
 
-    float getMeterLevel()
-    {
-        return m_outputSmoothed;
-    }
+    private:
+        void updateParameters();
 
-private:
-    float m_outputSmoothed;
-};
+        juce::AudioProcessorValueTreeState& m_parameters;
+
+        juce::dsp::Gain<float> m_gain;
+
+        float m_outputSmoothed;
+    };
 }; // namespace dsp
-};
+}; // namespace morphex

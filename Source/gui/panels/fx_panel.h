@@ -34,7 +34,7 @@ public:
         addAndMakeVisible (m_fxRows.add (reverb_panel));
 
         // Reverb FX - Dry / Wet
-        morphex::Slider* reverb_drywet_slider = new morphex::Slider (inProcessor.parameters, Morphex::Parameters::ReverbDryWet);
+        morphex::Slider* reverb_drywet_slider = new morphex::Slider (inProcessor.parameters, morphex::Parameters::ReverbDryWet);
         addAndMakeVisible (reverb_panel->m_sliders.add (reverb_drywet_slider));
     }
 

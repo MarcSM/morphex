@@ -49,8 +49,8 @@ public:
         addAndMakeVisible (m_residualButton);
 
         // Pad XY
-        Morphex::Parameter freqs_interp_factor_parameter = Morphex::PARAMETERS<float>[Morphex::Parameters::FreqsInterpFactor];
-        Morphex::Parameter mags_interp_factor_parameter  = Morphex::PARAMETERS<float>[Morphex::Parameters::MagsInterpFactor];
+        morphex::Parameter freqs_interp_factor_parameter = morphex::PARAMETERS<float>[morphex::Parameters::FreqsInterpFactor];
+        morphex::Parameter mags_interp_factor_parameter  = morphex::PARAMETERS<float>[morphex::Parameters::MagsInterpFactor];
 
         m_padXy = new PadXY (processor, processor.parameters, freqs_interp_factor_parameter, mags_interp_factor_parameter);
 
