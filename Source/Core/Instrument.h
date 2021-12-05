@@ -18,7 +18,8 @@
 
 #pragma once
 
-#include "note.h"
+// #include "note.h"
+#include "sound.h"
 #include <vector>
 
 enum MorphLocation
@@ -31,95 +32,86 @@ enum MorphLocation
     Total
 };
 
-using MorphNotes       = std::array<morphex::Note*, MorphLocation::Total>;
-using MorphSounds      = std::array<morphex::Sound*, MorphLocation::Total>;
-using MorphSoundFrames = std::array<morphex::Sound::Frame, MorphLocation::Total>;
-
 namespace Constants
 {
-constexpr auto NUM_MIDI_NOTES = 128;
-}
+constexpr auto MidiNotes      = 128;
+constexpr auto MidiVelocities = 128;
+} // namespace Constants
+
+using Note             = std::array<std::unique_ptr<morphex::Sound>, Constants::MidiVelocities>;
+using MorphNotes       = std::array<Note*, MorphLocation::Total>;
+using MorphSounds      = std::array<morphex::Sound*, MorphLocation::Total>;
+using MorphSoundFrames = std::array<morphex::Sound::Frame, MorphLocation::Total>;
 
 namespace morphex
 {
 class Instrument
 {
 public:
-    enum class Mode
+    enum class OperationMode
     {
         Morphing,
         FullRange
     };
 
-    enum class Interpolation
+    enum class InterpolationMode
     {
         None,
         Manual,
         FrequencyBased
     };
 
-    enum FrameType
+    struct ActiveModels
     {
-        Frequencies, // Interpolate Frequencies
-        Magnitudes,  // Interpolate Magnitudes
-        Stochastic,  // Interpolate Stochastic
-        Waveform,    // Interpolate Waveforms
+        bool Harmonic   = true;
+        bool Sinusoidal = true;
+        bool Stochastic = true;
+        bool Attack     = true;
+        bool Residual   = false;
     };
-
-    struct Generate
-    {
-        bool harmonic   = true;
-        bool sinusoidal = true;
-        bool stochastic = true;
-        bool attack     = true;
-        bool residual   = false;
-    };
-    Generate generate;
-
-    // Notes
-    std::vector<Note*> note;
-
-    // Data
-    std::string name;
-    std::string samples_dirpath;
-
-    // Mode
-    Mode mode = Mode::Morphing;
-
-    // Interpolation
-    Interpolation interpolation_mode = Interpolation::Manual;
 
     Instrument();
-    ~Instrument();
 
-    void init();
     void reset();
+    void setOperationMode (OperationMode operationMode);
+    void setActiveModel (Model::Type modelType, bool active);
+    void loadSound (std::string filePath, MorphLocation morphLocation = MorphLocation::Total);
+    void loadSoundsFromFolder (std::string folderPath);
 
-    void loadSound (std::string file_path, MorphLocation morph_location = MorphLocation::Total);
-    void loadAllSoundsFromFolder (std::string folder_path);
-
-    std::vector<Note*> getLoadedNotes();
-
-    MorphNotes  getCloserNotes (float f_target_note);
-    MorphSounds getCloserSounds (float f_target_note, float f_velocity);
-
-    MorphNotes  getMorphNotes();
-    void        setMorphNote (Note* note, MorphLocation morph_location, int midi_velocity = Constants::MAX_MIDI_VELOCITY);
-    MorphSounds getMorphSounds();
-    Sound*      getMorphSound (MorphLocation morph_location);
-    void        setMorphSound (Sound* sound, MorphLocation morph_location);
-
-    Sound*       getSound (float f_note, float f_velocity);
-    Sound::Frame getSoundFrame (float f_note, float f_velocity, int i_current_frame, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
-
-    Sound::Frame morphSoundFrames (float f_target_note, MorphSounds morph_sounds, int i_current_frame, int i_frame_length, float f_freqs_interp_factor = -1, float f_mags_interp_factor = -1);
-
-    std::vector<float> getNextFrame (float f_note, float f_velocity, int i_frame_length, float f_freqs_interp_factor, float f_mags_interp_factor);
-
-    std::vector<float> interpolateFrames (FrameType frame_type, float interp_factor, std::vector<float> frame_1, std::vector<float> frame_2, int i_frame_length, std::vector<int> idx_harmonics = std::vector<int>());
+    OperationMode     getOperationMode();
+    InterpolationMode getInterpolationMode();
+    MorphNotes        getClosestNotes (float targetMidiNote);
+    MorphSounds       getClosestSounds (float targetMidiNote, float velocity);
+    Sound*            getMorphSound (MorphLocation morph_location);
+    MorphSounds       getMorphSounds();
+    Sound::Frame      getSoundFrame (float targetMidiNote, float velocity, int currentFrameIndex, int frameLength, float freqsInterpFactor, float magsInterpFactor);
+    Sound::Frame      getMorphedSoundFrame (float targetMidiNote, MorphSounds morphSounds, int currentFrameIndex, int frameLength, float freqsInterpFactor = -1, float magsInterpFactor = -1);
+    
+    bool isModelActive (Model::Type modelType);
 
 private:
-    MorphNotes  morph_notes;
-    MorphSounds morph_sounds {};
+    enum FrameType
+    {
+        Frequencies,
+        Magnitudes,
+        Stochastic,
+        Waveform,
+    };
+
+    Sound*             getClosestLoadedSound (const Note& note, const float velocity);
+    
+    std::vector<float> interpolateFrames (FrameType frameType, float interpolationFactor, std::vector<float> frameA, std::vector<float> frameB, int frameLength);
+    bool               hasAnyLoadedSound (const Note& note) const;
+
+    std::string       m_name;
+    std::string       m_samplesDirectoryPath;
+    OperationMode     m_operationMode;
+    InterpolationMode m_interpolationMode;
+    ActiveModels      m_activeModels;
+
+    std::array<Note, Constants::MidiNotes> m_notes;
+
+    MorphNotes  m_morphNotes;
+    MorphSounds m_morphSounds;
 };
 }; // namespace morphex

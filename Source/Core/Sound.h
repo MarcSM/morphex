@@ -154,9 +154,9 @@ public:
     class Frame
     {
     public:
-        enum Component
+        enum class Component
         {
-            HarmonicFreqs = 0,
+            HarmonicFreqs,
             HarmonicMags,
             HarmonicPhases,
             SinusoidalFreqs,
@@ -165,6 +165,14 @@ public:
             Stochastic,
             Attack,
             Residual
+        };
+
+        enum class Type
+        {
+            Frequencies, // Interpolate Frequencies
+            Magnitudes,  // Interpolate Magnitudes
+            Stochastic,  // Interpolate Stochastic
+            Waveform,    // Interpolate Waveforms
         };
 
         struct SoundFrameFMP
@@ -217,6 +225,7 @@ public:
 
     juce::String loadDataFromFile (std::string file_path);
     void         load (juce::String file_data, HadFileSource file_source = HadFileSource::Path);
+    bool         isLoaded();
 
     Sound::Frame       getFrame (int i_num_frame, int i_hop_size);
     std::vector<float> getComponentFrame (Frame::Component component_name, int i_num_frame, int i_hop_size = 0);
@@ -234,4 +243,4 @@ private:
     int file_version;
     int decimal_places;
 };
-}; // namespace moprhex
+}; // namespace morphex

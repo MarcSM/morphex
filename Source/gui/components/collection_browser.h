@@ -118,12 +118,12 @@ private:
             if (f.isDirectory())
             {
                 // Loading selected folder
-                m_processor.m_synth.m_instrument.loadAllSoundsFromFolder (f.getFullPathName().toStdString());
+                m_processor.m_synth.m_instrument.loadSoundsFromFolder (f.getFullPathName().toStdString());
             }
             else
             {
                 // Loading current folder
-                m_processor.m_synth.m_instrument.loadAllSoundsFromFolder (getRoot().getFullPathName().toStdString());
+                m_processor.m_synth.m_instrument.loadSoundsFromFolder (getRoot().getFullPathName().toStdString());
             }
         }
     }

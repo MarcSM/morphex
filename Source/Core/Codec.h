@@ -18,14 +18,11 @@
 
 #pragma once
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 namespace Constants
 {
-constexpr auto DEFAULT_HZ         = 0.0f;
-constexpr auto DEFAULT_DB         = -200.0f;
-constexpr auto DEFAULT_NULL       = -1.0f;
 constexpr auto XML_DECIMAL_PLACES = 3;
 } // namespace Constants
 

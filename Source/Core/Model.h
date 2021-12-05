@@ -26,6 +26,15 @@ namespace morphex
 class Model
 {
 public:
+    enum class Type
+    {
+        Harmonic,
+        Sinusoidal,
+        Stochastic,
+        Attack,
+        Residual
+    };
+
     bool harmonic;
     bool sinusoidal;
     bool stochastic;
@@ -258,4 +267,4 @@ public:
 private:
     Values _values;
 };
-}; // namespace moprhex
+}; // namespace morphex

@@ -10,10 +10,6 @@
       <FILE id="MCEVjp" name="tools.h" compile="0" resource="0" file="Source/Core/tools.h"/>
       <FILE id="DIC1Xs" name="instrument.h" compile="0" resource="0" file="Source/Core/instrument.h"/>
       <FILE id="xAtxaC" name="instrument.cpp" compile="1" resource="0" file="Source/Core/instrument.cpp"/>
-      <FILE id="JdpZT5" name="note.h" compile="0" resource="0" file="Source/Core/note.h"/>
-      <FILE id="B4UgCb" name="note.cpp" compile="1" resource="0" file="Source/Core/note.cpp"/>
-      <FILE id="icqyDE" name="velocity.h" compile="0" resource="0" file="Source/Core/velocity.h"/>
-      <FILE id="BQFVg0" name="velocity.cpp" compile="1" resource="0" file="Source/Core/velocity.cpp"/>
       <FILE id="d9dn7g" name="sound.h" compile="0" resource="0" file="Source/Core/sound.h"/>
       <FILE id="Ylhobz" name="sound.cpp" compile="1" resource="0" file="Source/Core/sound.cpp"/>
       <FILE id="SV7bdh" name="model.h" compile="0" resource="0" file="Source/Core/model.h"/>

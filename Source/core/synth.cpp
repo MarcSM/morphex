@@ -23,27 +23,9 @@ namespace morphex
 Synth::Synth (juce::AudioProcessorValueTreeState& parameters) :
     m_parameters (parameters),
     m_reverb (parameters),
-    m_outputGain(parameters)
+    m_outputGain (parameters)
 {
-    m_instrument.mode               = Instrument::Mode::Morphing;
-    m_instrument.interpolation_mode = Instrument::Interpolation::Manual;
-
-    m_instrument.generate.harmonic   = true;
-    m_instrument.generate.sinusoidal = false;
-    m_instrument.generate.stochastic = false;
-    m_instrument.generate.attack     = false;
-    m_instrument.generate.residual   = false;
-
-    //    m_instrument.mode               = Instrument::Mode::FullRange;
-    //    m_instrument.interpolation_mode = Instrument::Interpolation::None;
-    //
-    //    m_instrument.generate.harmonic   = true;
-    //    m_instrument.generate.sinusoidal = true;
-    //    m_instrument.generate.stochastic = true;
-    //    m_instrument.generate.attack     = true;
-    //    m_instrument.generate.residual   = false;
-
-    //    // For testing the full range instrument case
+    //    // Test full range instrument case
     //    const bool loadDefaultSounds = false;
     //
     //    if (loadDefaultSounds)
@@ -75,15 +57,15 @@ Synth::Synth (juce::AudioProcessorValueTreeState& parameters) :
 }
 
 void Synth::renderNextBlock (juce::AudioBuffer<float>& outputAudio,
-                                const juce::MidiBuffer&   inputMidi,
-                                int                 startSample,
-                                int                 numSamples)
+                             const juce::MidiBuffer&   inputMidi,
+                             int                       startSample,
+                             int                       numSamples)
 {
     // Call base class method
     Synthesiser::renderNextBlock (outputAudio, inputMidi, startSample, numSamples);
 
-    auto block = juce::dsp::AudioBlock<float>(outputAudio);
-    auto context = juce::dsp::ProcessContextReplacing<float>(block);
+    auto block   = juce::dsp::AudioBlock<float> (outputAudio);
+    auto context = juce::dsp::ProcessContextReplacing<float> (block);
 
     // DSP
     m_reverb.process (context);
@@ -94,4 +76,4 @@ void Synth::reset()
 {
     m_instrument.reset();
 }
-} // namespace moprhex
+} // namespace morphex

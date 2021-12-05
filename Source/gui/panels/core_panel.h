@@ -26,7 +26,7 @@ class CorePanel : public juce::Component
 {
 public:
     CorePanel (MorphexAudioProcessor& processor) :
-    m_instrument (processor.m_synth.m_instrument)
+        m_instrument (processor.m_synth.m_instrument)
     {
         // Make button toggleable
         m_harmonicButton.setClickingTogglesState (true);
@@ -35,12 +35,11 @@ public:
         m_attackButton.setClickingTogglesState (true);
         m_residualButton.setClickingTogglesState (true);
 
-        // Core parameters default values
-        m_harmonicButton.setToggleState (m_instrument.generate.harmonic, juce::NotificationType::dontSendNotification);
-        m_sinusoidalButton.setToggleState (m_instrument.generate.sinusoidal, juce::NotificationType::dontSendNotification);
-        m_stochasticButton.setToggleState (m_instrument.generate.stochastic, juce::NotificationType::dontSendNotification);
-        m_attackButton.setToggleState (m_instrument.generate.attack, juce::NotificationType::dontSendNotification);
-        m_residualButton.setToggleState (m_instrument.generate.residual, juce::NotificationType::dontSendNotification);
+        m_harmonicButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Harmonic), juce::NotificationType::dontSendNotification);
+        m_sinusoidalButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Sinusoidal), juce::NotificationType::dontSendNotification);
+        m_stochasticButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Stochastic), juce::NotificationType::dontSendNotification);
+        m_attackButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Attack), juce::NotificationType::dontSendNotification);
+        m_residualButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Residual), juce::NotificationType::dontSendNotification);
 
         addAndMakeVisible (m_harmonicButton);
         addAndMakeVisible (m_sinusoidalButton);
@@ -68,21 +67,21 @@ public:
         //        getWidth() * 0.75f , getHeight() * 0.75f, true);
         // Background gradient
         juce::ColourGradient cg (GUI::Color::Accent.withAlpha (0.5f),
-                           getWidth() * 0.5f,
-                           getHeight() * 0.5f,
-                           GUI::Color::Accent.withAlpha (0.0f),
-                           getWidth() * 0.65f,
-                           getHeight() * 1.0f,
-                           true);
+                                 getWidth() * 0.5f,
+                                 getHeight() * 0.5f,
+                                 GUI::Color::Accent.withAlpha (0.0f),
+                                 getWidth() * 0.65f,
+                                 getHeight() * 1.0f,
+                                 true);
         g.setFillType (cg);
         g.fillRect (0, 0, getWidth(), getHeight());
 
         // Core controls
-        m_harmonicButton.onClick   = [this] { updateParameter (m_harmonicButton.getToggleState(), m_instrument.generate.harmonic); };
-        m_sinusoidalButton.onClick = [this] { updateParameter (m_sinusoidalButton.getToggleState(), m_instrument.generate.sinusoidal); };
-        m_stochasticButton.onClick = [this] { updateParameter (m_stochasticButton.getToggleState(), m_instrument.generate.stochastic); };
-        m_attackButton.onClick     = [this] { updateParameter (m_attackButton.getToggleState(), m_instrument.generate.attack); };
-        m_residualButton.onClick   = [this] { updateParameter (m_residualButton.getToggleState(), m_instrument.generate.residual); };
+        m_harmonicButton.onClick   = [this] { m_instrument.setActiveModel (morphex::Model::Type::Harmonic, m_harmonicButton.getToggleState()); };
+        m_sinusoidalButton.onClick = [this] { m_instrument.setActiveModel (morphex::Model::Type::Sinusoidal, m_sinusoidalButton.getToggleState()); };
+        m_stochasticButton.onClick = [this] { m_instrument.setActiveModel (morphex::Model::Type::Stochastic, m_stochasticButton.getToggleState()); };
+        m_attackButton.onClick     = [this] { m_instrument.setActiveModel (morphex::Model::Type::Attack, m_attackButton.getToggleState()); };
+        m_residualButton.onClick   = [this] { m_instrument.setActiveModel (morphex::Model::Type::Residual, m_residualButton.getToggleState()); };
 
         // Pad XY
 
@@ -95,12 +94,12 @@ public:
         float             glow_h      = glow_radius * 2.0f;
 
         juce::ColourGradient cg_glow (GUI::Color::Accent.withAlpha (0.3f),
-                                glow_x,
-                                glow_y,
-                                GUI::Color::Accent.withAlpha (0.0f),
-                                glow_x + (glow_radius * 0.4f),
-                                glow_y + (glow_radius * 0.4f),
-                                true);
+                                      glow_x,
+                                      glow_y,
+                                      GUI::Color::Accent.withAlpha (0.0f),
+                                      glow_x + (glow_radius * 0.4f),
+                                      glow_y + (glow_radius * 0.4f),
+                                      true);
 
         g.setFillType (cg_glow);
         g.fillRect (0, 0, getWidth(), getHeight());
@@ -136,7 +135,7 @@ public:
 
     void updateToggleState (juce::Button* button, juce::String name)
     {
-        auto   state          = button->getToggleState();
+        auto         state          = button->getToggleState();
         juce::String stateString    = state ? "ON" : "OFF";
         juce::String selectedString = state ? " (selected)" : "";
 

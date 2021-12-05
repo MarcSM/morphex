@@ -19,8 +19,8 @@
 #include "sound.h"
 #include "tools.h"
 
-#include "../helpers/utils.h"
 #include "../helpers/helper_functions.h"
+#include "../helpers/utils.h"
 
 // TODO - Adapt / remake the "Sound" class to use "ValueTree"
 // TODO - Merge with synth_sound
@@ -113,16 +113,16 @@ void Sound::reset()
 juce::String Sound::loadDataFromFile (std::string file_path)
 {
     juce::File file = juce::File (file_path);
-    name      = file.getFileNameWithoutExtension().toStdString();
-    extension = file.getFileExtension().toStdString();
-    path      = file_path;
-    dirpath   = file.getParentDirectory().getFullPathName().toStdString();
+    name            = file.getFileNameWithoutExtension().toStdString();
+    extension       = file.getFileExtension().toStdString();
+    path            = file_path;
+    dirpath         = file.getParentDirectory().getFullPathName().toStdString();
 
     std::stringstream had_file_path_aux;
     had_file_path_aux << dirpath << static_cast<std::string> (juce::File::getSeparatorString()) << name << ".had";
 
     std::string had_file_path = had_file_path_aux.str();
-    juce::File        had_file      = juce::File (had_file_path);
+    juce::File  had_file      = juce::File (had_file_path);
 
     return had_file.loadFileAsString();
 }
@@ -136,7 +136,7 @@ void Sound::load (juce::String file_data, HadFileSource file_source)
     if (file_source == HadFileSource::Path)
     {
         juce::String file_path = file_data;
-        file_data        = loadDataFromFile (file_data.toStdString());
+        file_data              = loadDataFromFile (file_data.toStdString());
     }
 
     std::unique_ptr<juce::XmlElement> xml (juce::XmlDocument::parse (file_data));
@@ -158,21 +158,21 @@ void Sound::load (juce::String file_data, HadFileSource file_source)
 
                 // Sound
                 juce::XmlElement* xml_sound = xml->getChildByName ("sound"); // had["sound"]
-                fs                    = xml_sound->getChildByName ("fs")->getAllSubText().getIntValue();
-                note                  = xml_sound->getChildByName ("note")->getAllSubText().getIntValue();
-                velocity              = xml_sound->getChildByName ("velocity")->getAllSubText().getIntValue();
-                max_harmonics         = xml_sound->getChildByName ("max_harmonics")->getAllSubText().getIntValue();
-                max_frames            = xml_sound->getChildByName ("max_frames")->getAllSubText().getIntValue();
-                loop.start            = xml_sound->getChildByName ("loop")->getChildByName ("start")->getAllSubText().getIntValue();
-                loop.end              = xml_sound->getChildByName ("loop")->getChildByName ("end")->getAllSubText().getIntValue();
+                fs                          = xml_sound->getChildByName ("fs")->getAllSubText().getIntValue();
+                note                        = xml_sound->getChildByName ("note")->getAllSubText().getIntValue();
+                velocity                    = xml_sound->getChildByName ("velocity")->getAllSubText().getIntValue();
+                max_harmonics               = xml_sound->getChildByName ("max_harmonics")->getAllSubText().getIntValue();
+                max_frames                  = xml_sound->getChildByName ("max_frames")->getAllSubText().getIntValue();
+                loop.start                  = xml_sound->getChildByName ("loop")->getChildByName ("start")->getAllSubText().getIntValue();
+                loop.end                    = xml_sound->getChildByName ("loop")->getChildByName ("end")->getAllSubText().getIntValue();
 
                 // Model
                 juce::XmlElement* xml_synthesis = xml->getChildByName ("synthesis"); // had["synthesis"]
-                model->harmonic           = hasChild (xml_synthesis, "h");
-                model->sinusoidal         = hasChild (xml_synthesis, "s");
-                model->stochastic         = hasChild (xml_synthesis, "c");
-                model->attack             = hasChild (xml_synthesis, "a");
-                model->residual           = hasChild (xml_synthesis, "r");
+                model->harmonic                 = hasChild (xml_synthesis, "h");
+                model->sinusoidal               = hasChild (xml_synthesis, "s");
+                model->stochastic               = hasChild (xml_synthesis, "c");
+                model->attack                   = hasChild (xml_synthesis, "a");
+                model->residual                 = hasChild (xml_synthesis, "r");
                 if (model->harmonic)
                 {
                     juce::XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName ("h"); // had["synthesis"]["h"]
@@ -205,7 +205,7 @@ void Sound::load (juce::String file_data, HadFileSource file_source)
                 //                    if (dirpath.empty()) dirpath = "";
 
                 // Analysis parameters
-                juce::XmlElement* xml_parameters              = xml->getChildByName ("parameters"); // had["parameters"]
+                juce::XmlElement* xml_parameters        = xml->getChildByName ("parameters"); // had["parameters"]
                 analysis.parameters.window_type         = (WindowType) xml_parameters->getChildByName ("window_type")->getAllSubText().getIntValue();
                 analysis.parameters.window_size         = xml_parameters->getChildByName ("window_size")->getAllSubText().getIntValue();
                 analysis.parameters.fft_size            = xml_parameters->getChildByName ("fft_size")->getAllSubText().getIntValue();
@@ -299,6 +299,11 @@ void Sound::load (juce::String file_data, HadFileSource file_source)
         //            jassertfalse;
     }
 };
+
+bool Sound::isLoaded()
+{
+    return loaded;
+}
 
 //    // TODO - If there is no ".mif" (Morphex Instrument File)
 //    // It is necessary to preload or even pre-analyze the sound file
@@ -719,4 +724,4 @@ void Sound::normalizeWaveform (std::vector<float>& waveform, float max_val, floa
     jassert (results_great.size() == 0); // Upper clipping
     jassert (results_less.size() == 0);  // Lower clipping
 }
-} // namespace moprhex
+} // namespace morphex

@@ -154,14 +154,14 @@ void Voice::clearAndResetCurrentNote()
 void Voice::updateMorphSounds (float f_note, float f_velocity)
 {
     // Instrument::Mode::Morphing
-    if (m_instrument.mode == Instrument::Mode::Morphing)
+    if (m_instrument.getOperationMode() == Instrument::OperationMode::Morphing)
     {
         morph_sounds = m_instrument.getMorphSounds();
     }
     // Instrument::Mode::FullRange
     else
     {
-        morph_sounds = m_instrument.getCloserSounds (f_note, f_velocity);
+        morph_sounds = m_instrument.getClosestSounds (f_note, f_velocity);
     }
 
     bool first_iter = true;
@@ -312,22 +312,22 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
         }
 
         // Instrument::Mode::Morphing
-        if (m_instrument.mode == Instrument::Mode::Morphing)
+        if (m_instrument.getOperationMode() == Instrument::OperationMode::Morphing)
         {
             float freqs_interp_factor = *m_parameters.getRawParameterValue (morphex::PARAMETERS<float>[morphex::Parameters::FreqsInterpFactor].ID);
             float mags_interp_factor  = *m_parameters.getRawParameterValue (morphex::PARAMETERS<float>[morphex::Parameters::MagsInterpFactor].ID);
 
             // TODO - Apply fade out if *i_current_frame > min_note_end - 4 (4 = fade_out_frames)
-            sound_frame = m_instrument.morphSoundFrames (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size, freqs_interp_factor, mags_interp_factor);
+            sound_frame = m_instrument.getMorphedSoundFrame (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size, freqs_interp_factor, mags_interp_factor);
         }
         // Instrument::Mode::FullRange
         else
         {
-            if (m_instrument.interpolation_mode == Instrument::Interpolation::None or morph_sounds[MorphLocation::UpLeft] == morph_sounds[MorphLocation::DownRight])
+            if (m_instrument.getInterpolationMode() == Instrument::InterpolationMode::None or morph_sounds[MorphLocation::UpLeft] == morph_sounds[MorphLocation::DownRight])
             {
                 Sound* selected_sound;
 
-                if (m_instrument.interpolation_mode == Instrument::Interpolation::None)
+                if (m_instrument.getInterpolationMode() == Instrument::InterpolationMode::None)
                 {
                     int left_note_distance  = std::abs (f_pressed_midi_note - morph_sounds[MorphLocation::UpLeft]->note);
                     int right_note_distance = std::abs (f_pressed_midi_note - morph_sounds[MorphLocation::DownRight]->note);
@@ -431,7 +431,7 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
             else
             {
                 // TODO - Apply fade out if *i_current_frame > min_note_end - 4 (4 = fade_out_frames)
-                sound_frame = m_instrument.morphSoundFrames (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
+                sound_frame = m_instrument.getMorphedSoundFrame (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
             }
         }
 
