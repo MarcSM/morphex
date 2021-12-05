@@ -89,7 +89,6 @@ void Instrument::loadSound (std::string filePath, MorphLocation morphLocation)
     auto sound = std::make_unique<Sound> (filePath);
 
     if (sound && sound->isLoaded())
-
     {
         // TODO - Improve this logic
         if (morphLocation < MorphLocation::Total)

@@ -19,7 +19,7 @@
 #include "sound.h"
 #include "tools.h"
 
-// TODO - Adapt / remake the "Sound" class to use "ValueTree"
+// TODO - Adapt/remake this class to make use of JUCE's "ValueTree" class (undo/redo feature)
 // TODO - Merge with synth_sound
 
 namespace Constants
@@ -29,289 +29,210 @@ constexpr auto CurrentFileVersion = 1;
 
 namespace morphex
 {
-Sound::Sound()
+Sound::Sound (std::string filePath)
 {
-    init();
+    loadHadFile (filePath);
 };
-
-// Read the file from a file_path
-Sound::Sound (std::string file_path)
-{
-    init();
-
-    // Load data from file_path
-    juce::String fileData = loadDataFromFile (file_path);
-
-    // Load the sound
-    load (fileData, HadFileSource::Binary);
-};
-
-Sound::Sound (std::string file_path, int note, int velocity)
-{
-    init();
-
-    note     = note;
-    velocity = velocity;
-
-    // Load data from file_path
-    juce::String fileData = loadDataFromFile (file_path);
-
-    // Load the sound
-    load (fileData, HadFileSource::Binary);
-};
-
-// Read the file from a binary file with an hypothetical file_path
-Sound::Sound (juce::String fileData, std::string file_path)
-{
-    init();
-
-    // Save the file_path
-    path = file_path;
-
-    // Load the sound
-    load (fileData, HadFileSource::Binary);
-};
-
-Sound::~Sound() {};
-
-void Sound::init (bool init_model)
-{
-    // Initialize default values
-    path            = "";
-    name            = "";
-    extension       = "";
-    loaded          = false;
-    analyzed        = false;
-    had_file_loaded = false;
-
-    // Initializing default values
-    //    x = []
-    fs            = 44100;
-    note          = 0;
-    velocity      = 0;
-    max_harmonics = 0;
-    max_frames    = 0;
-    sound_length  = 0;
-    loop.start    = 0;
-    loop.end      = 0;
-
-    if (init_model)
-        model = new Model();
-}
 
 void Sound::reset()
 {
-    init (false);
-
-    model->reset();
+    m_soundSourceInfo = nullptr;
+    m_hadFileInfo     = nullptr;
+    m_soundInfo       = nullptr;
+    m_hadInfo         = nullptr;
 }
 
-// Load data of ".had" file
-juce::String Sound::loadDataFromFile (std::string file_path)
+void Sound::loadHadFile (juce::String filePath)
 {
-    juce::File file = juce::File (file_path);
-    name            = file.getFileNameWithoutExtension().toStdString();
-    extension       = file.getFileExtension().toStdString();
-    path            = file_path;
-    dirpath         = file.getParentDirectory().getFullPathName().toStdString();
+    reset();
 
-    std::stringstream had_file_path_aux;
-    had_file_path_aux << dirpath << static_cast<std::string> (juce::File::getSeparatorString()) << name << ".had";
-
-    std::string had_file_path = had_file_path_aux.str();
-    juce::File  had_file      = juce::File (had_file_path);
-
-    return had_file.loadFileAsString();
-}
-
-void Sound::load (juce::String fileData, HadFileSource fileSource)
-{
-    // Initialize default values
-    loaded = false;
-
-    // If fileData is a file_path
-    if (fileSource == HadFileSource::Path)
+    try
     {
-        juce::String file_path = fileData;
-        fileData               = loadDataFromFile (fileData.toStdString());
-    }
+        juce::File hadFile = juce::File (filePath);
 
-    std::unique_ptr<juce::XmlElement> xml (juce::XmlDocument::parse (fileData));
-
-    if (xml)
-    {
-        try
+        if (hadFile.existsAsFile())
         {
-            juce::XmlElement* xml_file = xml->getChildByName ("file"); // had["file"]
+            m_hadFileInfo.name      = hadFile.getFileNameWithoutExtension().toStdString();
+            m_hadFileInfo.extension = hadFile.getFileExtension().toStdString();
+            m_hadFileInfo.path      = filePath;
+            m_hadFileInfo.dirpath   = hadFile.getParentDirectory().getFullPathName().toStdString();
 
-            if (xml_file)
+            std::unique_ptr<juce::XmlElement> xml (juce::XmlDocument::parse (hadFile.loadFileAsString()));
+
+            if (xml)
             {
-                file_version = hasChild (xml_file, "v") ? xml_file->getChildByName ("v")->getAllSubText().getIntValue() : 0;
+                juce::XmlElement* xml_file = xml->getChildByName ("file"); // had["file"]
 
-                if (file_version == Constants::CurrentFileVersion and hasChild (xml_file, "dp"))
+                if (xml_file)
                 {
-                    decimal_places = xml_file->getChildByName ("dp")->getAllSubText().getIntValue();
+                    file_version = hasChild (xml_file, "v") ? xml_file->getChildByName ("v")->getAllSubText().getIntValue() : 0;
 
-                    // Sound
-                    juce::XmlElement* xml_sound = xml->getChildByName ("sound"); // had["sound"]
-                    fs                          = xml_sound->getChildByName ("fs")->getAllSubText().getIntValue();
-                    note                        = xml_sound->getChildByName ("note")->getAllSubText().getIntValue();
-                    velocity                    = xml_sound->getChildByName ("velocity")->getAllSubText().getIntValue();
-                    max_harmonics               = xml_sound->getChildByName ("max_harmonics")->getAllSubText().getIntValue();
-                    max_frames                  = xml_sound->getChildByName ("max_frames")->getAllSubText().getIntValue();
-                    loop.start                  = xml_sound->getChildByName ("loop")->getChildByName ("start")->getAllSubText().getIntValue();
-                    loop.end                    = xml_sound->getChildByName ("loop")->getChildByName ("end")->getAllSubText().getIntValue();
-
-                    // Model
-                    juce::XmlElement* xml_synthesis = xml->getChildByName ("synthesis"); // had["synthesis"]
-                    model->harmonic                 = hasChild (xml_synthesis, "h");
-                    model->sinusoidal               = hasChild (xml_synthesis, "s");
-                    model->stochastic               = hasChild (xml_synthesis, "c");
-                    model->attack                   = hasChild (xml_synthesis, "a");
-                    model->residual                 = hasChild (xml_synthesis, "r");
-                    if (model->harmonic)
+                    if (file_version == Constants::CurrentFileVersion and hasChild (xml_file, "dp"))
                     {
-                        juce::XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName ("h"); // had["synthesis"]["h"]
-                        model->setHarmonic (getMatrixOfInts (xml_synthesis_harmonic, "f"),
-                                            getMatrixOfInts (xml_synthesis_harmonic, "m"),
-                                            getMatrixOfInts (xml_synthesis_harmonic, "p"),
-                                            true);
+                        decimal_places = xml_file->getChildByName ("dp")->getAllSubText().getIntValue();
+
+                        // Sound
+                        juce::XmlElement* xml_sound = xml->getChildByName ("sound"); // had["sound"]
+                        m_soundInfo                 = std::make_unique<SoundInfo>;
+                        m_hadInfo                   = std::make_unique<HadInfo>;
+                        m_soundInfo->note           = xml_sound->getChildByName ("note")->getAllSubText().getIntValue();
+                        m_soundInfo->velocity       = xml_sound->getChildByName ("velocity")->getAllSubText().getIntValue();
+                        m_hadInfo->fs               = xml_sound->getChildByName ("fs")->getAllSubText().getIntValue();
+                        // max_harmonics               = xml_sound->getChildByName ("max_harmonics")->getAllSubText().getIntValue();
+                        // max_frames                  = xml_sound->getChildByName ("max_frames")->getAllSubText().getIntValue();
+                        m_soundInfo->loopStart = xml_sound->getChildByName ("loop")->getChildByName ("start")->getAllSubText().getIntValue();
+                        m_soundInfo->loopEnd   = xml_sound->getChildByName ("loop")->getChildByName ("end")->getAllSubText().getIntValue();
+
+                        // Model
+                        juce::XmlElement* xml_synthesis = xml->getChildByName ("synthesis"); // had["synthesis"]
+                        m_model                         = std::make_unique<Model>;
+                        model->harmonic                 = hasChild (xml_synthesis, "h");
+                        model->sinusoidal               = hasChild (xml_synthesis, "s");
+                        model->stochastic               = hasChild (xml_synthesis, "c");
+                        model->attack                   = hasChild (xml_synthesis, "a");
+                        model->residual                 = hasChild (xml_synthesis, "r");
+                        if (model->harmonic)
+                        {
+                            juce::XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName ("h"); // had["synthesis"]["h"]
+                            model->setHarmonic (getMatrixOfInts (xml_synthesis_harmonic, "f"),
+                                                getMatrixOfInts (xml_synthesis_harmonic, "m"),
+                                                getMatrixOfInts (xml_synthesis_harmonic, "p"),
+                                                true);
+                        }
+                        if (model->sinusoidal)
+                        {
+                            juce::XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName ("s"); // had["synthesis"]["s"]
+                            model->setSinusoidal (getMatrixOfInts (xml_synthesis_sinusoidal, "f"),
+                                                  getMatrixOfInts (xml_synthesis_sinusoidal, "m"),
+                                                  getMatrixOfInts (xml_synthesis_sinusoidal, "p"),
+                                                  true);
+                        }
+                        if (model->stochastic)
+                        {
+                            model->setStochastic (getMatrixOfFloats (xml_synthesis, "c"), true);
+                        }
+                        if (model->attack)
+                        {
+                            model->setAttack (getVectorOfFloats (xml_synthesis, "a"), true);
+                        }
+                        if (model->residual)
+                        {
+                            model->setResidual (getVectorOfFloats (xml_synthesis, "r"), true);
+                        }
+
+                        // If source file is binary data, fill the missing attributes
+                        if (name.empty())
+                            name = file.name;
+                        if (extension.empty())
+                            extension = ".had";
+                        //                    if (path.empty()) path = "";
+                        //                    if (dirpath.empty()) dirpath = "";
+
+                        // Analysis parameters
+                        juce::XmlElement* xml_parameters = xml->getChildByName ("parameters"); // had["parameters"]
+                        m_hadInfo                        = std::make_unique<HadInfo>;
+                        m_hadInfo->window_type           = (WindowType) xml_parameters->getChildByName ("window_type")->getAllSubText().getIntValue();
+                        m_hadInfo->window_size           = xml_parameters->getChildByName ("window_size")->getAllSubText().getIntValue();
+                        m_hadInfo->fft_size              = xml_parameters->getChildByName ("fft_size")->getAllSubText().getIntValue();
+                        m_hadInfo->magnitude_threshold   = xml_parameters->getChildByName ("magnitude_threshold")->getAllSubText().getIntValue();
+                        m_hadInfo->hearing_threshold     = xml_parameters->getChildByName ("hearing_threshold")->getAllSubText().getIntValue();
+                        m_hadInfo->min_sine_dur          = xml_parameters->getChildByName ("min_sine_dur")->getAllSubText().getDoubleValue();
+                        m_hadInfo->max_harm              = xml_parameters->getChildByName ("max_harm")->getAllSubText().getIntValue();
+                        m_hadInfo->min_f0                = xml_parameters->getChildByName ("min_f0")->getAllSubText().getIntValue();
+                        m_hadInfo->max_f0                = xml_parameters->getChildByName ("max_f0")->getAllSubText().getIntValue();
+                        m_hadInfo->max_f0_error          = xml_parameters->getChildByName ("max_f0_error")->getAllSubText().getIntValue();
+                        m_hadInfo->harm_dev_slope        = xml_parameters->getChildByName ("harm_dev_slope")->getAllSubText().getDoubleValue();
+                        m_hadInfo->stoc_fact             = xml_parameters->getChildByName ("stoc_fact")->getAllSubText().getDoubleValue();
+                        m_hadInfo->synthesis_fft_size    = xml_parameters->getChildByName ("synthesis_fft_size")->getAllSubText().getIntValue();
+                        m_hadInfo->hop_size              = xml_parameters->getChildByName ("hop_size")->getAllSubText().getIntValue();
+
+                        // TODO TOFIX - Fix max_frames on .had files (max_frames int 22050 (attack))
+                        // and add XML_DECIMAL_PLACES on the .had file too
+                        features.max_frames = (int) std::max ({ (int) model->values.harmonic.freqs.size(),
+                                                                (int) model->values.harmonic.mags.size(),
+                                                                (int) model->values.harmonic.phases.size(),
+                                                                (int) model->values.sinusoidal.freqs.size(),
+                                                                (int) model->values.sinusoidal.mags.size(),
+                                                                (int) model->values.sinusoidal.phases.size(),
+                                                                (int) model->values.stochastic.size(),
+                                                                (int) std::trunc (model->values.attack.size() / analysis.parameters.hop_size),
+                                                                (int) std::trunc (model->values.residual.size() / analysis.parameters.hop_size) });
+
+                        m_soundInfo->sound_length = max_frames * analysis.parameters.hop_size;
+                        if (m_soundInfo->loopEnd == 0)
+                        {
+                            m_soundInfo->loopEnd = sound_length;
+                        }
+
+                        // // TODO TEST - Temporal override
+                        // m_soundInfo->loopEnd = (max_frames - 24) * analysis.parameters.hop_size;
+
+                        //                    // Synthesize the original sound
+                        //                    synthesize();
+                        //
+                        // Extract Additional Features
+                        extractFeatures();
+
+                        generateFrames();
+
+                        // Save Original Values
+                        //                saveOriginalValues();
+
+                        /** Normalize magnitudes on load by default */
+                        // TODO - Fix this method
+                        //                normalizeMagnitudes();
+
+                        /* TODO? - Refreshing the UI (waveform visualization) */
                     }
-                    if (model->sinusoidal)
+                    else
                     {
-                        juce::XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName ("s"); // had["synthesis"]["s"]
-                        model->setSinusoidal (getMatrixOfInts (xml_synthesis_sinusoidal, "f"),
-                                              getMatrixOfInts (xml_synthesis_sinusoidal, "m"),
-                                              getMatrixOfInts (xml_synthesis_sinusoidal, "p"),
-                                              true);
+                        // TODO - Raise and catch exception
+                        throw << "Error while parsing the XML hda file data\n";
+                        jassertfalse;
                     }
-                    if (model->stochastic)
-                        model->setStochastic (getMatrixOfFloats (xml_synthesis, "c"), true);
-                    if (model->attack)
-                        model->setAttack (getVectorOfFloats (xml_synthesis, "a"), true);
-                    if (model->residual)
-                        model->setResidual (getVectorOfFloats (xml_synthesis, "r"), true);
-
-                    // If source file is binary data, fill the missing attributes
-                    if (name.empty())
-                        name = file.name;
-                    if (extension.empty())
-                        extension = ".had";
-                    //                    if (path.empty()) path = "";
-                    //                    if (dirpath.empty()) dirpath = "";
-
-                    // Analysis parameters
-                    juce::XmlElement* xml_parameters        = xml->getChildByName ("parameters"); // had["parameters"]
-                    analysis.parameters.window_type         = (WindowType) xml_parameters->getChildByName ("window_type")->getAllSubText().getIntValue();
-                    analysis.parameters.window_size         = xml_parameters->getChildByName ("window_size")->getAllSubText().getIntValue();
-                    analysis.parameters.fft_size            = xml_parameters->getChildByName ("fft_size")->getAllSubText().getIntValue();
-                    analysis.parameters.magnitude_threshold = xml_parameters->getChildByName ("magnitude_threshold")->getAllSubText().getIntValue();
-                    analysis.parameters.hearing_threshold   = xml_parameters->getChildByName ("hearing_threshold")->getAllSubText().getIntValue();
-                    analysis.parameters.min_sine_dur        = xml_parameters->getChildByName ("min_sine_dur")->getAllSubText().getDoubleValue();
-                    analysis.parameters.max_harm            = xml_parameters->getChildByName ("max_harm")->getAllSubText().getIntValue();
-                    analysis.parameters.min_f0              = xml_parameters->getChildByName ("min_f0")->getAllSubText().getIntValue();
-                    analysis.parameters.max_f0              = xml_parameters->getChildByName ("max_f0")->getAllSubText().getIntValue();
-                    analysis.parameters.max_f0_error        = xml_parameters->getChildByName ("max_f0_error")->getAllSubText().getIntValue();
-                    analysis.parameters.harm_dev_slope      = xml_parameters->getChildByName ("harm_dev_slope")->getAllSubText().getDoubleValue();
-                    analysis.parameters.stoc_fact           = xml_parameters->getChildByName ("stoc_fact")->getAllSubText().getDoubleValue();
-                    analysis.parameters.synthesis_fft_size  = xml_parameters->getChildByName ("synthesis_fft_size")->getAllSubText().getIntValue();
-                    analysis.parameters.hop_size            = xml_parameters->getChildByName ("hop_size")->getAllSubText().getIntValue();
-
-                    //                    // Fix missing data
-                    //                    if (max_frames == 0)
-                    //                    {
-                    //                        max_frames = (int)std::max({
-                    //                            model->values.harmonic.freqs.size(),
-                    //                            model->values.harmonic.mags.size(),
-                    //                            model->values.harmonic.phases.size(),
-                    //                            model->values.sinusoidal.freqs.size(),
-                    //                            model->values.sinusoidal.mags.size(),
-                    //                            model->values.sinusoidal.phases.size(),
-                    //                            model->values.stochastic.size(),
-                    //                            model->values.attack.size(),
-                    //                            model->values.residual.size()
-                    //                        });
-                    //                    };
-
-                    // TODO TOFIX - Fix max_frames on .had files (max_frames    int    22050 (attack))
-                    // and add XML_DECIMAL_PLACES on the .had file too
-                    max_frames = (int) std::max ({ (int) model->values.harmonic.freqs.size(),
-                                                   (int) model->values.harmonic.mags.size(),
-                                                   (int) model->values.harmonic.phases.size(),
-                                                   (int) model->values.sinusoidal.freqs.size(),
-                                                   (int) model->values.sinusoidal.mags.size(),
-                                                   (int) model->values.sinusoidal.phases.size(),
-                                                   (int) model->values.stochastic.size(),
-                                                   (int) std::trunc (model->values.attack.size() / analysis.parameters.hop_size),
-                                                   (int) std::trunc (model->values.residual.size() / analysis.parameters.hop_size) });
-
-                    sound_length = max_frames * analysis.parameters.hop_size;
-                    if (loop.end == 0)
-                        loop.end = sound_length;
-
-                    // TODO TEST - Temporal override
-                    loop.end = (max_frames - 24) * analysis.parameters.hop_size;
-
-                    //                    // Synthesize the original sound
-                    //                    synthesize();
-                    //
-                    // Extract Additional Features
-                    extractFeatures();
-
-                    // Save Original Values
-                    //                saveOriginalValues();
-
-                    /** Normalize magnitudes on load by default */
-                    // TODO - Fix this method
-                    //                normalizeMagnitudes();
-
-                    /** Updating flags */
-                    had_file_loaded = true;
-
-                    // TODO - Test
-                    loaded = true;
-
-                    /* TODO? - Refreshing the UI (waveform visualization) */
                 }
                 else
                 {
-                    // TODO - Raise and catch exception
-                    std::cout << "Error while loading the sound\n";
-                    jassertfalse;
-
-                    reset();
+                    throw "Sound file not compatible";
                 }
             }
             else
             {
-                throw "Sound file not compatible";
+                throw "Error while loading the sound\n";
+                jassertfalse;
             }
         }
-        catch (const char* msg)
+        else
         {
-            std::cout << "Error while loading the sound: '" << msg << "'\n";
+            throw << "The file doesn't exist\n";
             jassertfalse;
         }
     }
-    else
+    catch (const char* msg)
     {
-        std::cout << "Error while loading the sound\n";
+        throw << "Error while loading the sound: '" << msg << "'\n";
         jassertfalse;
+        reset();
     }
 };
 
 bool Sound::isLoaded()
 {
-    return loaded;
+    return m_soundInfo && isAnalyzed();
+}
+
+bool Sound::isAnalyzed()
+{
+    return m_hadInfo;
 }
 
 //    // TODO - If there is no ".mif" (Morphex Instrument File)
 //    // It is necessary to preload or even pre-analyze the sound file
 //    // to locate it on the right note. Try to use copy constructors
 //    // to prevent process the whole file again.
-//    void Sound::getInstrumentFromFile(std::string file_path)
+//    void Sound::getInstrumentFromFile(std::string filePath)
 //    {
-//        File had_file = File(file_path);
+//        File had_file = File(filePath);
 //        fileData = had_file.loadFileAsString();
 //        return
 //
@@ -320,7 +241,7 @@ bool Sound::isLoaded()
 //
 //        std::unique_ptr<XmlElement> xml( XmlDocument::parse( fileData ) );
 //
-//        std::string file_path
+//        std::string filePath
 //    }
 
 Sound::Frame Sound::getFrame (int i_num_frame, int i_frame_length)
@@ -465,6 +386,12 @@ std::vector<float> Sound::getComponentFrame (Frame::Component component_name, in
     }
 
     return component_frame;
+}
+
+void Sound::generateFrames()
+{
+    // TODO - Merge model.h into this Sound class
+    // m_model -> m_frames
 }
 
 // TODO

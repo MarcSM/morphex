@@ -86,7 +86,7 @@ public:
     MorphSounds       getMorphSounds();
     Sound::Frame      getSoundFrame (float targetMidiNote, float velocity, int currentFrameIndex, int frameLength, float freqsInterpFactor, float magsInterpFactor);
     Sound::Frame      getMorphedSoundFrame (float targetMidiNote, MorphSounds morphSounds, int currentFrameIndex, int frameLength, float freqsInterpFactor = -1, float magsInterpFactor = -1);
-    
+
     bool isModelActive (Model::Type modelType);
 
 private:
@@ -98,8 +98,8 @@ private:
         Waveform,
     };
 
-    Sound*             getClosestLoadedSound (const Note& note, const float velocity);
-    
+    Sound* getClosestLoadedSound (const Note& note, const float velocity);
+
     std::vector<float> interpolateFrames (FrameType frameType, float interpolationFactor, std::vector<float> frameA, std::vector<float> frameB, int frameLength);
     bool               hasAnyLoadedSound (const Note& note) const;
 
