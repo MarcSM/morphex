@@ -21,9 +21,7 @@
 #include "instrument.h"
 #include "synth_sound.h"
 #include "synthesis.h"
-
-#include "../helpers/helper_functions.h"
-#include "../helpers/parameters.h"
+#include "parameters.h"
 
 namespace morphex
 {

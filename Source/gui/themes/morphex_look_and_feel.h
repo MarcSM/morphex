@@ -20,7 +20,7 @@
 
 #include <JuceHeader.h>
 
-#include "../../helpers/interface_defines.h"
+#include "../interface_defines.h"
 
 class MorphexLookAndFeel : public juce::LookAndFeel_V4
 {

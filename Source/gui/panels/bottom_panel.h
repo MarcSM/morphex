@@ -20,6 +20,8 @@
 
 #include <JuceHeader.h>
 
+#include "../interface_defines.h"
+
 class BottomPanel : public juce::Component
 {
 public:

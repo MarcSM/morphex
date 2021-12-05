@@ -6,6 +6,7 @@
               jucerFormatVersion="1" addUsingNamespaceToJuceHeader="0">
   <MAINGROUP id="BTCZAR" name="Morphex">
     <GROUP id="{AFEC479D-5C67-2E7A-1D34-7E1570EAC1CB}" name="core">
+      <FILE id="TKJlnV" name="parameters.h" compile="0" resource="0" file="Source/core/parameters.h"/>
       <FILE id="gKEM2f" name="codec.h" compile="0" resource="0" file="Source/Core/codec.h"/>
       <FILE id="MCEVjp" name="tools.h" compile="0" resource="0" file="Source/Core/tools.h"/>
       <FILE id="DIC1Xs" name="instrument.h" compile="0" resource="0" file="Source/Core/instrument.h"/>
@@ -33,6 +34,8 @@
       <FILE id="jPF0Wj" name="reverb.h" compile="0" resource="0" file="Source/DSP/reverb.h"/>
     </GROUP>
     <GROUP id="{6EDA0A93-483B-32FF-388C-C9E056E99237}" name="gui">
+      <FILE id="bDYU5k" name="interface_defines.h" compile="0" resource="0"
+            file="Source/gui/interface_defines.h"/>
       <GROUP id="{B04CE76A-724B-76AD-99B6-5F2521380886}" name="components">
         <FILE id="BBXSfP" name="button.h" compile="0" resource="0" file="Source/gui/components/button.h"/>
         <FILE id="uNHGPx" name="collection_browser.h" compile="0" resource="0"
@@ -63,14 +66,6 @@
             file="Source/Managers/preset_manager.h"/>
       <FILE id="zNUnLV" name="preset_manager.cpp" compile="1" resource="0"
             file="Source/Managers/preset_manager.cpp"/>
-    </GROUP>
-    <GROUP id="{2FE0720A-2404-2915-1953-7D2767C6275A}" name="helpers">
-      <FILE id="AjiFPN" name="interface_defines.h" compile="0" resource="0"
-            file="Source/Helpers/interface_defines.h"/>
-      <FILE id="Wli5cb" name="helper_functions.h" compile="0" resource="0"
-            file="Source/Helpers/helper_functions.h"/>
-      <FILE id="KpnAB6" name="parameters.h" compile="0" resource="0" file="Source/Helpers/parameters.h"/>
-      <FILE id="WNkw0V" name="utils.h" compile="0" resource="0" file="Source/Helpers/utils.h"/>
     </GROUP>
     <GROUP id="{AE3F5129-A357-44A3-5200-C0035B16DD0C}" name="assets">
       <GROUP id="{5E4C884E-1E8F-B633-A8AC-D3394DDE7739}" name="sounds"/>

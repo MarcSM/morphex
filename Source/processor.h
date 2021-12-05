@@ -19,7 +19,7 @@
 #pragma once
 
 #include "core/synth.h"
-#include "helpers/parameters.h"
+#include "core/parameters.h"
 #include "managers/preset_manager.h"
 
 class MorphexAudioProcessor : public juce::AudioProcessor

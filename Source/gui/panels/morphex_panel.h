@@ -22,7 +22,7 @@
 #include "main_panel.h"
 #include "top_panel.h"
 
-#include "../../helpers/interface_defines.h"
+#include "../interface_defines.h"
 
 class MorphexPanel : public juce::Component,
 public juce::DragAndDropContainer

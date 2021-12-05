@@ -17,7 +17,7 @@
  */
 
 #include "reverb.h"
-#include "../helpers/parameters.h"
+#include "../core/parameters.h"
 
 namespace morphex
 {

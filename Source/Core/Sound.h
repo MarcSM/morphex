@@ -240,6 +240,16 @@ public:
     void normalizeWaveform (std::vector<float>& waveform, float max_val, float max_db);
 
 private:
+    bool                                hasChild (juce::XmlElement* parent, juce::String child_name);
+    std::vector<long long>              splitInts (const std::string& list_of_ints);
+    std::vector<float>                  splitFloats (const std::string& list_of_floats, bool int_to_float = false);
+    std::vector<float>                  getVectorOfFloats (juce::XmlElement* parent, juce::String child_name);
+    std::vector<std::vector<long long>> getMatrixOfInts (juce::XmlElement* parent, juce::String child_name);
+    std::vector<std::vector<float>>     getMatrixOfFloats (juce::XmlElement* parent, juce::String child_name);
+
+    float findClosest (float arr[], int n, float target);
+    float getClosestValue (float val1, float val2, float target);
+
     int file_version;
     int decimal_places;
 };

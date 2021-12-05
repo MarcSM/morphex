@@ -18,8 +18,6 @@
 
 #include "preset_manager.h"
 
-#include "../helpers/helper_functions.h"
-
 namespace Constants
 {
 constexpr auto PresetFileExtension      = ".mpf";
@@ -79,7 +77,7 @@ bool PresetManager::loadPresetFromXml (juce::XmlElement* xmlElement)
         for (int i = 0; i < m_currentPresetXml->getNumAttributes(); i++)
         {
             const juce::String paramId = m_currentPresetXml->getAttributeName (i);
-            const float  value   = m_currentPresetXml->getDoubleAttribute (paramId);
+            const float        value   = m_currentPresetXml->getDoubleAttribute (paramId);
 
             for (int j = 0; j < parameters.size(); j++)
             {
@@ -146,8 +144,8 @@ void PresetManager::savePreset()
 
 void PresetManager::saveAsPreset (juce::String inPresetName)
 {
-    auto presetFilePath = Constants::PresetsDirectory + juce::File::getSeparatorChar() + inPresetName + Constants::PresetFileExtension;
-    juce::File presetFile = juce::File (presetFilePath);
+    auto       presetFilePath = Constants::PresetsDirectory + juce::File::getSeparatorChar() + inPresetName + Constants::PresetFileExtension;
+    juce::File presetFile     = juce::File (presetFilePath);
 
     if (!presetFile.exists())
     {
@@ -301,13 +299,26 @@ void PresetManager::storeLocalPreset()
     m_localPresets.clear();
 
     for (juce::DirectoryIterator di (juce::File (Constants::PresetsDirectory),
-                               false,
-                               "*" + static_cast<std::string> (Constants::PresetFileExtension),
+                                     false,
+                                     "*" + static_cast<std::string> (Constants::PresetFileExtension),
                                      juce::File::TypesOfFileToFind::findFiles);
          di.next();)
     {
         juce::File preset = di.getFile();
         m_localPresets.add (preset);
+    }
+}
+
+// Remove First Occurrence of given substring from main string.
+void PresetManager::removeSubStr (std::string& mainStr, const std::string& toRemove) const
+{
+    // Search for the substring in string
+    size_t pos = mainStr.find (toRemove);
+
+    if (pos != std::string::npos)
+    {
+        // If found then remove it from string
+        mainStr.erase (pos, toRemove.length());
     }
 }
 } // namespace morphex

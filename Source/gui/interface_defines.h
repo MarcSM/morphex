@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "JuceHeader.h"
+#include <JuceHeader.h>
 
 #define MORPHEX_PANEL_WIDTH   1000
 #define MORPHEX_PANEL_HEIGHT  600

@@ -30,14 +30,14 @@ public:
     void getXmlForPreset (juce::XmlElement* xmlElement);
     bool loadPresetFromXml (juce::XmlElement* xmlElement);
 
-    int    getNumberOfPresets();
+    int          getNumberOfPresets();
     juce::String getPresetName (int presetIndex);
 
-    void   createNewPreset();
-    void   savePreset();
-    void   saveAsPreset (juce::String presetName);
-    bool   loadPreset (int presetIndex);
-    bool   getIsCurrentPresetSaved() const;
+    void         createNewPreset();
+    void         savePreset();
+    void         saveAsPreset (juce::String presetName);
+    bool         loadPreset (int presetIndex);
+    bool         getIsCurrentPresetSaved() const;
     juce::String getCurrentPresetName() const;
 
     void getSoundInformation (juce::XmlElement* xmlElement) const;
@@ -45,14 +45,15 @@ public:
 
 private:
     void storeLocalPreset();
+    void removeSubStr (std::string& mainStr, const std::string& toRemove) const;
 
-    juce::AudioProcessor&     m_processor;
-    Synth& m_synth;
+    juce::AudioProcessor& m_processor;
+    Synth&                m_synth;
 
     juce::Array<juce::File> m_localPresets;
-    juce::String      m_currentPresetName;
-    bool        m_currentPresetIsSaved;
-    juce::XmlElement* m_currentPresetXml;
-    juce::File        m_currentLoadedPreset;
+    juce::String            m_currentPresetName;
+    bool                    m_currentPresetIsSaved;
+    juce::XmlElement*       m_currentPresetXml;
+    juce::File              m_currentLoadedPreset;
 };
 }; // namespace morphex

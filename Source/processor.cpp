@@ -19,8 +19,6 @@
 #include "processor.h"
 #include "editor.h"
 
-#include "helpers/utils.h"
-
 MorphexAudioProcessor::MorphexAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
     :
