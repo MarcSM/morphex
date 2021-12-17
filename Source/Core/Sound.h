@@ -18,37 +18,45 @@
 
 #pragma once
 
-// #include "JuceHeader.h"
+#include <JuceHeader.h>
 
 #include "frame.h"
 
 // #include <numeric>
 // #include <vector>
 
-#define ADD_MAPPAIR(_first, _second)                                    \
-    struct Pair                                                         \
-    {                                                                   \
-        std::pair<const key_type, mapped_type>& _p;                     \
-        Pair (std::pair<const key_type, mapped_type>& _a) : _p (_a) {}; \
-        key_type     _first() { return _p.first; };                     \
-        mapped_type& _second() { return _p.second; };                   \
-    }
+// TODO - Remove this and use std::map
+// #define ADD_MAPPAIR(_first, _second)                                    \
+//     struct Pair                                                         \
+//     {                                                                   \
+//         std::pair<const key_type, mapped_type>& _p;                     \
+//         Pair (std::pair<const key_type, mapped_type>& _a) : _p (_a) {}; \
+//         key_type     _first() { return _p.first; };                     \
+//         mapped_type& _second() { return _p.second; };                   \
+//     }
 
-#define ADD_ITER(_first, _second)                           \
-    struct Iterator : public iterator                       \
-    {                                                       \
-        Iterator() {};                                      \
-        Iterator (const iterator& _a) : iterator (_a) {};   \
-        key_type     _first() { return (*this)->first; };   \
-        mapped_type& _second() { return (*this)->second; }; \
-    }
+// #define ADD_ITER(_first, _second)                           \
+//     struct Iterator : public iterator                       \
+//     {                                                       \
+//         Iterator() {};                                      \
+//         Iterator (const iterator& _a) : iterator (_a) {};   \
+//         key_type     _first() { return (*this)->first; };   \
+//         mapped_type& _second() { return (*this)->second; }; \
+//     }
 
 namespace morphex
 {
 class Sound
 {
 public:
-    struct SoundSourceInfo
+    enum WindowType
+    {
+        blackmanharris = 0,
+        triang,
+        hanning
+    };
+    
+    struct SourceInfo
     {
         std::string name;
         std::string extension;
@@ -64,7 +72,7 @@ public:
         std::string dirpath;
     };
 
-    struct SoundInfo
+    struct Info
     {
         int note;
         int velocity;
@@ -94,21 +102,20 @@ public:
         int        fs                  = 0; // Frame size (sample rate)
     };
 
-    /** Sound Features */
     struct SoundFeatures
     {
-        struct NotesMap : public std::map<float, int, std::less<float>>
-        {
-            ADD_ITER (iterFrequency, iterOccurences);
-            ADD_MAPPAIR (frequency, occurences);
-        };
-        NotesMap notes;
-        float    predominant_note;
-        float    normalization_factor = 1.0;
-        int      max_harmonics        = 0;
-        int      max_frames           = 0;
+        // struct NotesMap : public std::map<float, int, std::less<float>>
+        // {
+        //     ADD_ITER (iterFrequency, iterOccurences);
+        //     ADD_MAPPAIR (frequency, occurences);
+        // };
+        // NotesMap notes;
+        std::map<float, int> notes;
+        float                predominantNote;
+        // float                normalizationFactor = 1.0;
+        // int                  maxHarmonics        = 0;
+        // int                  maxFrames           = 0;
     };
-    SoundFeatures features;
 
     Sound (std::string filePath);
 
@@ -117,26 +124,16 @@ public:
     bool isLoaded();
     bool isAnalyzed();
 
-    Frame              getFrame (int i_num_frame, int i_hop_size);
-    std::vector<float> getComponentFrame (Frame::Component component_name, int i_num_frame, int i_hop_size = 0);
-
-    void synthesize();
-
-    void extractFeatures();
-    void getFundamentalNotes();
-    void saveOriginalValues();
-    void normalizeMagnitudes();
-    void normalizeWaveform (std::vector<float>& waveform, float max_val, float max_db);
+    Info getInfo();
+    int getMaxFrames();
+    std::unique_ptr<Frame> getFrame (int frameIndex, int hopSize) const;
 
 private:
-    enum WindowType
-    {
-        blackmanharris = 0,
-        triang,
-        hanning
-    };
+    void synthesize();
+    void getFundamentalNotes();
+    // void normalizeMagnitudes();
+    // void normalizeWaveform (std::vector<float>& waveform, float max_val, float max_db);
 
-    void                                generateFrames();
     bool                                hasChild (juce::XmlElement* parent, juce::String child_name);
     std::vector<long long>              splitInts (const std::string& list_of_ints);
     std::vector<float>                  splitFloats (const std::string& list_of_floats, bool int_to_float = false);
@@ -144,16 +141,16 @@ private:
     std::vector<std::vector<long long>> getMatrixOfInts (juce::XmlElement* parent, juce::String child_name);
     std::vector<std::vector<float>>     getMatrixOfFloats (juce::XmlElement* parent, juce::String child_name);
 
-    float findClosest (float arr[], int n, float target);
-    float getClosestValue (float val1, float val2, float target);
-
-    std::unique_ptr<Model>           m_model;
-    std::unique_ptr<SoundSourceInfo> m_soundSourceInfo;
-    std::unique_ptr<HadFileInfo>     m_hadFileInfo;
-    std::unique_ptr<SoundInfo>       m_soundInfo;
-    std::unique_ptr<HadInfo>         m_hadInfo;
+    // float findClosest (float arr[], int n, float target);
+    // float getClosestValue (float val1, float val2, float target);
 
     std::vector<Frame> m_frames;
-    std::vector<float> m_originalWaveform;
+    std::vector<float> m_waveform;
+
+    std::unique_ptr<SourceInfo> m_sourceInfo;
+    std::unique_ptr<HadFileInfo>     m_hadFileInfo;
+    std::unique_ptr<Info>       m_info;
+    std::unique_ptr<HadInfo>         m_hadInfo;
+    std::unique_ptr<SoundFeatures>   m_soundFeatures;
 };
 }; // namespace morphex

@@ -21,7 +21,7 @@ AlwaysBreakTemplateDeclarations: 'true'
 BinPackArguments: 'false'
 BinPackParameters: 'false'
 BreakAfterJavaFieldAnnotations: 'false'
-BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Allman
 BreakBeforeTernaryOperators: 'true'
 BreakConstructorInitializersBeforeComma: 'false'

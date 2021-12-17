@@ -131,7 +131,7 @@ public:
 
     std::vector<float> getBuffer (BufferSection buffer_section, Channel selected_channel = Channel::Mono, int i_frame_length = 0);
 
-    void generateSoundFrame (Sound::Frame sound_frame, bool append_to_generated = false);
+    void generateSoundFrame (Frame sound_frame, bool append_to_generated = false);
 
     void updatePlayPointer (int i_pointer_increment);
     void updatePhases (SynthesisLiveValues::FP& fp_values, std::vector<float> freqs, std::vector<int> idx_freqs, int hop_size, bool append_to_generated = false);
@@ -152,7 +152,7 @@ private:
     //    void updatePhases (std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics, int hop_size, bool append_to_generated = false);
     //    void updateLastFreqs (std::vector<float> harmonics_freqs, std::vector<int> idx_harmonics);
 
-    std::vector<float> synthesizeSoundFrame (Sound::Frame sound_frame);
+    std::vector<float> synthesizeSoundFrame (Frame sound_frame);
     std::vector<float> generateSines (std::vector<float> iploc, std::vector<float> ipmag, std::vector<float> ipphase, int NS, int fs);
     std::vector<float> generateStocs (std::vector<float> stocs_morph, int H, int NS);
 

@@ -20,6 +20,10 @@
 
 namespace morphex
 {
+void Frame::Frame()
+{
+}
+
 const FftComponent& Frame::getHarmonicComponent() const;
 {
     return harmonic;
@@ -30,7 +34,7 @@ const FftComponent& Frame::getSinusoidalComponent() const;
     return sinusoidal;
 }
 
-const std::vector<float>& Frame::getStochasticWaveform() const;
+const std::vector<float>& Frame::getStochasticMagnitudes() const;
 {
     return stochastic;
 }
@@ -62,4 +66,30 @@ size_t Frame::getMaxNumOfSinusoids() const
 
     return maxNumOfSinusoids;
 };
+
+void setHarmonicComponent (FftComponent component)
+{
+    harmonic = component;
+}
+
+void setSinusoidalComponent (FftComponent component)
+{
+    sinusoidal = component;
+}
+
+void setStochasticMagnitudes (std::vector<float> values)
+{
+    stochastic = values;
+}
+
+void setAttackWaveform (std::vector<float> waveform)
+{
+    attack = waveform;
+}
+
+void setResidualWaveform (std::vector<float> waveform)
+{
+    residual = waveform;
+}
+
 }; // namespace morphex

@@ -170,22 +170,24 @@ void Voice::updateMorphSounds (float f_note, float f_velocity)
     {
         if (morph_sounds[i] != nullptr)
         {
+            const auto soundInfo = morph_sounds[i]->getInfo();
+            
             if (first_iter)
             {
-                max_loop_start = morph_sounds[i]->loop.start;
-                min_loop_end   = morph_sounds[i]->loop.end;
-                min_note_end   = morph_sounds[i]->max_frames;
+                max_loop_start = soundInfo.loopStart;
+                min_loop_end   = soundInfo.loopEnd;
+                min_note_end   = morph_sounds[i]->getMaxFrames();
 
                 first_iter = false;
             }
             else
             {
                 // Compute common looping regions
-                max_loop_start = std::max (max_loop_start, morph_sounds[i]->loop.start);
-                min_loop_end   = std::min (min_loop_end, morph_sounds[i]->loop.end);
+                max_loop_start = std::max (max_loop_start, soundInfo.loopStart);
+                min_loop_end   = std::min (min_loop_end, soundInfo.loopEnd);
 
                 // Get the minimum length of both notes
-                min_note_end = std::min (min_note_end, morph_sounds[i]->max_frames);
+                min_note_end = std::min (min_note_end, morph_sounds[i]->getMaxFrames());
             }
         }
     }

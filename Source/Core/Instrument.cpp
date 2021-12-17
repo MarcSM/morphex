@@ -59,23 +59,23 @@ void Instrument::setOperationMode (OperationMode operationMode)
     }
 }
 
-void Instrument::setActiveModel (Model::Type modelType, bool active)
+void Instrument::setActiveModel (ModelType modelType, bool active)
 {
     switch (modelType)
     {
-        case Model::Type::Harmonic:
+        case ModelType::Harmonic:
             m_activeModels.Harmonic = active;
             break;
-        case Model::Type::Sinusoidal:
+        case ModelType::Sinusoidal:
             m_activeModels.Sinusoidal = active;
             break;
-        case Model::Type::Stochastic:
+        case ModelType::Stochastic:
             m_activeModels.Stochastic = active;
             break;
-        case Model::Type::Attack:
+        case ModelType::Attack:
             m_activeModels.Attack = active;
             break;
-        case Model::Type::Residual:
+        case ModelType::Residual:
             m_activeModels.Residual = active;
             break;
         default:

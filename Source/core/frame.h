@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <vector>
+
 namespace morphex
 {
 class Frame
@@ -34,24 +36,30 @@ public:
 
     const FftComponent&       getHarmonicComponent() const;
     const FftComponent&       getSinusoidalComponent() const;
-    const std::vector<float>& getStochasticWaveform() const;
+    const std::vector<float>& getStochasticMagnitudes() const;
     const std::vector<float>& getAttackWaveform() const;
     const std::vector<float>& getResidualWaveform() const;
     size_t                    getMaxNumOfHarmonics() const;
     size_t                    getMaxNumOfSinusoids() const;
 
-private:
-    FftComponent       harmonic;
-    FftComponent       sinusoidal;
-    std::vector<float> stochastic;
-    std::vector<float> attack;
-    std::vector<float> residual;
+    void setHarmonicComponent (FftComponent component);
+    void setSinusoidalComponent (FftComponent component);
+    void setStochasticMagnitudes (std::vector<float> values);
+    void setAttackWaveform (std::vector<float> waveform);
+    void setResidualWaveform (std::vector<float> waveform);
 
-    bool hasHarmonic() { return harmonic.freqs.size() > 0; };
-    bool hasSinusoidal() { return sinusoidal.freqs.size() > 0; };
-    bool hasPhases (SoundFrameFMP sound_frame_fmp) { return sound_frame_fmp.phases.size() > 0; };
-    bool hasStochastic() { return stochastic.size() > 0; };
-    bool hasAttack() { return attack.size() > 0; };
-    bool hasResidual() { return residual.size() > 0; };
+private:
+    FftComponent       m_harmonic;
+    FftComponent       m_sinusoidal;
+    std::vector<float> m_stochastic;
+    std::vector<float> m_attack;
+    std::vector<float> m_residual;
+
+    bool hasHarmonic() { return m_harmonic.freqs.size() > 0; };
+    bool hasSinusoidal() { return m_sinusoidal.freqs.size() > 0; };
+    bool hasPhases() { return m_harmonic.phases.size() > 0; };
+    bool hasStochastic() { return m_stochastic.size() > 0; };
+    bool hasAttack() { return m_attack.size() > 0; };
+    bool hasResidual() { return m_residual.size() > 0; };
 };
 }; // namespace morphex

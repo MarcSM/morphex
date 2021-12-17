@@ -25,6 +25,7 @@
 namespace Constants
 {
 constexpr auto CurrentFileVersion = 1;
+constexpr auto A4Hz               = 440.0;
 } // namespace Constants
 
 namespace morphex
@@ -36,10 +37,14 @@ Sound::Sound (std::string filePath)
 
 void Sound::reset()
 {
-    m_soundSourceInfo = nullptr;
+    m_frames.clear();
+    m_waveform.clear();
+
+    m_sourceInfo = nullptr;
     m_hadFileInfo     = nullptr;
-    m_soundInfo       = nullptr;
+    m_info       = nullptr;
     m_hadInfo         = nullptr;
+    m_soundFeatures   = nullptr;
 }
 
 void Sound::loadHadFile (juce::String filePath)
@@ -52,10 +57,10 @@ void Sound::loadHadFile (juce::String filePath)
 
         if (hadFile.existsAsFile())
         {
-            m_hadFileInfo.name      = hadFile.getFileNameWithoutExtension().toStdString();
-            m_hadFileInfo.extension = hadFile.getFileExtension().toStdString();
-            m_hadFileInfo.path      = filePath;
-            m_hadFileInfo.dirpath   = hadFile.getParentDirectory().getFullPathName().toStdString();
+            m_hadFileInfo->name      = hadFile.getFileNameWithoutExtension().toStdString();
+            m_hadFileInfo->extension = hadFile.getFileExtension().toStdString();
+            m_hadFileInfo->path      = filePath.toStdString();
+            m_hadFileInfo->dirpath   = hadFile.getParentDirectory().getFullPathName().toStdString();
 
             std::unique_ptr<juce::XmlElement> xml (juce::XmlDocument::parse (hadFile.loadFileAsString()));
 
@@ -69,124 +74,161 @@ void Sound::loadHadFile (juce::String filePath)
 
                     if (file_version == Constants::CurrentFileVersion and hasChild (xml_file, "dp"))
                     {
-                        decimal_places = xml_file->getChildByName ("dp")->getAllSubText().getIntValue();
-
                         // Sound
-                        juce::XmlElement* xml_sound = xml->getChildByName ("sound"); // had["sound"]
-                        m_soundInfo                 = std::make_unique<SoundInfo>;
-                        m_hadInfo                   = std::make_unique<HadInfo>;
-                        m_soundInfo->note           = xml_sound->getChildByName ("note")->getAllSubText().getIntValue();
-                        m_soundInfo->velocity       = xml_sound->getChildByName ("velocity")->getAllSubText().getIntValue();
-                        m_hadInfo->fs               = xml_sound->getChildByName ("fs")->getAllSubText().getIntValue();
-                        // max_harmonics               = xml_sound->getChildByName ("max_harmonics")->getAllSubText().getIntValue();
-                        // max_frames                  = xml_sound->getChildByName ("max_frames")->getAllSubText().getIntValue();
-                        m_soundInfo->loopStart = xml_sound->getChildByName ("loop")->getChildByName ("start")->getAllSubText().getIntValue();
-                        m_soundInfo->loopEnd   = xml_sound->getChildByName ("loop")->getChildByName ("end")->getAllSubText().getIntValue();
-
-                        // Model
-                        juce::XmlElement* xml_synthesis = xml->getChildByName ("synthesis"); // had["synthesis"]
-                        m_model                         = std::make_unique<Model>;
-                        model->harmonic                 = hasChild (xml_synthesis, "h");
-                        model->sinusoidal               = hasChild (xml_synthesis, "s");
-                        model->stochastic               = hasChild (xml_synthesis, "c");
-                        model->attack                   = hasChild (xml_synthesis, "a");
-                        model->residual                 = hasChild (xml_synthesis, "r");
-                        if (model->harmonic)
-                        {
-                            juce::XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName ("h"); // had["synthesis"]["h"]
-                            model->setHarmonic (getMatrixOfInts (xml_synthesis_harmonic, "f"),
-                                                getMatrixOfInts (xml_synthesis_harmonic, "m"),
-                                                getMatrixOfInts (xml_synthesis_harmonic, "p"),
-                                                true);
-                        }
-                        if (model->sinusoidal)
-                        {
-                            juce::XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName ("s"); // had["synthesis"]["s"]
-                            model->setSinusoidal (getMatrixOfInts (xml_synthesis_sinusoidal, "f"),
-                                                  getMatrixOfInts (xml_synthesis_sinusoidal, "m"),
-                                                  getMatrixOfInts (xml_synthesis_sinusoidal, "p"),
-                                                  true);
-                        }
-                        if (model->stochastic)
-                        {
-                            model->setStochastic (getMatrixOfFloats (xml_synthesis, "c"), true);
-                        }
-                        if (model->attack)
-                        {
-                            model->setAttack (getVectorOfFloats (xml_synthesis, "a"), true);
-                        }
-                        if (model->residual)
-                        {
-                            model->setResidual (getVectorOfFloats (xml_synthesis, "r"), true);
-                        }
-
-                        // If source file is binary data, fill the missing attributes
-                        if (name.empty())
-                            name = file.name;
-                        if (extension.empty())
-                            extension = ".had";
-                        //                    if (path.empty()) path = "";
-                        //                    if (dirpath.empty()) dirpath = "";
+                        juce::XmlElement* xmlSound = xml->getChildByName ("sound"); // had["sound"]
+                        m_info                = std::make_unique<SoundInfo>;
+                        m_hadInfo                  = std::make_unique<HadInfo>;
+                        m_info->note          = xmlSound->getChildByName ("note")->getAllSubText().getIntValue();
+                        m_info->velocity      = xmlSound->getChildByName ("velocity")->getAllSubText().getIntValue();
+                        m_hadInfo->fs              = xmlSound->getChildByName ("fs")->getAllSubText().getIntValue();
+                        m_info->loopStart     = xmlSound->getChildByName ("loop")->getChildByName ("start")->getAllSubText().getIntValue();
+                        m_info->loopEnd       = xmlSound->getChildByName ("loop")->getChildByName ("end")->getAllSubText().getIntValue();
 
                         // Analysis parameters
-                        juce::XmlElement* xml_parameters = xml->getChildByName ("parameters"); // had["parameters"]
-                        m_hadInfo                        = std::make_unique<HadInfo>;
-                        m_hadInfo->window_type           = (WindowType) xml_parameters->getChildByName ("window_type")->getAllSubText().getIntValue();
-                        m_hadInfo->window_size           = xml_parameters->getChildByName ("window_size")->getAllSubText().getIntValue();
-                        m_hadInfo->fft_size              = xml_parameters->getChildByName ("fft_size")->getAllSubText().getIntValue();
-                        m_hadInfo->magnitude_threshold   = xml_parameters->getChildByName ("magnitude_threshold")->getAllSubText().getIntValue();
-                        m_hadInfo->hearing_threshold     = xml_parameters->getChildByName ("hearing_threshold")->getAllSubText().getIntValue();
-                        m_hadInfo->min_sine_dur          = xml_parameters->getChildByName ("min_sine_dur")->getAllSubText().getDoubleValue();
-                        m_hadInfo->max_harm              = xml_parameters->getChildByName ("max_harm")->getAllSubText().getIntValue();
-                        m_hadInfo->min_f0                = xml_parameters->getChildByName ("min_f0")->getAllSubText().getIntValue();
-                        m_hadInfo->max_f0                = xml_parameters->getChildByName ("max_f0")->getAllSubText().getIntValue();
-                        m_hadInfo->max_f0_error          = xml_parameters->getChildByName ("max_f0_error")->getAllSubText().getIntValue();
-                        m_hadInfo->harm_dev_slope        = xml_parameters->getChildByName ("harm_dev_slope")->getAllSubText().getDoubleValue();
-                        m_hadInfo->stoc_fact             = xml_parameters->getChildByName ("stoc_fact")->getAllSubText().getDoubleValue();
-                        m_hadInfo->synthesis_fft_size    = xml_parameters->getChildByName ("synthesis_fft_size")->getAllSubText().getIntValue();
-                        m_hadInfo->hop_size              = xml_parameters->getChildByName ("hop_size")->getAllSubText().getIntValue();
+                        juce::XmlElement* xmlParameters = xml->getChildByName ("parameters"); // had["parameters"]
+                        m_hadInfo                       = std::make_unique<HadInfo>;
+                        m_hadInfo->window_type          = (WindowType) xmlParameters->getChildByName ("window_type")->getAllSubText().getIntValue();
+                        m_hadInfo->window_size          = xmlParameters->getChildByName ("window_size")->getAllSubText().getIntValue();
+                        m_hadInfo->fft_size             = xmlParameters->getChildByName ("fft_size")->getAllSubText().getIntValue();
+                        m_hadInfo->magnitude_threshold  = xmlParameters->getChildByName ("magnitude_threshold")->getAllSubText().getIntValue();
+                        m_hadInfo->hearing_threshold    = xmlParameters->getChildByName ("hearing_threshold")->getAllSubText().getIntValue();
+                        m_hadInfo->min_sine_dur         = xmlParameters->getChildByName ("min_sine_dur")->getAllSubText().getDoubleValue();
+                        m_hadInfo->max_harm             = xmlParameters->getChildByName ("max_harm")->getAllSubText().getIntValue();
+                        m_hadInfo->min_f0               = xmlParameters->getChildByName ("min_f0")->getAllSubText().getIntValue();
+                        m_hadInfo->max_f0               = xmlParameters->getChildByName ("max_f0")->getAllSubText().getIntValue();
+                        m_hadInfo->max_f0_error         = xmlParameters->getChildByName ("max_f0_error")->getAllSubText().getIntValue();
+                        m_hadInfo->harm_dev_slope       = xmlParameters->getChildByName ("harm_dev_slope")->getAllSubText().getDoubleValue();
+                        m_hadInfo->stoc_fact            = xmlParameters->getChildByName ("stoc_fact")->getAllSubText().getDoubleValue();
+                        m_hadInfo->synthesis_fft_size   = xmlParameters->getChildByName ("synthesis_fft_size")->getAllSubText().getIntValue();
+                        m_hadInfo->hop_size             = xmlParameters->getChildByName ("hop_size")->getAllSubText().getIntValue();
 
-                        // TODO TOFIX - Fix max_frames on .had files (max_frames int 22050 (attack))
-                        // and add XML_DECIMAL_PLACES on the .had file too
-                        features.max_frames = (int) std::max ({ (int) model->values.harmonic.freqs.size(),
-                                                                (int) model->values.harmonic.mags.size(),
-                                                                (int) model->values.harmonic.phases.size(),
-                                                                (int) model->values.sinusoidal.freqs.size(),
-                                                                (int) model->values.sinusoidal.mags.size(),
-                                                                (int) model->values.sinusoidal.phases.size(),
-                                                                (int) model->values.stochastic.size(),
-                                                                (int) std::trunc (model->values.attack.size() / analysis.parameters.hop_size),
-                                                                (int) std::trunc (model->values.residual.size() / analysis.parameters.hop_size) });
+                        // Synthesis
+                        juce::XmlElement* xml_synthesis = xml->getChildByName ("synthesis"); // had["synthesis"]
 
-                        m_soundInfo->sound_length = max_frames * analysis.parameters.hop_size;
-                        if (m_soundInfo->loopEnd == 0)
+                        // Harmonic
+                        if (hasChild (xml_synthesis, "h"))
                         {
-                            m_soundInfo->loopEnd = sound_length;
+                            juce::XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName ("h"); // had["synthesis"]["h"]
+
+                            const auto harmonicFrequencies = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_harmonic, "f"));
+                            const auto harmonicMagnitudes  = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_harmonic, "m"));
+                            const auto harmonicPhases      = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_harmonic, "p"));
+
+                            if (harmonicFrequencies.size() != harmonicMagnitudes.size() ||
+                                harmonicFrequencies.size() != harmonicPhases.size())
+                            {
+                                throw "Harmonic information sizes do not match";
+                            }
+
+                            const auto maxFramesSize = std::max (m_frames.size(), harmonicFrequencies.size());
+
+                            m_frames.resize (maxFramesSize);
+
+                            for (auto i = 0u; i < harmonicFrequencies.size(); ++i)
+                            {
+                                m_frames[i].setHarmonicComponent ({ harmonicFrequencies, harmonicMagnitudes, harmonicPhases });
+                            }
                         }
 
-                        // // TODO TEST - Temporal override
-                        // m_soundInfo->loopEnd = (max_frames - 24) * analysis.parameters.hop_size;
+                        // Sinusoidal
+                        if (hasChild (xml_synthesis, "s"))
+                        {
+                            juce::XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName ("s"); // had["synthesis"]["s"]
 
-                        //                    // Synthesize the original sound
-                        //                    synthesize();
-                        //
-                        // Extract Additional Features
-                        extractFeatures();
+                            const auto sinusoidalFrequencies = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_sinusoidal, "f"));
+                            const auto sinusoidalMagnitudes  = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_sinusoidal, "m"));
+                            const auto sinusoidalPhases      = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_sinusoidal, "p"));
 
-                        generateFrames();
+                            if (sinusoidalFrequencies.size() != sinusoidalMagnitudes.size() ||
+                                sinusoidalFrequencies.size() != sinusoidalPhases.size())
+                            {
+                                throw "Sinusoidal information sizes do not match";
+                            }
 
-                        // Save Original Values
-                        //                saveOriginalValues();
+                            const auto maxFramesSize = std::max (m_frames.size(), sinusoidalFrequencies.size());
+
+                            m_frames.resize (maxFramesSize);
+
+                            for (auto i = 0u; i < sinusoidalFrequencies.size(); ++i)
+                            {
+                                m_frames[i].setHarmonicComponent ({ sinusoidalFrequencies, sinusoidalMagnitudes, sinusoidalPhases });
+                            }
+                        }
+
+                        // Stochastic
+                        if (hasChild (xml_synthesis, "c"))
+                        {
+                            const auto stochasticMagnitudes = Codec::decodeMatrix (getMatrixOfFloats (xml_synthesis, "c"), true);
+
+                            const auto maxFramesSize = std::max (m_frames.size(), sinusoidalFrequencies.size());
+
+                            m_frames.resize (maxFramesSize);
+
+                            for (auto i = 0u; i < sinusoidalFrequencies.size(); ++i)
+                            {
+                                m_frames[i].setHarmonicComponent ({ sinusoidalFrequencies, sinusoidalMagnitudes, sinusoidalPhases });
+                            }
+                        }
+
+                        const auto hopSize = m_hadInfo->hop_size;
+
+                        if (hopSize <= 0)
+                        {
+                            throw "hop_size value is not valid";
+                        }
+
+                        // Attack
+                        if (hasChild (xml_synthesis, "a"))
+                        {
+                            const auto attackWaveform    = Codec::decodeVector (getVectorOfFloats (xml_synthesis, "a"));
+                            const auto attackNumOfFrames = std::trunc (attackWaveform.size() / hopSize);
+                            const auto maxFramesSize     = std::max (m_frames.size(), attackNumOfFrames);
+
+                            m_frames.resize (maxFramesSize);
+
+                            auto currentSample = 0;
+
+                            for (auto i = 0u; i < m_frames.size(); ++i)
+                            {
+                                const auto waveformSize = std::min (attackWaveform.size() - currentSample, hopSize);
+
+                                m_frames[i].setAttackWaveform ({ attackWaveform.begin() + currentSample, attackWaveform.begin() + currentSample + waveformSize });
+
+                                currentSample += hopSize;
+                            }
+                        }
+
+                        // Residual
+                        if (hasChild (xml_synthesis, "r"))
+                        {
+                            const auto residualWaveform    = Codec::decodeVector (getVectorOfFloats (xml_synthesis, "r"));
+                            const auto residualNumOfFrames = std::trunc (residualWaveform.size()) / hopSize);
+                            const auto maxFramesSize       = std::max (m_frames.size(), attackNumOfFrames);
+
+                            m_frames.resize (maxFramesSize);
+
+                            auto currentSample = 0;
+
+                            for (auto i = 0u; i < m_frames.size(); ++i)
+                            {
+                                const auto waveformSize = std::min (residualWaveform.size() - currentSample, hopSize);
+
+                                m_frames[i].setResidualWaveform ({ residualWaveform.begin() + currentSample, residualWaveform.begin() + currentSample + waveformSize });
+
+                                currentSample += hopSize;
+                            }
+                        }
+
+                        
+                        m_soundFeatures = std::make_unique<SoundFeatures>()
+                        getFundamentalNotes();
 
                         /** Normalize magnitudes on load by default */
                         // TODO - Fix this method
                         //                normalizeMagnitudes();
-
-                        /* TODO? - Refreshing the UI (waveform visualization) */
                     }
                     else
                     {
-                        // TODO - Raise and catch exception
                         throw << "Error while parsing the XML hda file data\n";
                         jassertfalse;
                     }
@@ -218,7 +260,7 @@ void Sound::loadHadFile (juce::String filePath)
 
 bool Sound::isLoaded()
 {
-    return m_soundInfo && isAnalyzed();
+    return m_info && isAnalyzed();
 }
 
 bool Sound::isAnalyzed()
@@ -244,154 +286,31 @@ bool Sound::isAnalyzed()
 //        std::string filePath
 //    }
 
-Sound::Frame Sound::getFrame (int i_num_frame, int i_frame_length)
+Info getInfo() const
 {
-    // Output
-    Sound::Frame sound_frame;
-
-    // TODO - Improve the name tagging for the components of a frame
-    if (i_num_frame < model->values.harmonic.freqs.size())
-    {
-        sound_frame.harmonic.freqs  = getComponentFrame (Frame::Component::HarmonicFreqs, i_num_frame);
-        sound_frame.harmonic.mags   = getComponentFrame (Frame::Component::HarmonicMags, i_num_frame);
-        sound_frame.harmonic.phases = getComponentFrame (Frame::Component::HarmonicPhases, i_num_frame);
-        //            sound_frame.harmonic.phases = std::vector<float>(0);
-    }
-    else
-    {
-        sound_frame.harmonic.freqs  = std::vector<float> (0);
-        sound_frame.harmonic.mags   = std::vector<float> (0);
-        sound_frame.harmonic.phases = std::vector<float> (0);
-    }
-
-    if (i_num_frame < model->values.sinusoidal.freqs.size())
-    {
-        sound_frame.sinusoidal.freqs  = getComponentFrame (Frame::Component::SinusoidalFreqs, i_num_frame);
-        sound_frame.sinusoidal.mags   = getComponentFrame (Frame::Component::SinusoidalMags, i_num_frame);
-        sound_frame.sinusoidal.phases = getComponentFrame (Frame::Component::SinusoidalPhases, i_num_frame);
-        //            sound_frame.sinusoidal.phases = std::vector<float>(0);
-    }
-    else
-    {
-        sound_frame.sinusoidal.freqs  = std::vector<float> (0);
-        sound_frame.sinusoidal.mags   = std::vector<float> (0);
-        sound_frame.sinusoidal.phases = std::vector<float> (0);
-    }
-
-    if (i_num_frame < model->values.stochastic.size())
-    {
-        sound_frame.stochastic = getComponentFrame (Frame::Component::Stochastic, i_num_frame);
-    }
-
-    if ((i_num_frame * i_frame_length) < model->values.attack.size())
-    {
-        sound_frame.attack = getComponentFrame (Frame::Component::Attack, i_num_frame, i_frame_length);
-    }
-    else
-    {
-        sound_frame.attack = std::vector<float> (0);
-    }
-
-    if ((i_num_frame * i_frame_length) < model->values.residual.size())
-    {
-        sound_frame.residual = getComponentFrame (Frame::Component::Residual, i_num_frame, i_frame_length);
-    }
-    else
-    {
-        sound_frame.residual = std::vector<float> (0);
-    }
-
-    return sound_frame;
+    return m_info;
 }
 
-// TODO - TOOPT- Optimize CPU
-std::vector<float> Sound::getComponentFrame (Frame::Component component_name, int i_num_frame, int i_frame_length)
+int getMaxFrames()
 {
-    // Output
-    std::vector<float> component_frame;
-
-    switch (component_name)
-    {
-        case Frame::Component::HarmonicFreqs:
-            component_frame = model->values.harmonic.freqs[i_num_frame];
-            break;
-        case Frame::Component::HarmonicMags:
-            component_frame = model->values.harmonic.mags[i_num_frame];
-            break;
-        case Frame::Component::HarmonicPhases:
-            if (model->values.harmonic.phases.size() > i_num_frame)
-            {
-                component_frame = model->values.harmonic.phases[i_num_frame];
-            }
-            else
-            {
-                component_frame = std::vector<float> (0);
-            }
-            break;
-        case Frame::Component::SinusoidalFreqs:
-            component_frame = model->values.sinusoidal.freqs[i_num_frame];
-            break;
-        case Frame::Component::SinusoidalMags:
-            component_frame = model->values.sinusoidal.mags[i_num_frame];
-            break;
-        case Frame::Component::SinusoidalPhases:
-            if (model->values.sinusoidal.phases.size() > i_num_frame)
-            {
-                component_frame = model->values.sinusoidal.phases[i_num_frame];
-            }
-            else
-            {
-                component_frame = std::vector<float> (0);
-            }
-            break;
-        case Frame::Component::Stochastic:
-            component_frame = model->values.stochastic[i_num_frame];
-            break;
-        case Frame::Component::Attack:
-        case Frame::Component::Residual:
-        {
-            // TODO - Improve the CPU on this section
-
-            std::vector<float> vector_component = model->values.attack;
-
-            if (component_name == Frame::Component::Residual)
-            {
-                vector_component = model->values.residual;
-            }
-
-            int i_start_sample = i_num_frame * i_frame_length;
-            int i_end_sample   = i_start_sample + i_frame_length;
-            int i_vec_size     = (int) vector_component.size();
-
-            if (i_vec_size < i_end_sample)
-            {
-                i_end_sample = i_vec_size;
-            }
-
-            if (i_vec_size < i_start_sample)
-            {
-                i_start_sample = i_vec_size;
-            }
-
-            std::vector<float> residual_frame = Tools::Get::valuesInRange (vector_component, i_start_sample, i_end_sample);
-
-            for (int i = 0; i < residual_frame.size(); i++)
-            {
-                //                    component_frame[i] = residual_frame[i];
-                component_frame.push_back (residual_frame[i]);
-            }
-
-            break;
-        }
-    }
-
-    return component_frame;
+    return static_cast<int>(m_frame.size());
 }
 
-void Sound::generateFrames()
+std::unique_ptr<Frame> Sound::getFrame (int frameIndex, int hopSize)
 {
-    // TODO - Merge model.h into this Sound class
-    // m_model -> m_frames
+    auto frame = nullptr;
+
+    if (frameIndex < m_frames.size())
+    {
+        // TODO - std::vector<std::shared_ptr<Frame>> m_frames?
+        frame = std::make_unique<Frame> (m_frames[frameIndex]);
+    }
+    else
+    {
+        jassertfalse;
+    }
+
+    return frame;
 }
 
 // TODO
@@ -404,41 +323,43 @@ void Sound::synthesize()
     //        synthesis.engine = std::make_unique<SynthesisEngine>();
     //
     //        // Synthesize Harmonics
-    //        synthesis.harmonic = synthesis.engine->sineModelSynth(model->values.harmonics_freqs,
-    //                                                                          model->values.harmonics_mags,
-    //                                                                          model->values.harmonics_phases,
+    //        synthesis.harmonic = synthesis.engine->sineModelSynth(m_model->values.harmonics_freqs,
+    //                                                                          m_model->values.harmonics_mags,
+    //                                                                          m_model->values.harmonics_phases,
     //                                                                          analysis.parameters.synthesis_fft_size,
     //                                                                          analysis.parameters.hop_size,
     //                                                                          synthesis.engine->window,
     //                                                                          file.fs);
     //
     //        // TODO - Synthesize Stochastic Component
-    //        synthesis.stochastic = synthesis.engine->stochasticModelSynth(model->values.stochastic,
+    //        synthesis.stochastic = synthesis.engine->stochasticModelSynth(m_model->values.stochastic,
     //                                                                                  analysis.parameters.synthesis_fft_size,
     //                                                                                  analysis.parameters.hop_size);
     //
     //    // Sum the harmonic and stochastic components together
     //    synthesis.x = yh[:min(yh.size, yst.size)]+yst[:min(yh.size, yst.size)]
-}
 
-void Sound::extractFeatures()
-{
-    // Extract the fundamentals
-    getFundamentalNotes();
+    // TODO - Save more information
+    // features.max_frames = m_model->getMaxNumOfFrames (analysis.parameters.hop_size);
+    // m_info->sound_length = max_frames * analysis.parameters.hop_size;
+    // if (m_info->loopEnd == 0)
+    // {
+    //     m_info->loopEnd = sound_length;
+    // }
+
+    // TODO - Refresh the UI (waveform visualization)
 }
 
 void Sound::getFundamentalNotes()
 {
-    // Define the "notes" array
-    SoundFeatures::NotesMap notes;
+    auto& notes = m_soundFeatures.notes;
 
-    // Define A4 in Hz
-    const float A4 = 440.0;
+    notes.clear();
 
-    // Populate the "notes" array
-    for (int i_octave = -4; i_octave < 4; i_octave++)
+    // Populate the notes array
+    for (auto octaveNumber = -4; octaveNumber < 4; octaveNumber++)
     {
-        float a = A4 * powf (2, (float) i_octave);
+        float a = Constants::A4Hz * powf (2, (float) octaveNumber);
 
         notes.emplace ((a * powf (2, -9.0 / 12)), 0); // "C"
         notes.emplace ((a * powf (2, -8.0 / 12)), 0); // "C#"
@@ -454,159 +375,134 @@ void Sound::getFundamentalNotes()
         notes.emplace ((a * powf (2, 2.0 / 12)), 0);  // "B"
     }
 
-    float notes_array[notes.size()];
-
-    int i_note = 0;
-
-    for (const auto& [frequency, number_of_occurrences] : notes)
-    {
-        notes_array[i_note] = frequency;
-        i_note++;
-    }
-
     // Count the number of occurrences for each fundamental present on "harmonic_frequencies"
-    for (int i_frame = 0; i_frame < model->values.harmonic.freqs.size(); i_frame++)
+    for (const auto& frame : m_frames)
     {
-        if (model->values.harmonic.freqs[i_frame].size() > 0)
+        const auto& currentFundamental = frame[0];
+
+        // Find closest note for this fundamental
+        const auto& closestNote = std::min_element (notes.begin(), notes.end(), [&] (const auto& lowerNote, const auto& upperNote) {
+            return std::abs (lowerNote.second - currentFundamental) < std::abs (upperNote.second - currentFundamental);
+        });
+
+        if (closestNote != notes.end())
         {
-            // Current fundamental
-            float current_fundamental = model->values.harmonic.freqs[i_frame][0];
-
-            // Find the closest note for this fundamental in Hz
-            float i_closest_note = findClosest (notes_array, (int) notes.size(), current_fundamental);
-
-            // Incrementing the number of occurrences
-            notes.find (i_closest_note)->second++;
+            // Increment the number of occurrences
+            closestNote.second++;
+        }
+        else
+        {
+            jassertfalse;
         }
     }
-
-    // Save the result on features.fundamentals
-    features.notes = notes;
 
     // Find the predominant fundamental
-    typedef SoundFeatures::NotesMap::iterator iter;
-    iter                                      it  = notes.begin();
-    iter                                      end = notes.end();
+    const auto& predominantNote = std::max_element (notes.begin(), notes.end(), [] (const auto& lowerNote, const auto& upperNote) {
+        return lowerNote.second < upperNote.second;
+    });
 
-    float max_frequency  = it->first;
-    int   max_occurences = it->second;
-    for (; it != end; ++it)
+    if (predominantNote != notes.end())
     {
-        if (it->second > max_occurences)
-        {
-            max_frequency  = it->first;
-            max_occurences = it->second;
-        }
+        // Save the predominant note
+        m_soundFeatures.predominantNote = predominantNote.second;
     }
-
-    // Save the predominant note
-    features.predominant_note = max_frequency;
-}
-
-void Sound::saveOriginalValues()
-{
-    original.harmonic.freqs    = model->values.harmonic.freqs;
-    original.harmonic.mags     = model->values.harmonic.mags;
-    original.harmonic.phases   = model->values.harmonic.phases;
-    original.sinusoidal.freqs  = model->values.sinusoidal.freqs;
-    original.sinusoidal.mags   = model->values.sinusoidal.mags;
-    original.sinusoidal.phases = model->values.sinusoidal.phases;
-    original.attack            = model->values.attack;
-    original.stochastic        = model->values.stochastic;
-    original.residual          = model->values.residual;
-}
-
-// TODO
-void Sound::normalizeMagnitudes()
-{
-    jassertfalse;
-    DBG ("This normalization function must be updated, now it's possible to not have an harmonic component");
-
-    // Define normalization range db
-    float min_db = -100.0;
-    float max_db = -1.0;
-
-    // Initialize min and max values
-    float min_val = 0.0;
-    float max_val = -100.0;
-
-    // Get the harmonic magnitudes matrix
-    std::vector<std::vector<float>> harmonic_mags = model->values.harmonic.mags;
-
-    // Find the min and max of the harmonic magnitudes matrix
-    for (int i = 0; i < harmonic_mags.size(); i++)
+    else
     {
-        if (harmonic_mags[i].size() > 0)
-        {
-            float local_min_val = *min_element (harmonic_mags[i].begin(), harmonic_mags[i].end());
-            float local_max_val = *max_element (harmonic_mags[i].begin(), harmonic_mags[i].end());
-
-            if (local_min_val < min_val)
-                min_val = local_min_val;
-            if (local_max_val > max_val)
-                max_val = local_max_val;
-        }
-    }
-
-    // Normalize the harmonic magnitudes
-    for (int i = 0; i < harmonic_mags.size(); i++)
-    {
-        for (int j = 0; j < harmonic_mags[i].size(); j++)
-        {
-            harmonic_mags[i][j] = (max_db - min_db) * ((harmonic_mags[i][j] - min_val) / (max_val - min_val)) + min_db;
-        }
-    }
-
-    // Set the harmonic magnitudes matrix
-    model->setHarmonicMagnitudes (harmonic_mags);
-
-    // Calcualte the normalization factor applied over the harmonics magnitudes
-    features.normalization_factor = Tools::Calculate::dbToLinear (-std::abs (max_val - max_db));
-
-    if (model->hasSinusoidal())
-    {
-        // Get the sinusoidal magnitudes matrix
-        std::vector<std::vector<float>> sinusoidal_mags = model->values.sinusoidal.mags;
-
-        // Normalize the sinusoidal magnitudes
-        for (int i = 0; i < sinusoidal_mags.size(); i++)
-        {
-            for (int j = 0; j < sinusoidal_mags[i].size(); j++)
-            {
-                sinusoidal_mags[i][j] = (max_db - min_db) * ((sinusoidal_mags[i][j] - min_val) / (max_val - min_val)) + min_db;
-            }
-        }
-
-        // Set the sinusoidal magnitudes matrix
-        model->setSinusoidalMagnitudes (sinusoidal_mags);
-    }
-
-    // Attack component normalization
-    if (model->hasAttack())
-    {
-        // Get the residual component
-        std::vector<float> attack = model->values.attack;
-
-        // Normalize attack component
-        normalizeWaveform (attack, max_val, max_db);
-
-        // Set the normalized attack component
-        model->setAttack (attack);
-    }
-
-    // Residual component normalization
-    if (model->hasResidual())
-    {
-        // Get the residual component
-        std::vector<float> residual = model->values.residual;
-
-        // Normalize residual component
-        normalizeWaveform (residual, max_val, max_db);
-
-        // Set the normalized residual component
-        model->setResidual (residual);
+        jassertfalse;
     }
 }
+
+// // TODO
+// void Sound::normalizeMagnitudes()
+// {
+//     DBG ("This normalization function must be updated, now it's possible to not have an harmonic component");
+//     jassertfalse;
+
+//     // Define normalization range db
+//     float min_db = -100.0;
+//     float max_db = -1.0;
+
+//     // Initialize min and max values
+//     float min_val = 0.0;
+//     float max_val = -100.0;
+
+//     // Get the harmonic magnitudes matrix
+//     std::vector<std::vector<float>> harmonic_mags = m_model->values.harmonic.mags;
+
+//     // Find the min and max of the harmonic magnitudes matrix
+//     for (int i = 0; i < harmonic_mags.size(); i++)
+//     {
+//         if (harmonic_mags[i].size() > 0)
+//         {
+//             float local_min_val = *min_element (harmonic_mags[i].begin(), harmonic_mags[i].end());
+//             float local_max_val = *max_element (harmonic_mags[i].begin(), harmonic_mags[i].end());
+
+//             if (local_min_val < min_val)
+//                 min_val = local_min_val;
+//             if (local_max_val > max_val)
+//                 max_val = local_max_val;
+//         }
+//     }
+
+//     // Normalize the harmonic magnitudes
+//     for (int i = 0; i < harmonic_mags.size(); i++)
+//     {
+//         for (int j = 0; j < harmonic_mags[i].size(); j++)
+//         {
+//             harmonic_mags[i][j] = (max_db - min_db) * ((harmonic_mags[i][j] - min_val) / (max_val - min_val)) + min_db;
+//         }
+//     }
+
+//     // Set the harmonic magnitudes matrix
+//     m_model->setHarmonicMagnitudes (harmonic_mags);
+
+//     // Calcualte the normalization factor applied over the harmonics magnitudes
+//     features.normalization_factor = Tools::Calculate::dbToLinear (-std::abs (max_val - max_db));
+
+//     if (m_model->hasSinusoidal())
+//     {
+//         // Get the sinusoidal magnitudes matrix
+//         std::vector<std::vector<float>> sinusoidal_mags = m_model->values.sinusoidal.mags;
+
+//         // Normalize the sinusoidal magnitudes
+//         for (int i = 0; i < sinusoidal_mags.size(); i++)
+//         {
+//             for (int j = 0; j < sinusoidal_mags[i].size(); j++)
+//             {
+//                 sinusoidal_mags[i][j] = (max_db - min_db) * ((sinusoidal_mags[i][j] - min_val) / (max_val - min_val)) + min_db;
+//             }
+//         }
+
+//         // Set the sinusoidal magnitudes matrix
+//         m_model->setSinusoidalMagnitudes (sinusoidal_mags);
+//     }
+
+//     // Attack component normalization
+//     if (m_model->hasAttack())
+//     {
+//         // Get the residual component
+//         std::vector<float> attack = m_model->values.attack;
+
+//         // Normalize attack component
+//         normalizeWaveform (attack, max_val, max_db);
+
+//         // Set the normalized attack component
+//         m_model->setAttack (attack);
+//     }
+
+//     // Residual component normalization
+//     if (m_model->hasResidual())
+//     {
+//         // Get the residual component
+//         std::vector<float> residual = m_model->values.residual;
+
+//         // Normalize residual component
+//         normalizeWaveform (residual, max_val, max_db);
+
+//         // Set the normalized residual component
+//         m_model->setResidual (residual);
+//     }
+// }
 
 void Sound::normalizeWaveform (std::vector<float>& waveform, float max_val, float max_db)
 {
@@ -754,60 +650,60 @@ std::vector<std::vector<float>> Sound::getMatrixOfFloats (juce::XmlElement* pare
     return result_matrix;
 }
 
-// Returns element closest to target in arr[]
-float Sound::findClosest (float arr[], int n, float target)
-{
-    // Corner cases
-    if (target <= arr[0])
-        return arr[0];
-    if (target >= arr[n - 1])
-        return arr[n - 1];
+// // Returns element closest to target in arr[]
+// float Sound::findClosest (float arr[], int n, float target)
+// {
+//     // Corner cases
+//     if (target <= arr[0])
+//         return arr[0];
+//     if (target >= arr[n - 1])
+//         return arr[n - 1];
 
-    // Doing binary search
-    int i = 0, j = n, mid = 0;
-    while (i < j)
-    {
-        mid = (i + j) / 2;
+//     // Doing binary search
+//     int i = 0, j = n, mid = 0;
+//     while (i < j)
+//     {
+//         mid = (i + j) / 2;
 
-        if (arr[mid] == target)
-            return arr[mid];
+//         if (arr[mid] == target)
+//             return arr[mid];
 
-        // If target is less than array element, then search in left
-        if (target < arr[mid])
-        {
-            // If target is greater than previous to mid, return closest of two
-            if (mid > 0 && target > arr[mid - 1])
-                return getClosestValue (arr[mid - 1], arr[mid], target);
+//         // If target is less than array element, then search in left
+//         if (target < arr[mid])
+//         {
+//             // If target is greater than previous to mid, return closest of two
+//             if (mid > 0 && target > arr[mid - 1])
+//                 return getClosestValue (arr[mid - 1], arr[mid], target);
 
-            // Repeat for left half
-            j = mid;
-        }
+//             // Repeat for left half
+//             j = mid;
+//         }
 
-        // If target is greater than mid
-        else
-        {
-            if (mid < n - 1 && target < arr[mid + 1])
-                return getClosestValue (arr[mid], arr[mid + 1], target);
-            // update i
-            i = mid + 1;
-        }
-    }
+//         // If target is greater than mid
+//         else
+//         {
+//             if (mid < n - 1 && target < arr[mid + 1])
+//                 return getClosestValue (arr[mid], arr[mid + 1], target);
+//             // update i
+//             i = mid + 1;
+//         }
+//     }
 
-    // Only single element left after search
-    return arr[mid];
-}
+//     // Only single element left after search
+//     return arr[mid];
+// }
 
-// Method to compare which one is the more close.
-// We find the closest by taking the difference
-// between the target and both values. It assumes
-// that val2 is greater than val1 and target lies
-// between these two.
-float Sound::getClosestValue (float val1, float val2, float target)
-{
-    if (target - val1 >= val2 - target)
-        return val2;
-    else
-        return val1;
-}
+// // Method to compare which one is the closest.
+// // We find the closest by taking the difference
+// // between the target and both values. It assumes
+// // that val2 is greater than val1 and target lies
+// // between these two.
+// float Sound::getClosestValue (float val1, float val2, float target)
+// {
+//     if (target - val1 >= val2 - target)
+//         return val2;
+//     else
+//         return val1;
+// }
 
 } // namespace morphex

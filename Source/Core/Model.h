@@ -264,6 +264,19 @@ public:
         this->_values.residual = residual;
     }
 
+    size_t getMaxNumOfFrames (int hopSize)
+    {
+        return std::max ({ _values.harmonic.freqs.size(),
+                           _values.harmonic.mags.size(),
+                           _values.harmonic.phases.size(),
+                           _values.sinusoidal.freqs.size(),
+                           _values.sinusoidal.mags.size(),
+                           _values.sinusoidal.phases.size(),
+                           _values.stochastic.size(),
+                           std::trunc (_values.attack.size() / hopSize),
+                           std::trunc (_values.residual.size() / hopSize) })
+    }
+
 private:
     Values _values;
 };
