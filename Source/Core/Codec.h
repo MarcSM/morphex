@@ -26,7 +26,9 @@ namespace Constants
 constexpr auto XML_DECIMAL_PLACES = 3;
 } // namespace Constants
 
-namespace Codec
+namespace morphex
+{
+namespace codec
 {
 // List Decoding (does not change size of arrays)
 template <typename T>
@@ -71,3 +73,4 @@ void inline decodeMatrix (std::vector<std::vector<float>>& given_matrix, bool ab
     }
 }
 }; // namespace Codec
+};

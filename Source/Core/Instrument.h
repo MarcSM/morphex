@@ -41,7 +41,7 @@ constexpr auto MidiVelocities = 128;
 using Note             = std::array<std::unique_ptr<morphex::Sound>, Constants::MidiVelocities>;
 using MorphNotes       = std::array<Note*, MorphLocation::Total>;
 using MorphSounds      = std::array<morphex::Sound*, MorphLocation::Total>;
-using MorphSoundFrames = std::array<morphex::Frame, MorphLocation::Total>;
+using MorphSoundFrames = std::array<std::shared_ptr<morphex::Frame>, MorphLocation::Total>;
 
 namespace morphex
 {
@@ -83,7 +83,7 @@ public:
 
     void reset();
     void setOperationMode (OperationMode operationMode);
-    void setActiveModel (ModelType modelType, bool active);
+    void setModelActive (ModelType modelType, bool active);
     void loadSound (std::string filePath, MorphLocation morphLocation = MorphLocation::Total);
     void loadSoundsFromFolder (std::string folderPath);
 
@@ -122,5 +122,9 @@ private:
 
     MorphNotes  m_morphNotes;
     MorphSounds m_morphSounds;
+    
+    // TODO
+    // bool regenerateHarmonicPhases
+    // bool regenerateSinusoidalPhases
 };
 }; // namespace morphex

@@ -35,11 +35,11 @@ public:
         m_attackButton.setClickingTogglesState (true);
         m_residualButton.setClickingTogglesState (true);
 
-        m_harmonicButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Harmonic), juce::NotificationType::dontSendNotification);
-        m_sinusoidalButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Sinusoidal), juce::NotificationType::dontSendNotification);
-        m_stochasticButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Stochastic), juce::NotificationType::dontSendNotification);
-        m_attackButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Attack), juce::NotificationType::dontSendNotification);
-        m_residualButton.setToggleState (m_instrument.isModelActive (morphex::Model::Type::Residual), juce::NotificationType::dontSendNotification);
+        m_harmonicButton.setToggleState (m_instrument.isModelActive (morphex::Instrument::ModelType::Harmonic), juce::NotificationType::dontSendNotification);
+        m_sinusoidalButton.setToggleState (m_instrument.isModelActive (morphex::Instrument::ModelType::Sinusoidal), juce::NotificationType::dontSendNotification);
+        m_stochasticButton.setToggleState (m_instrument.isModelActive (morphex::Instrument::ModelType::Stochastic), juce::NotificationType::dontSendNotification);
+        m_attackButton.setToggleState (m_instrument.isModelActive (morphex::Instrument::ModelType::Attack), juce::NotificationType::dontSendNotification);
+        m_residualButton.setToggleState (m_instrument.isModelActive (morphex::Instrument::ModelType::Residual), juce::NotificationType::dontSendNotification);
 
         addAndMakeVisible (m_harmonicButton);
         addAndMakeVisible (m_sinusoidalButton);
@@ -77,11 +77,11 @@ public:
         g.fillRect (0, 0, getWidth(), getHeight());
 
         // Core controls
-        m_harmonicButton.onClick   = [this] { m_instrument.setActiveModel (morphex::Model::Type::Harmonic, m_harmonicButton.getToggleState()); };
-        m_sinusoidalButton.onClick = [this] { m_instrument.setActiveModel (morphex::Model::Type::Sinusoidal, m_sinusoidalButton.getToggleState()); };
-        m_stochasticButton.onClick = [this] { m_instrument.setActiveModel (morphex::Model::Type::Stochastic, m_stochasticButton.getToggleState()); };
-        m_attackButton.onClick     = [this] { m_instrument.setActiveModel (morphex::Model::Type::Attack, m_attackButton.getToggleState()); };
-        m_residualButton.onClick   = [this] { m_instrument.setActiveModel (morphex::Model::Type::Residual, m_residualButton.getToggleState()); };
+        m_harmonicButton.onClick   = [this] { m_instrument.setModelActive (morphex::Instrument::ModelType::Harmonic, m_harmonicButton.getToggleState()); };
+        m_sinusoidalButton.onClick = [this] { m_instrument.setModelActive (morphex::Instrument::ModelType::Sinusoidal, m_sinusoidalButton.getToggleState()); };
+        m_stochasticButton.onClick = [this] { m_instrument.setModelActive (morphex::Instrument::ModelType::Stochastic, m_stochasticButton.getToggleState()); };
+        m_attackButton.onClick     = [this] { m_instrument.setModelActive (morphex::Instrument::ModelType::Attack, m_attackButton.getToggleState()); };
+        m_residualButton.onClick   = [this] { m_instrument.setModelActive (morphex::Instrument::ModelType::Residual, m_residualButton.getToggleState()); };
 
         // Pad XY
 

@@ -59,7 +59,7 @@ void Instrument::setOperationMode (OperationMode operationMode)
     }
 }
 
-void Instrument::setActiveModel (ModelType modelType, bool active)
+void Instrument::setModelActive (ModelType modelType, bool active)
 {
     switch (modelType)
     {
@@ -105,16 +105,25 @@ void Instrument::loadSound (std::string filePath, MorphLocation morphLocation)
             }
 
             Sound* otherLoadedSound = getMorphSound (otherSoundMorphLocation);
-
-            if (otherLoadedSound && sound->note == otherLoadedSound->note & sound->velocity == otherLoadedSound->velocity)
+            
+            if (otherLoadedSound)
             {
-                if (sound->velocity == 0 || sound->velocity == 1)
+                const auto soundInfo = sound->getInfo();
+                const auto otherLoadedSoundInfo = otherLoadedSound->getInfo();
+                
+                if (soundInfo &&
+                    otherLoadedSoundInfo &&
+                    soundInfo->note == otherLoadedSoundInfo->note &&
+                    soundInfo->velocity == otherLoadedSoundInfo->velocity)
                 {
-                    sound->velocity = Constants::MidiVelocities;
-                }
-                else
-                {
-                    sound->velocity = 1;
+                    if (soundInfo->velocity == 0 || soundInfo->velocity == 1)
+                    {
+                        sound->setVelocity(Constants::MidiVelocities);
+                    }
+                    else
+                    {
+                        sound->setVelocity(1);
+                    }
                 }
             }
         }
@@ -129,12 +138,21 @@ void Instrument::loadSound (std::string filePath, MorphLocation morphLocation)
 
             m_morphSounds[morphLocation] = sound.get();
         }
+        
+        const auto soundInfo = sound->getInfo();
 
-        m_notes[sound->note][sound->velocity] = std::move (sound);
+        if (soundInfo)
+        {
+            m_notes[soundInfo->note][soundInfo->velocity] = std::move (sound);
+        }
+        else
+        {
+            jassertfalse;
+        }
     }
     else
     {
-        jassert (false);
+        jassertfalse;
     }
 }
 

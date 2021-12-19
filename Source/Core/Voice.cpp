@@ -172,22 +172,25 @@ void Voice::updateMorphSounds (float f_note, float f_velocity)
         {
             const auto soundInfo = morph_sounds[i]->getInfo();
             
-            if (first_iter)
+            if (soundInfo)
             {
-                max_loop_start = soundInfo.loopStart;
-                min_loop_end   = soundInfo.loopEnd;
-                min_note_end   = morph_sounds[i]->getMaxFrames();
+                if (first_iter)
+                {
+                    max_loop_start = soundInfo->loopStart;
+                    min_loop_end   = soundInfo->loopEnd;
+                    min_note_end   = morph_sounds[i]->getMaxFrames();
 
-                first_iter = false;
-            }
-            else
-            {
-                // Compute common looping regions
-                max_loop_start = std::max (max_loop_start, soundInfo.loopStart);
-                min_loop_end   = std::min (min_loop_end, soundInfo.loopEnd);
+                    first_iter = false;
+                }
+                else
+                {
+                    // Compute common looping regions
+                    max_loop_start = std::max (max_loop_start, soundInfo->loopStart);
+                    min_loop_end   = std::min (min_loop_end, soundInfo->loopEnd);
 
-                // Get the minimum length of both notes
-                min_note_end = std::min (min_note_end, morph_sounds[i]->getMaxFrames());
+                    // Get the minimum length of both notes
+                    min_note_end = std::min (min_note_end, morph_sounds[i]->getMaxFrames());
+                }
             }
         }
     }
@@ -246,7 +249,7 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
         }
     }
 
-    Sound::Frame sound_frame;
+    Frame frame;
 
     while (m_synthesis.live_values.i_samples_ready < i_frame_length)
     {
@@ -320,7 +323,7 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
             float mags_interp_factor  = *m_parameters.getRawParameterValue (morphex::PARAMETERS<float>[morphex::Parameters::MagsInterpFactor].ID);
 
             // TODO - Apply fade out if *i_current_frame > min_note_end - 4 (4 = fade_out_frames)
-            sound_frame = m_instrument.getMorphedSoundFrame (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size, freqs_interp_factor, mags_interp_factor);
+            frame = m_instrument.getMorphedSoundFrame (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size, freqs_interp_factor, mags_interp_factor);
         }
         // Instrument::Mode::FullRange
         else
@@ -331,8 +334,8 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
 
                 if (m_instrument.getInterpolationMode() == Instrument::InterpolationMode::None)
                 {
-                    int left_note_distance  = std::abs (f_pressed_midi_note - morph_sounds[MorphLocation::UpLeft]->note);
-                    int right_note_distance = std::abs (f_pressed_midi_note - morph_sounds[MorphLocation::DownRight]->note);
+                    int left_note_distance  = std::abs (f_pressed_midi_note - morph_sounds[MorphLocation::UpLeft]->getInfo()->note);
+                    int right_note_distance = std::abs (f_pressed_midi_note - morph_sounds[MorphLocation::DownRight]->getInfo()->note);
 
                     if (left_note_distance < right_note_distance)
                     {
@@ -347,21 +350,30 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
                 {
                     selected_sound = morph_sounds[MorphLocation::UpLeft];
                 }
+                
+                // TODO - Check for nullptr
+                auto nullableFrame = selected_sound->getFrame (*i_current_frame, i_hop_size);
 
-                sound_frame = selected_sound->getFrame (*i_current_frame, i_hop_size);
+                frame = *nullableFrame.get();
 
                 // Get target frequency
                 float f_target_frequency = Tools::Midi::toFreq (f_current_midi_note);
-                float f_note_frequency   = Tools::Midi::toFreq (selected_sound->note);
+                float f_note_frequency   = Tools::Midi::toFreq (selected_sound->getInfo()->note);
 
-                if (sound_frame.hasHarmonic())
+                if (frame.hasHarmonic())
                 {
+                    auto auxHarmonics = frame.getHarmonicComponent();
+                    
                     // Recalculate the harmonics for the current midi note
-                    for (int i = 0; i < sound_frame.harmonic.freqs.size(); i++)
+                    for (int i = 0; i < auxHarmonics.freqs.size(); i++)
                     {
-                        sound_frame.harmonic.freqs[i] = (sound_frame.harmonic.freqs[i] / f_note_frequency) * f_target_frequency;
+                        auxHarmonics.freqs[i] = (auxHarmonics.freqs[i] / f_note_frequency) * f_target_frequency;
+                        
+                        m_synthesis.live_values.harmonic.last_freqs[i] = auxHarmonics.freqs[i];
+                        
+                        //// OK frame.harmonic.freqs[i] = (frame.harmonic.freqs[i] / f_note_frequency) * f_target_frequency;
 
-                        //                            if (sound_frame.hasPhases(sound_frame.harmonic))
+                        //                            if (frame.hasPhases(frame.harmonic))
                         //                            {
                         //                                // TODO TRANSPOSE PHASE (WIP)
                         //                                const int H = synthesis.parameters.hop_size;
@@ -371,75 +383,81 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
                         //                                // NEW
                         //                                auto lastPhase = synthesis.live_values.harmonic.phases[i];
                         //                                auto lastFreq = synthesis.live_values.harmonic.last_freqs[i];
-                        //                                auto phaseDelta = sound_frame.harmonic.phases[i] - lastPhase;
-                        //                                synthesis.live_values.harmonic.phases[i] = sound_frame.harmonic.phases[i];
+                        //                                auto phaseDelta = frame.harmonic.phases[i] - lastPhase;
+                        //                                synthesis.live_values.harmonic.phases[i] = frame.harmonic.phases[i];
                         //
-                        ////                                auto phaseDeltaPrime = (M_PI * (lastFreq + sound_frame.harmonic.freqs[i]) / FS) * H;
-                        ////                                auto phaseDeltaPrime = (M_PI * (lastFreq + sound_frame.harmonic.freqs[i]) / FS) * H;
+                        ////                                auto phaseDeltaPrime = (M_PI * (lastFreq + frame.harmonic.freqs[i]) / FS) * H;
+                        ////                                auto phaseDeltaPrime = (M_PI * (lastFreq + frame.harmonic.freqs[i]) / FS) * H;
                         ////                                auto phaseDeltaPrime = phaseDelta - H * 2 * M_PI;
                         //                                auto phaseDeltaPrime = phaseDelta - H * 2 * M_PI;
                         //
                         ////                                auto phaseDeltaPrimeMod = std::fmod (phaseDeltaPrime + M_PI, (2.0 * M_PI) - M_PI);
                         //                                auto phaseDeltaPrimeMod = std::fmod (phaseDeltaPrime, (2.0 * M_PI));
-                        //                                sound_frame.harmonic.phases[i] = phaseDeltaPrimeMod;
+                        //                                frame.harmonic.phases[i] = phaseDeltaPrimeMod;
                         ////                                synthesis.live_values.harmonic.phases[i] = phaseDeltaPrimeMod; // test
                         //
                         //                                // LIVE
                         //
                         ////                                const int H = synthesis.parameters.hop_size;
-                        ////                                const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
+                        ////                                const int MAX_HARMONICS = frame.getMaxHarmonics();
                         ////                                std::vector<int> idx_harmonics = Tools::Generate::range (0, MAX_HARMONICS);
                         ////
-                        ////                                sound_frame.harmonic.phases = Tools::Get::valuesByIndex (synthesis.live_values.harmonic.phases, idx_harmonics);
+                        ////                                frame.harmonic.phases = Tools::Get::valuesByIndex (synthesis.live_values.harmonic.phases, idx_harmonics);
                         ////
                         ////                                // Save the current frequencies to be available fot the next iteration
-                        ////                                synthesis.updateLastFreqs (synthesis.live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics);
+                        ////                                synthesis.updateLastFreqs (synthesis.live_values.harmonic, frame.harmonic.freqs, idx_harmonics);
                         ////
                         ////                                // Update phases for the next iteration
-                        ////                                synthesis.updatePhases (synthesis.live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics, H);
+                        ////                                synthesis.updatePhases (synthesis.live_values.harmonic, frame.harmonic.freqs, idx_harmonics, H);
                         //
                         //                                // OLD
                         //
-                        ////                                synthesis.live_values.harmonic.last_freqs[i] = sound_frame.harmonic.freqs[i];
+                        ////                                synthesis.live_values.harmonic.last_freqs[i] = frame.harmonic.freqs[i];
                         ////                                auto lastPhase = synthesis.live_values.harmonic.phases[i];
                         ////
-                        ////                                sound_frame.harmonic.phases[i] = lastPhase + i_hop_size * sound_frame.harmonic.freqs[i];
+                        ////                                frame.harmonic.phases[i] = lastPhase + i_hop_size * frame.harmonic.freqs[i];
                         ////
-                        ////                                synthesis.live_values.harmonic.phases[i] = sound_frame.harmonic.phases[i];
-                        ////                                //                            updatePhases (live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics, H);
-                        ////                                // sound_frame.harmonic.phases[i] = (sound_frame.harmonic.phases[i] / f_note_frequency) * f_target_frequency;
+                        ////                                synthesis.live_values.harmonic.phases[i] = frame.harmonic.phases[i];
+                        ////                                //                            updatePhases (live_values.harmonic, frame.harmonic.freqs, idx_harmonics, H);
+                        ////                                // frame.harmonic.phases[i] = (frame.harmonic.phases[i] / f_note_frequency) * f_target_frequency;
                         //                            }
 
-                        m_synthesis.live_values.harmonic.last_freqs[i] = sound_frame.harmonic.freqs[i];
+                        //// OK m_synthesis.live_values.harmonic.last_freqs[i] = frame.harmonic.freqs[i];
                     }
+                    
+                    frame.setHarmonicComponent(auxHarmonics);
                 }
 
-                if (sound_frame.hasSinusoidal())
+                if (frame.hasSinusoidal())
                 {
+                    auto auxSinusoids = frame.getSinusoidalComponent();
+                    
                     // Recalculate the harmonics for the current midi note
-                    for (int i = 0; i < sound_frame.sinusoidal.freqs.size(); i++)
+                    for (int i = 0; i < auxSinusoids.freqs.size(); i++)
                     {
-                        sound_frame.sinusoidal.freqs[i] = (sound_frame.sinusoidal.freqs[i] / f_note_frequency) * f_target_frequency;
+                        auxSinusoids.freqs[i] = (auxSinusoids.freqs[i] / f_note_frequency) * f_target_frequency;
                     }
+                    
+                    frame.setSinusoidalComponent(auxSinusoids);
                 }
 
                 // TODO TRANSPOSE PHASE
                 //
                 //                    // Transpose left note frequencies to the target frequency
-                //                    Tools::Calculate::divideByScalar(sound_frame.harmonics_freqs,
+                //                    Tools::Calculate::divideByScalar(frame.harmonics_freqs,
                 //                                                     Tools::Midi::toFreq(morph_sounds[MorphLocation::Left]->note));
-                //                    Tools::Calculate::multiplyByScalar(sound_frame.harmonics_freqs, f_target_frequency);
+                //                    Tools::Calculate::multiplyByScalar(frame.harmonics_freqs, f_target_frequency);
             }
             else
             {
                 // TODO - Apply fade out if *i_current_frame > min_note_end - 4 (4 = fade_out_frames)
-                sound_frame = m_instrument.getMorphedSoundFrame (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
+                frame = m_instrument.getMorphedSoundFrame (f_current_midi_note, morph_sounds, *i_current_frame, i_hop_size);
             }
         }
 
         // NOTE - "frame" will have "i_hop_size" more samples ready to be played after each call
         // TODO - This function needs to be optimized
-        m_synthesis.generateSoundFrame (sound_frame, i_frame_length);
+        m_synthesis.generateSoundFrame (frame, i_frame_length);
 
         *i_current_frame += 1;
 
@@ -451,7 +469,7 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
     }
 
     // Selecting the processed samples
-    std::vector<float> frame = m_synthesis.getBuffer (Synthesis::BufferSection::Play, Channel::Mono, i_frame_length);
+    std::vector<float> buffer = m_synthesis.getBuffer (Synthesis::BufferSection::Play, Channel::Mono, i_frame_length);
 
     // Update play pointer position
     m_synthesis.updatePlayPointer (i_frame_length);
@@ -459,6 +477,6 @@ std::vector<float> Voice::getNextFrame (float f_note, float f_velocity, int i_fr
     // Update samples ready to be played
     m_synthesis.live_values.i_samples_ready -= i_frame_length;
 
-    return frame;
+    return buffer;
 }
 }; // namespace moprhex

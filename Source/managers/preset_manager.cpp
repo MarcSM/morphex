@@ -222,7 +222,7 @@ void PresetManager::getSoundInformation (juce::XmlElement* xmlElement) const
 
     for (int i = 0; i < morphSounds.size(); i++)
     {
-        std::string soundFilePath = morphSounds[i]->path;
+        std::string soundFilePath = morphSounds[i]->getHadFileInfo()->path;
         removeSubStr (soundFilePath, (Constants::CollectionDirectory + juce::File::getSeparatorChar()).toStdString());
         juce::String soundFilePathId = Constants::SoundFilePathParameterId + juce::String (i + 1);
         xmlElement->setAttribute (soundFilePathId, soundFilePath);

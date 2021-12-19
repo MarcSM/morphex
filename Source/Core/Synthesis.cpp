@@ -98,7 +98,7 @@ void Synthesis::reset()
     }
 }
 
-std::vector<float> Synthesis::synthesizeSoundFrame (Sound::Frame sound_frame)
+std::vector<float> Synthesis::synthesizeSoundFrame (Frame frame)
 {
     // Parameters shortcut
     const int FS = parameters.fs;
@@ -108,13 +108,15 @@ std::vector<float> Synthesis::synthesizeSoundFrame (Sound::Frame sound_frame)
     std::vector<float> yw (NS, 0.0);
 
     // Harmonic component
-    if (m_instrument.isModelActive (Model::Type::Harmonic) and sound_frame.hasHarmonic())
+    if (m_instrument.isModelActive (Instrument::ModelType::Harmonic) and frame.hasHarmonic())
     {
+        auto harmonics = frame.getHarmonicComponent();
+        
         // TODO - TOFIX - This does not work
         std::vector<float> y_harmonic =
-            generateSines (sound_frame.harmonic.freqs,
-                           sound_frame.harmonic.mags,
-                           sound_frame.harmonic.phases,
+            generateSines (harmonics.freqs,
+                           harmonics.mags,
+                           harmonics.phases,
                            NS,
                            FS);
 
@@ -129,12 +131,14 @@ std::vector<float> Synthesis::synthesizeSoundFrame (Sound::Frame sound_frame)
     }
 
     // Sinusoidal component
-    if (m_instrument.isModelActive (Model::Type::Sinusoidal) and sound_frame.hasSinusoidal())
+    if (m_instrument.isModelActive (Instrument::ModelType::Sinusoidal) and frame.hasSinusoidal())
     {
+        auto sinusoids = frame.getSinusoidalComponent();
+        
         std::vector<float> y_sinusoidal =
-            generateSines (sound_frame.sinusoidal.freqs,
-                           sound_frame.sinusoidal.mags,
-                           sound_frame.sinusoidal.phases,
+            generateSines (sinusoids.freqs,
+                           sinusoids.mags,
+                           sinusoids.phases,
                            NS,
                            FS);
 
@@ -149,9 +153,9 @@ std::vector<float> Synthesis::synthesizeSoundFrame (Sound::Frame sound_frame)
     }
 
     // TODO - Stochastic component
-    //        if ( sound_frame.hasStochastic() )
+    //        if ( frame.hasStochastic() )
     //        {
-    //            std::vector<float> y_stocs = generateStocs(sound_frame.stochastic, H * 2, NS);
+    //            std::vector<float> y_stocs = generateStocs(frame.stochastic, H * 2, NS);
     //
     //            // Applying the window and saving the result on the output vector "harmonic"
     //            std::vector<float> yw_stocs(NS);
@@ -165,79 +169,89 @@ std::vector<float> Synthesis::synthesizeSoundFrame (Sound::Frame sound_frame)
     //        }
 
     // Attack compontent
-    if (m_instrument.isModelActive (Model::Type::Attack) and sound_frame.hasAttack())
+    if (m_instrument.isModelActive (Instrument::ModelType::Attack) and frame.hasAttack())
     {
-        for (int i = 0; i < sound_frame.attack.size(); i++)
+        auto attackWaveform = frame.getAttackWaveform();
+        
+        for (int i = 0; i < attackWaveform.size(); i++)
         {
-            yw[i] += sound_frame.attack[i];
+            yw[i] += attackWaveform[i];
         }
     }
 
     // Residual compontent
-    if (m_instrument.isModelActive (Model::Type::Residual) and sound_frame.hasResidual())
+    if (m_instrument.isModelActive (Instrument::ModelType::Residual) and frame.hasResidual())
     {
-        for (int i = 0; i < sound_frame.residual.size(); i++)
+        auto residualWaveform = frame.getResidualWaveform();
+        
+        for (int i = 0; i < residualWaveform.size(); i++)
         {
-            yw[i] += sound_frame.residual[i];
+            yw[i] += residualWaveform[i];
         }
     }
 
     return yw;
 }
 
-void Synthesis::generateSoundFrame (Sound::Frame sound_frame, bool append_to_generated)
+void Synthesis::generateSoundFrame (Frame frame, bool append_to_generated)
 {
     // Get parameters
     const int H             = parameters.hop_size;
-    const int MAX_HARMONICS = sound_frame.getMaxHarmonics();
-    const int MAX_SINUSOIDS = sound_frame.getMaxSinusoids();
+    const auto maxNumOfHarmonics = static_cast<int> (frame.getMaxNumOfHarmonics());
+    const auto maxNumOfSinusoids = static_cast<int> (frame.getMaxNumOfSinusoids());
 
     // A list with the indexes of the harmonics we want to interpolate
-    std::vector<int> idx_harmonics = Tools::Generate::range (0, MAX_HARMONICS);
-    std::vector<int> idx_sinusoids = Tools::Generate::range (0, MAX_SINUSOIDS);
+    std::vector<int> idx_harmonics = Tools::Generate::range (0, maxNumOfHarmonics);
+    std::vector<int> idx_sinusoids = Tools::Generate::range (0, maxNumOfSinusoids);
 
     // If the sound frame has harmonics but not its phases
-    if (sound_frame.hasHarmonic())
+    if (frame.hasHarmonic())
     {
+        auto harmonics = frame.getHarmonicComponent();
+        
         // Get phase values
-        if (live_values.first_frame && sound_frame.hasPhases (sound_frame.harmonic))
+        if (live_values.first_frame && frame.hasPhases ())
         {
-            live_values.harmonic.phases = sound_frame.harmonic.phases;
+            live_values.harmonic.phases = harmonics.phases;
         }
         else
         {
-            sound_frame.harmonic.phases = Tools::Get::valuesByIndex (live_values.harmonic.phases, idx_harmonics);
+            harmonics.phases = Tools::Get::valuesByIndex (live_values.harmonic.phases, idx_harmonics);
+            frame.setHarmonicComponent(harmonics);
         }
 
         // Save the current frequencies to be available fot the next iteration
-        updateLastFreqs (live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics);
+        updateLastFreqs (live_values.harmonic, harmonics.freqs, idx_harmonics);
 
         // Update phases for the next iteration
-        updatePhases (live_values.harmonic, sound_frame.harmonic.freqs, idx_harmonics, H);
+        updatePhases (live_values.harmonic, harmonics.freqs, idx_harmonics, H);
     }
 
     // If the sound frame has sinusoids but not its phases
-    if (sound_frame.hasSinusoidal())
+    if (frame.hasSinusoidal())
     {
+        auto sinusoids = frame.getSinusoidalComponent();
+        
         // Get phase values
-        if (live_values.first_frame && sound_frame.hasPhases (sound_frame.sinusoidal))
+        if (live_values.first_frame && frame.hasSinusoidalPhases ())
         {
-            live_values.sinusoidal.phases = sound_frame.sinusoidal.phases;
+            live_values.sinusoidal.phases = sinusoids.phases;
         }
         else
         {
-            sound_frame.sinusoidal.phases = Tools::Get::valuesByIndex (live_values.sinusoidal.phases, idx_sinusoids);
+            sinusoids.phases = Tools::Get::valuesByIndex (live_values.sinusoidal.phases, idx_sinusoids);
+            frame.setSinusoidalComponent(sinusoids);
         }
 
         // Save the current frequencies to be available fot the next iteration
-        updateLastFreqs (live_values.sinusoidal, sound_frame.sinusoidal.freqs, idx_sinusoids);
+        updateLastFreqs (live_values.sinusoidal, sinusoids.freqs, idx_sinusoids);
 
         // Update phases for the next iteration
-        updatePhases (live_values.sinusoidal, sound_frame.sinusoidal.freqs, idx_sinusoids, H);
+        updatePhases (live_values.sinusoidal, sinusoids.freqs, idx_sinusoids, H);
     }
 
     // Generate windowed audio frame
-    std::vector<float> windowed_audio_frame = synthesizeSoundFrame (sound_frame);
+    std::vector<float> windowed_audio_frame = synthesizeSoundFrame (frame);
 
     if (live_values.first_frame)
     {

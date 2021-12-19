@@ -18,6 +18,7 @@
 
 #include "sound.h"
 #include "tools.h"
+#include "codec.h"
 
 // TODO - Adapt/remake this class to make use of JUCE's "ValueTree" class (undo/redo feature)
 // TODO - Merge with synth_sound
@@ -70,14 +71,14 @@ void Sound::loadHadFile (juce::String filePath)
 
                 if (xml_file)
                 {
-                    file_version = hasChild (xml_file, "v") ? xml_file->getChildByName ("v")->getAllSubText().getIntValue() : 0;
+                    const auto file_version = hasChild (xml_file, "v") ? xml_file->getChildByName ("v")->getAllSubText().getIntValue() : 0;
 
                     if (file_version == Constants::CurrentFileVersion and hasChild (xml_file, "dp"))
                     {
                         // Sound
                         juce::XmlElement* xmlSound = xml->getChildByName ("sound"); // had["sound"]
-                        m_info                = std::make_unique<SoundInfo>;
-                        m_hadInfo                  = std::make_unique<HadInfo>;
+                        m_info                = std::make_unique<Info>();
+                        m_hadInfo                  = std::make_unique<HadInfo>();
                         m_info->note          = xmlSound->getChildByName ("note")->getAllSubText().getIntValue();
                         m_info->velocity      = xmlSound->getChildByName ("velocity")->getAllSubText().getIntValue();
                         m_hadInfo->fs              = xmlSound->getChildByName ("fs")->getAllSubText().getIntValue();
@@ -86,8 +87,8 @@ void Sound::loadHadFile (juce::String filePath)
 
                         // Analysis parameters
                         juce::XmlElement* xmlParameters = xml->getChildByName ("parameters"); // had["parameters"]
-                        m_hadInfo                       = std::make_unique<HadInfo>;
-                        m_hadInfo->window_type          = (WindowType) xmlParameters->getChildByName ("window_type")->getAllSubText().getIntValue();
+                        m_hadInfo                       = std::make_unique<HadInfo>();
+                        m_hadInfo->window_type          = static_cast<WindowType>(xmlParameters->getChildByName ("window_type")->getAllSubText().getIntValue());
                         m_hadInfo->window_size          = xmlParameters->getChildByName ("window_size")->getAllSubText().getIntValue();
                         m_hadInfo->fft_size             = xmlParameters->getChildByName ("fft_size")->getAllSubText().getIntValue();
                         m_hadInfo->magnitude_threshold  = xmlParameters->getChildByName ("magnitude_threshold")->getAllSubText().getIntValue();
@@ -109,10 +110,18 @@ void Sound::loadHadFile (juce::String filePath)
                         if (hasChild (xml_synthesis, "h"))
                         {
                             juce::XmlElement* xml_synthesis_harmonic = xml_synthesis->getChildByName ("h"); // had["synthesis"]["h"]
+                            
+                            auto harmonicFrequencies = getMatrixOfFloats (xml_synthesis_harmonic, "f");
+                            auto harmonicMagnitudes  = getMatrixOfFloats (xml_synthesis_harmonic, "m");
+                            auto harmonicPhases      = getMatrixOfFloats (xml_synthesis_harmonic, "p");
 
-                            const auto harmonicFrequencies = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_harmonic, "f"));
-                            const auto harmonicMagnitudes  = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_harmonic, "m"));
-                            const auto harmonicPhases      = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_harmonic, "p"));
+                            codec::decodeMatrixDiff (harmonicFrequencies);
+                            codec::decodeMatrixDiff (harmonicMagnitudes);
+                            codec::decodeMatrixDiff (harmonicPhases);
+                            
+                            codec::decodeMatrix (harmonicFrequencies, false, false);
+                            codec::decodeMatrix (harmonicMagnitudes, true, false);
+                            codec::decodeMatrix (harmonicPhases, false, false);
 
                             if (harmonicFrequencies.size() != harmonicMagnitudes.size() ||
                                 harmonicFrequencies.size() != harmonicPhases.size())
@@ -126,7 +135,7 @@ void Sound::loadHadFile (juce::String filePath)
 
                             for (auto i = 0u; i < harmonicFrequencies.size(); ++i)
                             {
-                                m_frames[i].setHarmonicComponent ({ harmonicFrequencies, harmonicMagnitudes, harmonicPhases });
+                                m_frames[i]->setHarmonicComponent ({ harmonicFrequencies[i], harmonicMagnitudes[i], harmonicPhases[i] });
                             }
                         }
 
@@ -134,10 +143,18 @@ void Sound::loadHadFile (juce::String filePath)
                         if (hasChild (xml_synthesis, "s"))
                         {
                             juce::XmlElement* xml_synthesis_sinusoidal = xml_synthesis->getChildByName ("s"); // had["synthesis"]["s"]
+                            
+                            auto sinusoidalFrequencies = getMatrixOfFloats (xml_synthesis_sinusoidal, "f");
+                            auto sinusoidalMagnitudes = getMatrixOfFloats (xml_synthesis_sinusoidal, "m");
+                            auto sinusoidalPhases = getMatrixOfFloats (xml_synthesis_sinusoidal, "p");
 
-                            const auto sinusoidalFrequencies = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_sinusoidal, "f"));
-                            const auto sinusoidalMagnitudes  = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_sinusoidal, "m"));
-                            const auto sinusoidalPhases      = Codec::decodeMatrixDiff (getMatrixOfInts (xml_synthesis_sinusoidal, "p"));
+                            codec::decodeMatrixDiff (sinusoidalFrequencies);
+                            codec::decodeMatrixDiff (sinusoidalMagnitudes);
+                            codec::decodeMatrixDiff (sinusoidalPhases);
+                            
+                            codec::decodeMatrix (sinusoidalFrequencies, false, false);
+                            codec::decodeMatrix (sinusoidalMagnitudes, true, false);
+                            codec::decodeMatrix (sinusoidalPhases, false, false);
 
                             if (sinusoidalFrequencies.size() != sinusoidalMagnitudes.size() ||
                                 sinusoidalFrequencies.size() != sinusoidalPhases.size())
@@ -151,28 +168,30 @@ void Sound::loadHadFile (juce::String filePath)
 
                             for (auto i = 0u; i < sinusoidalFrequencies.size(); ++i)
                             {
-                                m_frames[i].setHarmonicComponent ({ sinusoidalFrequencies, sinusoidalMagnitudes, sinusoidalPhases });
+                                m_frames[i]->setSinusoidalComponent ({ sinusoidalFrequencies[i], sinusoidalMagnitudes[i], sinusoidalPhases[i] });
                             }
                         }
 
                         // Stochastic
                         if (hasChild (xml_synthesis, "c"))
                         {
-                            const auto stochasticMagnitudes = Codec::decodeMatrix (getMatrixOfFloats (xml_synthesis, "c"), true);
+                            auto stochasticMagnitudes = getMatrixOfFloats (xml_synthesis, "c");
+                            
+                            codec::decodeMatrix (stochasticMagnitudes, true);
 
-                            const auto maxFramesSize = std::max (m_frames.size(), sinusoidalFrequencies.size());
+                            const auto maxFramesSize = std::max (m_frames.size(), stochasticMagnitudes.size());
 
                             m_frames.resize (maxFramesSize);
 
-                            for (auto i = 0u; i < sinusoidalFrequencies.size(); ++i)
+                            for (auto i = 0u; i < stochasticMagnitudes.size(); ++i)
                             {
-                                m_frames[i].setHarmonicComponent ({ sinusoidalFrequencies, sinusoidalMagnitudes, sinusoidalPhases });
+                                m_frames[i]->setStochasticMagnitudes (stochasticMagnitudes[i]);
                             }
                         }
 
                         const auto hopSize = m_hadInfo->hop_size;
 
-                        if (hopSize <= 0)
+                        if (hopSize <= 0u)
                         {
                             throw "hop_size value is not valid";
                         }
@@ -180,19 +199,22 @@ void Sound::loadHadFile (juce::String filePath)
                         // Attack
                         if (hasChild (xml_synthesis, "a"))
                         {
-                            const auto attackWaveform    = Codec::decodeVector (getVectorOfFloats (xml_synthesis, "a"));
-                            const auto attackNumOfFrames = std::trunc (attackWaveform.size() / hopSize);
+                            auto attackWaveform = getVectorOfFloats (xml_synthesis, "a");
+                            
+                            codec::decodeVector (attackWaveform);
+                            
+                            const auto attackNumOfFrames = static_cast<size_t>( std::ceil ( static_cast<double>(attackWaveform.size() / hopSize)));
                             const auto maxFramesSize     = std::max (m_frames.size(), attackNumOfFrames);
 
                             m_frames.resize (maxFramesSize);
 
-                            auto currentSample = 0;
+                            auto currentSample = 0u;
 
-                            for (auto i = 0u; i < m_frames.size(); ++i)
+                            for (auto i = 0u; i < attackNumOfFrames; ++i)
                             {
                                 const auto waveformSize = std::min (attackWaveform.size() - currentSample, hopSize);
 
-                                m_frames[i].setAttackWaveform ({ attackWaveform.begin() + currentSample, attackWaveform.begin() + currentSample + waveformSize });
+                                m_frames[i]->setAttackWaveform ({ attackWaveform.begin() + currentSample, attackWaveform.begin() + currentSample + waveformSize });
 
                                 currentSample += hopSize;
                             }
@@ -201,26 +223,30 @@ void Sound::loadHadFile (juce::String filePath)
                         // Residual
                         if (hasChild (xml_synthesis, "r"))
                         {
-                            const auto residualWaveform    = Codec::decodeVector (getVectorOfFloats (xml_synthesis, "r"));
-                            const auto residualNumOfFrames = std::trunc (residualWaveform.size()) / hopSize);
-                            const auto maxFramesSize       = std::max (m_frames.size(), attackNumOfFrames);
+                            auto residualWaveform = getVectorOfFloats (xml_synthesis, "r");
+                            
+                            codec::decodeVector (residualWaveform);
+                            
+                            const auto residualNumOfFrames = static_cast<size_t>( std::ceil ( static_cast<double>(residualWaveform.size() / hopSize)));
+                            const auto maxFramesSize       = std::max (m_frames.size(), residualNumOfFrames);
 
                             m_frames.resize (maxFramesSize);
 
-                            auto currentSample = 0;
+                            auto currentSample = 0u;
 
-                            for (auto i = 0u; i < m_frames.size(); ++i)
+                            for (auto i = 0u; i < residualNumOfFrames; ++i)
                             {
                                 const auto waveformSize = std::min (residualWaveform.size() - currentSample, hopSize);
 
-                                m_frames[i].setResidualWaveform ({ residualWaveform.begin() + currentSample, residualWaveform.begin() + currentSample + waveformSize });
+                                m_frames[i]->setResidualWaveform ({ residualWaveform.begin() + currentSample, residualWaveform.begin() + currentSample + waveformSize });
 
                                 currentSample += hopSize;
                             }
                         }
 
                         
-                        m_soundFeatures = std::make_unique<SoundFeatures>()
+                        m_soundFeatures = std::make_unique<SoundFeatures>();
+                        
                         getFundamentalNotes();
 
                         /** Normalize magnitudes on load by default */
@@ -229,7 +255,7 @@ void Sound::loadHadFile (juce::String filePath)
                     }
                     else
                     {
-                        throw << "Error while parsing the XML hda file data\n";
+                        throw "Error while parsing the XML hda file data\n";
                         jassertfalse;
                     }
                 }
@@ -246,26 +272,26 @@ void Sound::loadHadFile (juce::String filePath)
         }
         else
         {
-            throw << "The file doesn't exist\n";
+            throw "The file doesn't exist\n";
             jassertfalse;
         }
     }
     catch (const char* msg)
     {
-        throw << "Error while loading the sound: '" << msg << "'\n";
+        DBG("Error while loading the sound: '" << msg << "'\n");
         jassertfalse;
         reset();
     }
 };
 
-bool Sound::isLoaded()
+bool Sound::isLoaded() const
 {
     return m_info && isAnalyzed();
 }
 
-bool Sound::isAnalyzed()
+bool Sound::isAnalyzed() const
 {
-    return m_hadInfo;
+    return m_hadInfo != nullptr;
 }
 
 //    // TODO - If there is no ".mif" (Morphex Instrument File)
@@ -286,24 +312,23 @@ bool Sound::isAnalyzed()
 //        std::string filePath
 //    }
 
-Info getInfo() const
+Sound::Info* Sound::getInfo() const
 {
-    return m_info;
+    return m_info.get();
 }
 
-int getMaxFrames()
+int Sound::getMaxFrames() const
 {
-    return static_cast<int>(m_frame.size());
+    return static_cast<int>(m_frames.size());
 }
 
-std::unique_ptr<Frame> Sound::getFrame (int frameIndex, int hopSize)
+std::shared_ptr<const Frame> Sound::getFrame (int frameIndex, int hopSize) const
 {
     auto frame = nullptr;
 
     if (frameIndex < m_frames.size())
     {
-        // TODO - std::vector<std::shared_ptr<Frame>> m_frames?
-        frame = std::make_unique<Frame> (m_frames[frameIndex]);
+        return m_frames[frameIndex];
     }
     else
     {
@@ -311,6 +336,18 @@ std::unique_ptr<Frame> Sound::getFrame (int frameIndex, int hopSize)
     }
 
     return frame;
+}
+
+void Sound::setVelocity(const int velocity)
+{
+    if (m_info)
+    {
+        m_info->velocity = velocity;
+    }
+    else
+    {
+        jassertfalse;
+    }
 }
 
 // TODO
@@ -352,59 +389,66 @@ void Sound::synthesize()
 
 void Sound::getFundamentalNotes()
 {
-    auto& notes = m_soundFeatures.notes;
-
-    notes.clear();
-
-    // Populate the notes array
-    for (auto octaveNumber = -4; octaveNumber < 4; octaveNumber++)
+    if(m_soundFeatures)
     {
-        float a = Constants::A4Hz * powf (2, (float) octaveNumber);
+        auto& notes = m_soundFeatures->notes;
 
-        notes.emplace ((a * powf (2, -9.0 / 12)), 0); // "C"
-        notes.emplace ((a * powf (2, -8.0 / 12)), 0); // "C#"
-        notes.emplace ((a * powf (2, -7.0 / 12)), 0); // "D"
-        notes.emplace ((a * powf (2, -6.0 / 12)), 0); // "D#"
-        notes.emplace ((a * powf (2, -5.0 / 12)), 0); // "E"
-        notes.emplace ((a * powf (2, -4.0 / 12)), 0); // "F"
-        notes.emplace ((a * powf (2, -3.0 / 12)), 0); // "F#"
-        notes.emplace ((a * powf (2, -2.0 / 12)), 0); // "G"
-        notes.emplace ((a * powf (2, -1.0 / 12)), 0); // "G#"
-        notes.emplace ((a), 0);                       // "A"
-        notes.emplace ((a * powf (2, 1.0 / 12)), 0);  // "A#"
-        notes.emplace ((a * powf (2, 2.0 / 12)), 0);  // "B"
-    }
+        notes.clear();
 
-    // Count the number of occurrences for each fundamental present on "harmonic_frequencies"
-    for (const auto& frame : m_frames)
-    {
-        const auto& currentFundamental = frame[0];
+        // Populate the notes array
+        for (auto octaveNumber = -4; octaveNumber < 4; octaveNumber++)
+        {
+            float a = Constants::A4Hz * powf (2, (float) octaveNumber);
 
-        // Find closest note for this fundamental
-        const auto& closestNote = std::min_element (notes.begin(), notes.end(), [&] (const auto& lowerNote, const auto& upperNote) {
-            return std::abs (lowerNote.second - currentFundamental) < std::abs (upperNote.second - currentFundamental);
+            notes.emplace ((a * powf (2, -9.0 / 12)), 0); // "C"
+            notes.emplace ((a * powf (2, -8.0 / 12)), 0); // "C#"
+            notes.emplace ((a * powf (2, -7.0 / 12)), 0); // "D"
+            notes.emplace ((a * powf (2, -6.0 / 12)), 0); // "D#"
+            notes.emplace ((a * powf (2, -5.0 / 12)), 0); // "E"
+            notes.emplace ((a * powf (2, -4.0 / 12)), 0); // "F"
+            notes.emplace ((a * powf (2, -3.0 / 12)), 0); // "F#"
+            notes.emplace ((a * powf (2, -2.0 / 12)), 0); // "G"
+            notes.emplace ((a * powf (2, -1.0 / 12)), 0); // "G#"
+            notes.emplace ((a), 0);                       // "A"
+            notes.emplace ((a * powf (2, 1.0 / 12)), 0);  // "A#"
+            notes.emplace ((a * powf (2, 2.0 / 12)), 0);  // "B"
+        }
+
+        // Count the number of occurrences for each fundamental present on "harmonic_frequencies"
+        for (const auto& frame : m_frames)
+        {
+            const auto& currentFundamental = frame.getHarmonicComponent().freqs[0];
+
+            // Find closest note for this fundamental
+            const auto& closestNote = std::min_element (notes.begin(), notes.end(), [&] (const auto& lowerNote, const auto& upperNote) {
+                return std::abs (lowerNote.second - currentFundamental) < std::abs (upperNote.second - currentFundamental);
+            });
+
+            if (closestNote != notes.end())
+            {
+                // Increment the number of occurrences
+                ++closestNote->second;
+            }
+            else
+            {
+                jassertfalse;
+            }
+        }
+
+        // Find the predominant fundamental
+        const auto& predominantNote = std::max_element (notes.begin(), notes.end(), [] (const auto& lowerNote, const auto& upperNote) {
+            return lowerNote.second < upperNote.second;
         });
 
-        if (closestNote != notes.end())
+        if (predominantNote != notes.end())
         {
-            // Increment the number of occurrences
-            closestNote.second++;
+            // Save the predominant note
+            m_soundFeatures.predominantNote = predominantNote.second;
         }
         else
         {
             jassertfalse;
         }
-    }
-
-    // Find the predominant fundamental
-    const auto& predominantNote = std::max_element (notes.begin(), notes.end(), [] (const auto& lowerNote, const auto& upperNote) {
-        return lowerNote.second < upperNote.second;
-    });
-
-    if (predominantNote != notes.end())
-    {
-        // Save the predominant note
-        m_soundFeatures.predominantNote = predominantNote.second;
     }
     else
     {

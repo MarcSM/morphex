@@ -47,6 +47,14 @@ public:
     void setStochasticMagnitudes (std::vector<float> values);
     void setAttackWaveform (std::vector<float> waveform);
     void setResidualWaveform (std::vector<float> waveform);
+    
+    bool hasHarmonic() { return m_harmonic.freqs.size() > 0; };
+    bool hasSinusoidal() { return m_sinusoidal.freqs.size() > 0; };
+    bool hasPhases() { return m_harmonic.phases.size() > 0; };
+    bool hasSinusoidalPhases() { return m_sinusoidal.phases.size() > 0; };
+    bool hasStochastic() { return m_stochastic.size() > 0; };
+    bool hasAttack() { return m_attack.size() > 0; };
+    bool hasResidual() { return m_residual.size() > 0; };
 
 private:
     FftComponent       m_harmonic;
@@ -54,12 +62,5 @@ private:
     std::vector<float> m_stochastic;
     std::vector<float> m_attack;
     std::vector<float> m_residual;
-
-    bool hasHarmonic() { return m_harmonic.freqs.size() > 0; };
-    bool hasSinusoidal() { return m_sinusoidal.freqs.size() > 0; };
-    bool hasPhases() { return m_harmonic.phases.size() > 0; };
-    bool hasStochastic() { return m_stochastic.size() > 0; };
-    bool hasAttack() { return m_attack.size() > 0; };
-    bool hasResidual() { return m_residual.size() > 0; };
 };
 }; // namespace morphex

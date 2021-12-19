@@ -98,7 +98,7 @@ public:
         double     harm_dev_slope      = 0.0;
         double     stoc_fact           = 0.0;
         int        synthesis_fft_size  = 0;
-        int        hop_size            = 0;
+        size_t     hop_size            = 0u;
         int        fs                  = 0; // Frame size (sample rate)
     };
 
@@ -121,12 +121,15 @@ public:
 
     void reset();
     void loadHadFile (juce::String filePath);
-    bool isLoaded();
-    bool isAnalyzed();
+    bool isLoaded() const;
+    bool isAnalyzed() const;
 
-    Info getInfo();
-    int getMaxFrames();
-    std::unique_ptr<Frame> getFrame (int frameIndex, int hopSize) const;
+    Info* getInfo() const;
+    HadFileInfo* getHadFileInfo() const;
+    int getMaxFrames() const;
+    std::shared_ptr<const Frame> getFrame (int frameIndex, int hopSize) const;
+    
+    void setVelocity(int velocity);
 
 private:
     void synthesize();
@@ -144,7 +147,7 @@ private:
     // float findClosest (float arr[], int n, float target);
     // float getClosestValue (float val1, float val2, float target);
 
-    std::vector<Frame> m_frames;
+    std::vector<std::shared_ptr<Frame>> m_frames;
     std::vector<float> m_waveform;
 
     std::unique_ptr<SourceInfo> m_sourceInfo;
