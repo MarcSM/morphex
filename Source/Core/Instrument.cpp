@@ -293,31 +293,31 @@ Sound* Instrument::getMorphSound (MorphLocation morph_location)
     return m_morphSounds[morph_location];
 }
 
-Sound::Frame Instrument::getSoundFrame (float targetMidiNote, float velocity, int currentFrameIndex, int frameLength, float freqsInterpFactor, float magsInterpFactor)
-{
-    // TODO - Return empty sound frame if all "morphSounds" are nullptrs
-
-    auto morphSounds = getClosestSounds (targetMidiNote, velocity);
-
-    if (morphSounds[MorphLocation::UpLeft] == morphSounds[MorphLocation::DownRight])
-    {
-        return morphSounds[MorphLocation::UpLeft]->getFrame (currentFrameIndex, frameLength);
-    }
-    else
-    {
-        return getMorphedSoundFrame (targetMidiNote, morphSounds, currentFrameIndex, frameLength, freqsInterpFactor, magsInterpFactor);
-    }
-}
+//std::shared_ptr<const Frame> Instrument::getSoundFrame (float targetMidiNote, float velocity, int currentFrameIndex, int frameLength, float freqsInterpFactor, float magsInterpFactor)
+//{
+//    // TODO - Return empty sound frame if all "morphSounds" are nullptrs
+//
+//    auto morphSounds = getClosestSounds (targetMidiNote, velocity);
+//
+//    if (morphSounds[MorphLocation::UpLeft] == morphSounds[MorphLocation::DownRight])
+//    {
+//        return morphSounds[MorphLocation::UpLeft]->getFrame (currentFrameIndex, frameLength);
+//    }
+//    else
+//    {
+//        return getMorphedSoundFrame (targetMidiNote, morphSounds, currentFrameIndex, frameLength, freqsInterpFactor, magsInterpFactor);
+//    }
+//}
 
 // NOTE: About looping, two modes, the first one is that each note loops
 // on their own loop points and then do the morphing, it will cause misalignment.
 // The second one is to have the maximum starting loop point and the minimum ending
 // loop point, the loop section will be smaller but it will sound homogeneous
 // among iterations.
-Sound::Frame Instrument::getMorphedSoundFrame (float targetMidiNote, MorphSounds morphSounds, int currentFrameIndex, int frameLength, float freqsInterpFactor, float magsInterpFactor)
+Frame Instrument::getMorphedSoundFrame (float targetMidiNote, MorphSounds morphSounds, int currentFrameIndex, int frameLength, float freqsInterpFactor, float magsInterpFactor) const
 {
     // Output
-    Sound::Frame morphedSoundFrame;
+    Frame morphedSoundFrame;
 
     // Get target frequency
     auto targetFrequency = Tools::Midi::toFreq (targetMidiNote);
@@ -326,13 +326,13 @@ Sound::Frame Instrument::getMorphedSoundFrame (float targetMidiNote, MorphSounds
     // how far is each note from the target frequency (normalized)
     if (m_interpolationMode == InterpolationMode::FrequencyBased)
     {
-        if (morphSounds[MorphLocation::UpLeft]->note == morphSounds[MorphLocation::DownRight]->note)
+        if (morphSounds[MorphLocation::UpLeft]->getInfo()->note == morphSounds[MorphLocation::DownRight]->getInfo()->note)
         {
             freqsInterpFactor = 0.0;
         }
         else
         {
-            freqsInterpFactor = (targetFrequency - Tools::Midi::toFreq (morphSounds[MorphLocation::UpLeft]->note)) / (Tools::Midi::toFreq (morphSounds[MorphLocation::DownRight]->note) - Tools::Midi::toFreq (morphSounds[MorphLocation::UpLeft]->note));
+            freqsInterpFactor = (targetFrequency - Tools::Midi::toFreq (morphSounds[MorphLocation::UpLeft]->getInfo()->note)) / (Tools::Midi::toFreq (morphSounds[MorphLocation::DownRight]->getInfo()->note) - Tools::Midi::toFreq (morphSounds[MorphLocation::UpLeft]->getInfo()->note));
         }
 
         magsInterpFactor = freqsInterpFactor;
@@ -349,7 +349,7 @@ Sound::Frame Instrument::getMorphedSoundFrame (float targetMidiNote, MorphSounds
     morphSoundFrames[MorphLocation::DownRight] = morphSounds[MorphLocation::DownRight]->getFrame (currentFrameIndex, frameLength);
 
     // Get the maximum number of hamronics and sound length
-    auto numOfMaxHarmonics = std::max (morphSoundFrames[MorphLocation::UpLeft].getMaxHarmonics(), morphSoundFrames[MorphLocation::DownRight].getMaxHarmonics());
+    auto numOfMaxHarmonics = std::max (morphSoundFrames[MorphLocation::UpLeft]->getMaxNumOfHarmonics(), morphSoundFrames[MorphLocation::DownRight]->getMaxNumOfHarmonics());
 
     // NOTE - If it doesn't sound properly, try to always give more weight
     // to the higer samples (it is necessary to define a function that,
@@ -366,24 +366,32 @@ Sound::Frame Instrument::getMorphedSoundFrame (float targetMidiNote, MorphSounds
     // //             explicit_fundamental = i_note
     //             return (note_hfreq / f_note_freq) * targetFrequency
 
-    if (morphSoundFrames[MorphLocation::UpLeft].hasHarmonic() or morphSoundFrames[MorphLocation::DownRight].hasHarmonic())
+    if (morphSoundFrames[MorphLocation::UpLeft]->hasHarmonic() or morphSoundFrames[MorphLocation::DownRight]->hasHarmonic())
     {
         // TODO - Check parameter morphSounds[MorphLocation::Left]->parameters.transpose.harmonic
-        // if false, do not transpose the frame of ote
+        // if false, do not transpose the frame of note
+        
+        auto morphedHarmonics = morphedSoundFrame.getHarmonicComponent();
+        auto leftHarmonics = morphSoundFrames[MorphLocation::UpLeft]->getHarmonicComponent();
+        auto rightHarmonics = morphSoundFrames[MorphLocation::DownRight]->getHarmonicComponent();
 
         // Transpose left note frequencies to the target frequency
-        Tools::Calculate::divideByScalar (morphSoundFrames[MorphLocation::UpLeft].harmonic.freqs, Tools::Midi::toFreq (morphSounds[MorphLocation::UpLeft]->note));
-        Tools::Calculate::multiplyByScalar (morphSoundFrames[MorphLocation::UpLeft].harmonic.freqs, targetFrequency);
+        Tools::Calculate::divideByScalar (leftHarmonics.freqs, Tools::Midi::toFreq (morphSounds[MorphLocation::UpLeft]->getInfo()->note));
+        Tools::Calculate::multiplyByScalar (leftHarmonics.freqs, targetFrequency);
 
         // Transpose right note frequencies to the target frequency
-        Tools::Calculate::divideByScalar (morphSoundFrames[MorphLocation::DownRight].harmonic.freqs, Tools::Midi::toFreq (morphSounds[MorphLocation::DownRight]->note));
-        Tools::Calculate::multiplyByScalar (morphSoundFrames[MorphLocation::DownRight].harmonic.freqs, targetFrequency);
+        Tools::Calculate::divideByScalar (rightHarmonics.freqs, Tools::Midi::toFreq (morphSounds[MorphLocation::DownRight]->getInfo()->note));
+        Tools::Calculate::multiplyByScalar (rightHarmonics.freqs, targetFrequency);
 
         // Interpolating the frequencies of the given harmonics
-        morphedSoundFrame.harmonic.freqs = interpolateFrames (FrameType::Frequencies, freqsInterpFactor, morphSoundFrames[MorphLocation::UpLeft].harmonic.freqs, morphSoundFrames[MorphLocation::DownRight].harmonic.freqs, numOfMaxHarmonics);
+        morphedHarmonics.freqs = interpolateFrames (FrameType::Frequencies, freqsInterpFactor, leftHarmonics.freqs, rightHarmonics.freqs, numOfMaxHarmonics);
 
         // Interpolating the magnitudes of the given harmonics
-        morphedSoundFrame.harmonic.mags = interpolateFrames (FrameType::Magnitudes, magsInterpFactor, morphSoundFrames[MorphLocation::UpLeft].harmonic.mags, morphSoundFrames[MorphLocation::DownRight].harmonic.mags, numOfMaxHarmonics);
+        morphedHarmonics.mags = interpolateFrames (FrameType::Magnitudes, magsInterpFactor, leftHarmonics.mags, rightHarmonics.mags, numOfMaxHarmonics);
+        
+        morphedSoundFrame.setHarmonicComponent(morphedHarmonics);
+        
+        
     }
 
     // TODO - Add sinusoidal component
@@ -419,56 +427,65 @@ Sound::Frame Instrument::getMorphedSoundFrame (float targetMidiNote, MorphSounds
     //                              harmonicsIndices);
     //        }
 
-    if (morphSoundFrames[MorphLocation::UpLeft].hasStochastic() or morphSoundFrames[MorphLocation::DownRight].hasStochastic())
+    if (morphSoundFrames[MorphLocation::UpLeft]->hasStochastic() or morphSoundFrames[MorphLocation::DownRight]->hasStochastic())
     {
+        auto leftStochastic = morphSoundFrames[MorphLocation::UpLeft]->getStochasticMagnitudes();
+        auto rightStochastic = morphSoundFrames[MorphLocation::DownRight]->getStochasticMagnitudes();
+        
         // Interpolating the stochastic components of the given harmonics
-        morphedSoundFrame.stochastic = interpolateFrames (FrameType::Stochastic, stocsInterpFactor, morphSoundFrames[MorphLocation::UpLeft].stochastic, morphSoundFrames[MorphLocation::DownRight].stochastic, numOfMaxHarmonics);
+        morphedSoundFrame.setStochasticMagnitudes( interpolateFrames (FrameType::Stochastic, stocsInterpFactor, leftStochastic, rightStochastic, numOfMaxHarmonics));
     }
 
-    if (morphSoundFrames[MorphLocation::UpLeft].hasAttack() or morphSoundFrames[MorphLocation::DownRight].hasAttack())
+    if (morphSoundFrames[MorphLocation::UpLeft]->hasAttack() or morphSoundFrames[MorphLocation::DownRight]->hasAttack())
     {
         // TODO - Check parameter morphSounds[MorphLocation::Left]->parameters.transpose.attack
-        // if false, do not transpose the frame of ote
+        // if false, do not transpose the frame of note
 
+        auto leftAttack = morphSoundFrames[MorphLocation::UpLeft]->getAttackWaveform();
+        auto rightAttack = morphSoundFrames[MorphLocation::DownRight]->getAttackWaveform();
+        
         // Interpolating the stochastic components of the given harmonics
-        morphedSoundFrame.attack = interpolateFrames (FrameType::Waveform, attackInterpFactor, morphSoundFrames[MorphLocation::UpLeft].attack, morphSoundFrames[MorphLocation::DownRight].attack, frameLength);
+        morphedSoundFrame.setAttackWaveform( interpolateFrames (FrameType::Waveform, attackInterpFactor, leftAttack, rightAttack, frameLength));
     }
 
-    if (morphSoundFrames[MorphLocation::UpLeft].hasResidual() or morphSoundFrames[MorphLocation::DownRight].hasResidual())
+    if (morphSoundFrames[MorphLocation::UpLeft]->hasResidual() or morphSoundFrames[MorphLocation::DownRight]->hasResidual())
     {
         // TODO - Check parameter morphSounds[MorphLocation::Left]->parameters.transpose.residual
-        // if false, do not transpose the frame of ote
+        // if false, do not transpose the frame of note
+        
+        auto leftResidual = morphSoundFrames[MorphLocation::UpLeft]->getResidualWaveform();
+        auto rightResidual = morphSoundFrames[MorphLocation::DownRight]->getResidualWaveform();
 
         // Interpolating the stochastic components of the given harmonics
-        morphedSoundFrame.residual = interpolateFrames (FrameType::Waveform, residualInterpFactor, morphSoundFrames[MorphLocation::UpLeft].residual, morphSoundFrames[MorphLocation::DownRight].residual, frameLength);
+        morphedSoundFrame.setResidualWaveform( interpolateFrames (FrameType::Waveform, residualInterpFactor, leftResidual, rightResidual, frameLength));
     }
 
     return morphedSoundFrame;
 }
 
-bool Instrument::isModelActive (const Model::Type modelType)
+bool Instrument::isModelActive (const ModelType modelType)
 {
     bool isModelActive = false;
 
     switch (modelType)
     {
-        case Model::Type::Harmonic:
+        case ModelType::Harmonic:
             isModelActive = m_activeModels.Harmonic;
             break;
-        case Model::Type::Sinusoidal:
+        case ModelType::Sinusoidal:
             isModelActive = m_activeModels.Sinusoidal;
             break;
-        case Model::Type::Stochastic:
+        case ModelType::Stochastic:
             isModelActive = m_activeModels.Stochastic;
             break;
-        case Model::Type::Attack:
+        case ModelType::Attack:
             isModelActive = m_activeModels.Attack;
             break;
-        case Model::Type::Residual:
+        case ModelType::Residual:
             isModelActive = m_activeModels.Residual;
             break;
         default:
-            jassert (false);
+            jassertfalse;
             break;
     }
 
@@ -487,7 +504,7 @@ Sound* Instrument::getClosestLoadedSound (const Note& note, const float velocity
     {
         if (sound && sound->isLoaded())
         {
-            auto velocityDistance = std::abs (sound->velocity - midiRangedVelocity);
+            auto velocityDistance = std::abs (sound->getInfo()->velocity - midiRangedVelocity);
 
             // Prefer lower velocities ("<=" for upper velocities)
             if (velocityDistance < shortestVelocityDistance)
@@ -501,7 +518,7 @@ Sound* Instrument::getClosestLoadedSound (const Note& note, const float velocity
     return closestLoadedSound;
 }
 
-std::vector<float> Instrument::interpolateFrames (Instrument::FrameType frameType, float interpolationFactor, std::vector<float> frameA, std::vector<float> frameB, int frameLength)
+std::vector<float> Instrument::interpolateFrames (Instrument::FrameType frameType, float interpolationFactor, std::vector<float> frameA, std::vector<float> frameB, size_t frameLength) const
 {
     // TODO - Get rid of the for loops, use matrix multiplications instead
 

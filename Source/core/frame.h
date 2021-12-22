@@ -25,8 +25,6 @@ namespace morphex
 class Frame
 {
 public:
-    Frame();
-
     struct FftComponent
     {
         std::vector<float> freqs;
@@ -48,13 +46,13 @@ public:
     void setAttackWaveform (std::vector<float> waveform);
     void setResidualWaveform (std::vector<float> waveform);
     
-    bool hasHarmonic() { return m_harmonic.freqs.size() > 0; };
-    bool hasSinusoidal() { return m_sinusoidal.freqs.size() > 0; };
-    bool hasPhases() { return m_harmonic.phases.size() > 0; };
-    bool hasSinusoidalPhases() { return m_sinusoidal.phases.size() > 0; };
-    bool hasStochastic() { return m_stochastic.size() > 0; };
-    bool hasAttack() { return m_attack.size() > 0; };
-    bool hasResidual() { return m_residual.size() > 0; };
+    bool hasHarmonic() const { return m_harmonic.freqs.size() > 0; };
+    bool hasSinusoidal() const { return m_sinusoidal.freqs.size() > 0; };
+    bool hasPhases() const { return m_harmonic.phases.size() > 0; };
+    bool hasSinusoidalPhases() const { return m_sinusoidal.phases.size() > 0; };
+    bool hasStochastic() const { return m_stochastic.size() > 0; };
+    bool hasAttack() const { return m_attack.size() > 0; };
+    bool hasResidual() const { return m_residual.size() > 0; };
 
 private:
     FftComponent       m_harmonic;

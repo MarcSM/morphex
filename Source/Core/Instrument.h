@@ -41,7 +41,7 @@ constexpr auto MidiVelocities = 128;
 using Note             = std::array<std::unique_ptr<morphex::Sound>, Constants::MidiVelocities>;
 using MorphNotes       = std::array<Note*, MorphLocation::Total>;
 using MorphSounds      = std::array<morphex::Sound*, MorphLocation::Total>;
-using MorphSoundFrames = std::array<std::shared_ptr<morphex::Frame>, MorphLocation::Total>;
+using MorphSoundFrames = std::array<std::shared_ptr<const morphex::Frame>, MorphLocation::Total>;
 
 namespace morphex
 {
@@ -93,8 +93,8 @@ public:
     MorphSounds       getClosestSounds (float targetMidiNote, float velocity);
     Sound*            getMorphSound (MorphLocation morph_location);
     MorphSounds       getMorphSounds();
-    Frame      getSoundFrame (float targetMidiNote, float velocity, int currentFrameIndex, int frameLength, float freqsInterpFactor, float magsInterpFactor);
-    Frame      getMorphedSoundFrame (float targetMidiNote, MorphSounds morphSounds, int currentFrameIndex, int frameLength, float freqsInterpFactor = -1, float magsInterpFactor = -1);
+//    std::shared_ptr<const Frame>      getSoundFrame (float targetMidiNote, float velocity, int currentFrameIndex, int frameLength, float freqsInterpFactor, float magsInterpFactor);
+    Frame      getMorphedSoundFrame (float targetMidiNote, MorphSounds morphSounds, int currentFrameIndex, int frameLength, float freqsInterpFactor = -1, float magsInterpFactor = -1) const;
 
     bool isModelActive (ModelType modelType);
 
@@ -109,7 +109,7 @@ private:
 
     Sound* getClosestLoadedSound (const Note& note, const float velocity);
 
-    std::vector<float> interpolateFrames (FrameType frameType, float interpolationFactor, std::vector<float> frameA, std::vector<float> frameB, int frameLength);
+    std::vector<float> interpolateFrames (FrameType frameType, float interpolationFactor, std::vector<float> frameA, std::vector<float> frameB, size_t frameLength) const;
     bool               hasAnyLoadedSound (const Note& note) const;
 
     std::string       m_name;

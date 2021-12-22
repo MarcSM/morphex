@@ -40,8 +40,6 @@ public:
 
         if (m_morphLocation != MorphLocation::Total)
             this->updateCurrentSound();
-        else
-            m_sound = new morphex::Sound();
 
         addAndMakeVisible (m_soundNumberPanel);
         addAndMakeVisible (m_soundNamePanel);
@@ -195,15 +193,15 @@ private:
             g.setColour (GUI::Color::Logo);
             g.setFont (font_2);
 
-            if (sound_panel->m_sound->loaded)
+            if (sound_panel->m_sound->isLoaded())
             {
                 if (sound_panel->m_numSound == 1 or sound_panel->m_numSound == 3)
                 {
-                    g.drawText (sound_panel->m_sound->name, getLocalBounds(), juce::Justification::topRight, false);
+                    g.drawText (sound_panel->m_sound->getHadFileInfo()->name, getLocalBounds(), juce::Justification::topRight, false);
                 }
                 else
                 {
-                    g.drawText (sound_panel->m_sound->name, getLocalBounds(), juce::Justification::topLeft, false);
+                    g.drawText (sound_panel->m_sound->getHadFileInfo()->name, getLocalBounds(), juce::Justification::topLeft, false);
                 }
             }
         }
@@ -224,7 +222,7 @@ private:
 
     void timerCallback() override
     {
-        if (m_morphLocation < MorphLocation::Total and this->m_currentSoundPath != m_instrument.getMorphSound (m_morphLocation)->path)
+        if (m_morphLocation < MorphLocation::Total and this->m_currentSoundPath != m_instrument.getMorphSound (m_morphLocation)->getHadFileInfo()->path)
         {
             this->updateCurrentSound();
             repaint();
@@ -234,7 +232,7 @@ private:
     void updateCurrentSound()
     {
         m_sound                  = m_instrument.getMorphSound (m_morphLocation);
-        this->m_currentSoundPath = m_sound->path;
+        this->m_currentSoundPath = m_sound->getHadFileInfo()->path;
     }
 
     std::string m_currentSoundPath;

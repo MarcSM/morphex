@@ -317,6 +317,11 @@ Sound::Info* Sound::getInfo() const
     return m_info.get();
 }
 
+Sound::HadFileInfo* Sound::getHadFileInfo() const
+{
+    return m_hadFileInfo.get();
+}
+
 int Sound::getMaxFrames() const
 {
     return static_cast<int>(m_frames.size());
@@ -417,7 +422,7 @@ void Sound::getFundamentalNotes()
         // Count the number of occurrences for each fundamental present on "harmonic_frequencies"
         for (const auto& frame : m_frames)
         {
-            const auto& currentFundamental = frame.getHarmonicComponent().freqs[0];
+            const auto& currentFundamental = frame->getHarmonicComponent().freqs[0];
 
             // Find closest note for this fundamental
             const auto& closestNote = std::min_element (notes.begin(), notes.end(), [&] (const auto& lowerNote, const auto& upperNote) {
@@ -443,7 +448,7 @@ void Sound::getFundamentalNotes()
         if (predominantNote != notes.end())
         {
             // Save the predominant note
-            m_soundFeatures.predominantNote = predominantNote.second;
+            m_soundFeatures->predominantNote = predominantNote->second;
         }
         else
         {
@@ -548,49 +553,49 @@ void Sound::getFundamentalNotes()
 //     }
 // }
 
-void Sound::normalizeWaveform (std::vector<float>& waveform, float max_val, float max_db)
-{
-    // Define normalization range linear
-    float max_val_from_db = Tools::Calculate::dbToLinear (max_val);
-    float max_linear      = Tools::Calculate::dbToLinear (max_db);
-    float min_linear      = -max_linear;
-
-    // Initialize min and max values
-    float min_val_linear = 0.0;
-    float max_val_linear = 0.0;
-
-    // Find the max value of the waveform
-    for (int i = 0; i < waveform.size(); i++)
-    {
-        float current_val = std::abs (waveform[i]);
-        if (current_val > max_val_linear)
-            max_val_linear = current_val;
-    }
-
-    if (max_val_from_db > max_val_linear)
-    {
-        max_val_linear = max_val_from_db;
-    }
-
-    min_val_linear = -max_val_linear;
-
-    //        float waveform_normalization_factor = std::abs(max_val_linear - max_linear);
-
-    // Normalize the waveform component with the same factor
-    for (int i = 0; i < waveform.size(); i++)
-    {
-        waveform[i] = (max_linear - min_linear) * ((waveform[i] - min_val_linear) / (max_val_linear - min_val_linear)) + min_linear;
-    }
-
-    std::vector<float> results_great;
-    copy_if (waveform.begin(), waveform.end(), back_inserter (results_great), [] (float n) { return n > 1.0; });
-
-    std::vector<float> results_less;
-    copy_if (waveform.begin(), waveform.end(), back_inserter (results_less), [] (float n) { return n < -1.0; });
-
-    jassert (results_great.size() == 0); // Upper clipping
-    jassert (results_less.size() == 0);  // Lower clipping
-}
+//void Sound::normalizeWaveform (std::vector<float>& waveform, float max_val, float max_db)
+//{
+//    // Define normalization range linear
+//    float max_val_from_db = Tools::Calculate::dbToLinear (max_val);
+//    float max_linear      = Tools::Calculate::dbToLinear (max_db);
+//    float min_linear      = -max_linear;
+//
+//    // Initialize min and max values
+//    float min_val_linear = 0.0;
+//    float max_val_linear = 0.0;
+//
+//    // Find the max value of the waveform
+//    for (int i = 0; i < waveform.size(); i++)
+//    {
+//        float current_val = std::abs (waveform[i]);
+//        if (current_val > max_val_linear)
+//            max_val_linear = current_val;
+//    }
+//
+//    if (max_val_from_db > max_val_linear)
+//    {
+//        max_val_linear = max_val_from_db;
+//    }
+//
+//    min_val_linear = -max_val_linear;
+//
+//    //        float waveform_normalization_factor = std::abs(max_val_linear - max_linear);
+//
+//    // Normalize the waveform component with the same factor
+//    for (int i = 0; i < waveform.size(); i++)
+//    {
+//        waveform[i] = (max_linear - min_linear) * ((waveform[i] - min_val_linear) / (max_val_linear - min_val_linear)) + min_linear;
+//    }
+//
+//    std::vector<float> results_great;
+//    copy_if (waveform.begin(), waveform.end(), back_inserter (results_great), [] (float n) { return n > 1.0; });
+//
+//    std::vector<float> results_less;
+//    copy_if (waveform.begin(), waveform.end(), back_inserter (results_less), [] (float n) { return n < -1.0; });
+//
+//    jassert (results_great.size() == 0); // Upper clipping
+//    jassert (results_less.size() == 0);  // Lower clipping
+//}
 
 /** Check if an xml element has any child with a given name */
 bool Sound::hasChild (juce::XmlElement* parent, juce::String child_name)
