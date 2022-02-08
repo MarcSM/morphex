@@ -152,7 +152,7 @@ void Instrument::loadSound (std::string filePath, MorphLocation morphLocation)
     }
     else
     {
-        jassertfalse;
+        // jassertfalse;
     }
 }
 

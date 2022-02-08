@@ -15,11 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Morphex. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <JuceHeader.h>
 
 #include "frame.h"
 
 namespace morphex
 {
+//Frame::Frame() : m_harmonic ({{},{},{}}),
+//m_sinusoidal ({{},{},{}}),
+//m_stochastic ({}),
+//m_attack ({}),
+//m_residual ({})
+//{
+//
+//}
+
 const Frame::FftComponent& Frame::getHarmonicComponent() const
 {
     return m_harmonic;
@@ -65,6 +75,13 @@ size_t Frame::getMaxNumOfSinusoids() const
 
 void Frame::setHarmonicComponent (Frame::FftComponent component)
 {
+    DBG("size");
+    DBG(freqs.size());
+    DBG("size in");
+    m_harmonic.freqs.resize(0);
+    DBG(m_harmonic.freqs.size());
+//    DBG("size");
+//    DBG(component.freqs.size());
     m_harmonic = component;
 }
 

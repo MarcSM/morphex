@@ -24,7 +24,7 @@ namespace morphex
 {
 class Frame
 {
-public:
+public:    
     struct FftComponent
     {
         std::vector<float> freqs;
@@ -39,7 +39,7 @@ public:
     const std::vector<float>& getResidualWaveform() const;
     size_t                    getMaxNumOfHarmonics() const;
     size_t                    getMaxNumOfSinusoids() const;
-
+    
     void setHarmonicComponent (FftComponent component);
     void setSinusoidalComponent (FftComponent component);
     void setStochasticMagnitudes (std::vector<float> values);

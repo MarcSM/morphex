@@ -58,6 +58,7 @@ void Sound::loadHadFile (juce::String filePath)
 
         if (hadFile.existsAsFile())
         {
+            m_hadFileInfo            = std::make_unique<HadFileInfo>();
             m_hadFileInfo->name      = hadFile.getFileNameWithoutExtension().toStdString();
             m_hadFileInfo->extension = hadFile.getFileExtension().toStdString();
             m_hadFileInfo->path      = filePath.toStdString();
@@ -123,10 +124,14 @@ void Sound::loadHadFile (juce::String filePath)
                             codec::decodeMatrix (harmonicMagnitudes, true, false);
                             codec::decodeMatrix (harmonicPhases, false, false);
 
-                            if (harmonicFrequencies.size() != harmonicMagnitudes.size() ||
-                                harmonicFrequencies.size() != harmonicPhases.size())
+                            if (harmonicFrequencies.size() != harmonicMagnitudes.size())
                             {
-                                throw "Harmonic information sizes do not match";
+                                throw "Harmonic information sizes does not match";
+                            }
+                            
+                            if (harmonicPhases.size() > 0 && harmonicFrequencies.size() != harmonicPhases.size())
+                            {
+                                throw "Harmonic phase information size does not match";
                             }
 
                             const auto maxFramesSize = std::max (m_frames.size(), harmonicFrequencies.size());
@@ -135,7 +140,22 @@ void Sound::loadHadFile (juce::String filePath)
 
                             for (auto i = 0u; i < harmonicFrequencies.size(); ++i)
                             {
-                                m_frames[i]->setHarmonicComponent ({ harmonicFrequencies[i], harmonicMagnitudes[i], harmonicPhases[i] });
+                                // TODO - All had files must have the phase info
+                                if (harmonicPhases.size() < i)
+                                {
+                                    m_frames[i]->setHarmonicComponent ({ harmonicFrequencies[i], harmonicMagnitudes[i], harmonicPhases[i] });
+                                }
+                                else
+                                {
+                                    std::vector<float> freqs = harmonicFrequencies[i];
+                                    std::vector<float> mags = harmonicMagnitudes[i];
+                                    std::vector<float> phases;
+//                                    Frame::FftComponent frame = { freqs,  mags, phases };
+                                    
+                                    m_frames[i]->setHarmonicComponent (freqs,  mags, phases);
+//                                    m_frames[i]->setHarmonicComponent ({ freqs,  mags, phases });
+//                                    m_frames[i]->setHarmonicComponent ({ harmonicFrequencies[i], harmonicMagnitudes[i], harmonicMagnitudes[i] });
+                                }
                             }
                         }
 
